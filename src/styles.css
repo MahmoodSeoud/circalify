@@ -1,0 +1,640 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: white;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+#wrapper {
+  background: white;
+  width: 100% !important;
+  height: 800px !important;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  position: relative !important;
+  top: 0;
+  left: 0;
+}
+
+/* SharePoint Classic specific styles - remove constraints */
+.ms-webpart-zone-cell #wrapper,
+.ms-rtestate-field #wrapper {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  min-height: 400px; /* minimum for usability */
+}
+
+/* Make SVG truly responsive - FORCE override */
+#wrapper svg,
+svg[data-name="SvgJs Doc"] {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  min-width: none !important;
+  min-height: none !important;
+  display: block !important;
+  position: relative !important;
+}
+
+/* SharePoint Classic SVG - remove all constraints */
+.ms-webpart-zone-cell #wrapper svg,
+.ms-rtestate-field #wrapper svg {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Force SharePoint containers to expand */
+body.ms-bodyareascrollbar #wrapper {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+body.ms-bodyareascrollbar #wrapper svg {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Override SharePoint web part zone constraints */
+.ms-webpart-zone-cell {
+  height: auto !important;
+  min-height: 400px !important;
+}
+
+/* Force SharePoint web part chrome to expand */
+.ms-webpart-chrome,
+.ms-webpart-chrome-body {
+  height: auto !important;
+  min-height: 500px !important;
+  width: 100% !important;
+  overflow: visible !important;
+}
+
+/* Target SharePoint's script editor specifically */
+.ms-rte-wpbox,
+.ms-rte-embedcode {
+  height: auto !important;
+  min-height: 1000px !important;
+  width: 100% !important;
+}
+
+/* SVG.js library specific overrides */
+svg.svg-container,
+svg[style*="width"],
+svg[style*="height"] {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Mobile fallbacks only */
+@media (max-width: 480px) {
+  #wrapper {
+    min-height: 350px;
+  }
+}
+
+/* Modern styled popup overlay */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.popup-overlay.show {
+  display: flex;
+}
+
+.popup-container {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  max-width: 450px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  position: relative;
+  transform: scale(0.9);
+  transition: transform 0.2s ease-out;
+}
+
+.popup-overlay.show .popup-container {
+  transform: scale(1);
+}
+
+.popup-header {
+  background: linear-gradient(135deg, #e1f2f9 0%, #c3e9f5 100%);
+  padding: 20px 24px;
+  border-bottom: 1px solid #e0e0e0;
+  position: relative;
+}
+
+.popup-date {
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+}
+
+.popup-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  line-height: 1.3;
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+}
+
+.popup-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: none !important;
+  border-radius: 6px !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  max-width: 32px !important;
+  max-height: 32px !important;
+  cursor: pointer;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px !important;
+  color: #666 !important;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 1 !important;
+  text-decoration: none !important;
+  outline: none !important;
+}
+
+.popup-close:hover {
+  background: #ffffff !important;
+  color: #333 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.popup-body {
+  padding: 24px;
+}
+
+.popup-description {
+  font-size: 16px;
+  line-height: 1.5;
+  color: #555;
+  margin: 0 0 16px 0;
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+}
+
+.popup-notification-info {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 16px;
+  margin-top: 16px;
+}
+
+.notification-field {
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.notification-field strong {
+  color: #333;
+  font-weight: 600;
+}
+
+/* Large screen optimizations (1920px+) */
+@media (min-width: 1920px) {
+  body {
+    padding: 0;
+  }
+
+  #wrapper {
+    max-width: min(90vw, 1920px);
+    height: min(90vh, 1080px);
+    border-radius: 15px;
+  }
+
+  .popup-container {
+    max-width: 500px;
+  }
+
+  .popup-title {
+    font-size: 22px;
+  }
+
+  .popup-description {
+    font-size: 18px;
+  }
+}
+
+/* Standard desktop (1366px - 1919px) */
+@media (min-width: 1366px) and (max-width: 1919px) {
+  #wrapper {
+    max-width: min(92vw, 1300px);
+    height: min(82vh, 1000px);
+  }
+}
+
+/* Tablet landscape and smaller desktops */
+@media (max-width: 1365px) {
+  body {
+    padding: 0;
+  }
+
+  #wrapper {
+    max-width: 95vw;
+    height: min(90vh, 800px);
+    min-height: 550px;
+  }
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  body {
+    padding: 0;
+  }
+
+  #wrapper {
+    height: min(70vh, 600px);
+    min-height: 500px;
+    border-radius: 5px;
+    aspect-ratio: unset;
+  }
+
+  .popup-container {
+    width: 95%;
+    max-width: 350px;
+  }
+
+  .popup-title {
+    font-size: 18px;
+  }
+
+  .popup-description {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 0;
+  }
+
+  #wrapper {
+    height: min(60vh, 500px);
+    min-height: 400px;
+    border-radius: 3px;
+  }
+
+  .popup-container {
+    width: 98%;
+    max-width: 320px;
+  }
+
+  .popup-title {
+    font-size: 16px;
+  }
+
+  .popup-description {
+    font-size: 13px;
+  }
+}
+
+/* Process tooltip styles */
+.process-tooltip {
+  position: fixed !important; /* Fixed positioning for SharePoint Classic compatibility */
+  z-index: 999999 !important; /* High z-index for SharePoint Classic compatibility */
+  background: white !important;
+  border: 2px solid #333 !important;
+  border-radius: 8px !important;
+  padding: 12px 16px !important;
+  min-width: 250px !important;
+  max-width: 350px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+  transition: opacity 0.2s ease-in-out !important;
+  font-family: Arial, sans-serif !important;
+  /* SharePoint Classic specific overrides */
+  display: block !important;
+  visibility: visible !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
+.process-tooltip.visible {
+  opacity: 1 !important;
+}
+
+.process-tooltip-date {
+  font-weight: bold;
+  color: #666;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.process-tooltip-title {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.process-tooltip-description {
+  color: #555;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.process-tooltip-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 8px 8px 0 8px;
+  border-color: #333 transparent transparent transparent;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.process-tooltip-arrow::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 6px 0 6px;
+  border-color: white transparent transparent transparent;
+  bottom: 2px;
+  left: -6px;
+}
+
+/* Activity button styles */
+.activity-button {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #e1f2f9;
+  border: 1px solid gray;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  z-index: 10;
+  visibility: visible !important;
+}
+
+.activity-button:hover {
+  background: #c3e9f5;
+}
+
+.activity-text {
+  color: #333;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  text-align: center;
+}
+
+.activity-button.top-left {
+  top: 0%;
+  left: 40px;
+}
+
+.activity-button.top-right {
+  top: 0%;
+  right: 40px;
+}
+
+.activity-button.bottom-left {
+  bottom: 20%;
+  left: 40px;
+}
+
+.activity-button.bottom-right {
+  bottom: 20%;
+  right: 40px;
+}
+
+/* Responsive adjustments for activity buttons */
+@media (min-width: 1920px) {
+  .activity-button {
+    width: 150px;
+    height: 150px;
+  }
+
+  .activity-text {
+    font-size: 15px;
+  }
+
+  .activity-button.top-left,
+  .activity-button.bottom-left {
+    left: 50px;
+  }
+
+  .activity-button.top-right,
+  .activity-button.bottom-right {
+    right: 50px;
+  }
+}
+
+@media (max-width: 1365px) {
+  .activity-button {
+    width: 100px;
+    height: 100px;
+  }
+
+  .activity-text {
+    font-size: 12px;
+  }
+
+  .activity-button.top-left,
+  .activity-button.bottom-left {
+    left: 20px;
+  }
+
+  .activity-button.top-right,
+  .activity-button.bottom-right {
+    right: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .activity-button {
+    display: none;
+  }
+}
+
+/* Activity dropdown styles */
+.activity-dropdown {
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  display: none;
+  min-width: 200px;
+}
+
+.activity-dropdown.show {
+  display: block;
+}
+
+.dropdown-item {
+  padding: 10px 15px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  background: whitesmoke;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background: #c3e9f5;
+}
+
+/* Arrow indicator for activity buttons */
+.activity-button::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 8px solid #0088c2;
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Bestemmelser button styles */
+.bestemmelser-button {
+  position: absolute;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 35px;
+  background: #e1f2f9;
+  border: 1px solid gray;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  z-index: 10;
+}
+
+.bestemmelser-button:hover {
+  background: #c3e9f5;
+}
+
+.bestemmelser-text {
+  color: #333;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  text-align: center;
+}
+
+.bestemmelser-button::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 8px solid #0088c2;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.bestemmelser-button .activity-dropdown {
+  bottom: 50px;
+  left: 0;
+}
+
+/* Responsive adjustments for Bestemmelser */
+@media (min-width: 1920px) {
+  .bestemmelser-button {
+    width: 300px;
+    height: 50px;
+    bottom: 20%;
+  }
+
+  .bestemmelser-text {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 1365px) {
+  .bestemmelser-button {
+    width: 200px;
+    height: 35px;
+    bottom: 20%;
+  }
+
+  .bestemmelser-text {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .bestemmelser-button {
+    display: none;
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "yearwheel",
+  "version": "1.0.0",
+  "description": "YearWheel / Årshjulet - Local Development",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "python3 -m http.server 8080",
+    "dev": "python3 -m http.server 8080",
+    "build": "rm -rf public && mkdir -p public/src/lib public/src/utils public/images && cp src/*.js src/*.css public/src/ && cp -r src/lib/* public/src/lib/ && cp -r src/utils/* public/src/utils/ && cp index.html public/ && cp create-dummy-data.js public/ && cp docs/installations-vejledning.pdf public/installations-vejledning.pdf && cp -r images/* public/images/ 2>/dev/null || true"
+  },
+  "type": "module"
+}

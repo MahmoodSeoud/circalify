@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Circalify - Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    .header {
+      background: #2c3e50;
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 2.5em;
+      font-weight: 300;
+    }
+
+    .header p {
+      margin: 10px 0 0;
+      opacity: 0.9;
+    }
+
+    .content {
+      padding: 30px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+
+    .control-group {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .control-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .control-group select,
+    .control-group input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .control-group button {
+      padding: 10px 20px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    .control-group button:hover {
+      background: #2980b9;
+    }
+
+    .wheel-container {
+      width: 100%;
+      height: 600px;
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      position: relative;
+    }
+
+    .info-panel {
+      margin-top: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+
+    .info-panel h3 {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+
+    .event-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .event-card {
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      border-left: 4px solid #3498db;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .event-card .date {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 5px;
+    }
+
+    .event-card .label {
+      font-weight: bold;
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+
+    .event-card .ring {
+      display: inline-block;
+      padding: 2px 8px;
+      background: #e3f2fd;
+      color: #1976d2;
+      border-radius: 12px;
+      font-size: 11px;
+    }
+
+    .stats {
+      display: flex;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .stat-box {
+      flex: 1;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-box .value {
+      font-size: 2em;
+      font-weight: bold;
+      color: #3498db;
+    }
+
+    .stat-box .label {
+      font-size: 0.9em;
+      color: #666;
+      margin-top: 5px;
+    }
+
+    /* Custom tooltip styling */
+    .circalify-tooltip {
+      max-width: 250px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Circalify</h1>
+      <p>Interactive Circular Annual Wheel Visualization</p>
+    </div>
+
+    <div class="content">
+      <!-- Controls -->
+      <div class="controls">
+        <div class="control-group">
+          <label for="data-preset">Data Preset:</label>
+          <select id="data-preset">
+            <option value="company">Company Operations</option>
+            <option value="personal">Personal Calendar</option>
+            <option value="project">Project Timeline</option>
+            <option value="random">Random Events</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label for="ring-count">Number of Rings:</label>
+          <select id="ring-count">
+            <option value="3">3 Rings</option>
+            <option value="4">4 Rings</option>
+            <option value="5" selected>5 Rings</option>
+            <option value="6">6 Rings</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label for="color-scheme">Color Scheme:</label>
+          <select id="color-scheme">
+            <option value="default">Default</option>
+            <option value="pastel">Pastel</option>
+            <option value="vibrant">Vibrant</option>
+            <option value="monochrome">Monochrome</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <button onclick="addRandomEvent()">Add Random Event</button>
+        </div>
+
+        <div class="control-group">
+          <button onclick="clearEvents()">Clear All Events</button>
+        </div>
+
+        <div class="control-group">
+          <button onclick="exportSVG()">Export SVG</button>
+        </div>
+      </div>
+
+      <!-- Wheel Container -->
+      <div id="wheel" class="wheel-container"></div>
+
+      <!-- Info Panel -->
+      <div class="info-panel">
+        <h3>Visualization Info</h3>
+
+        <div class="stats">
+          <div class="stat-box">
+            <div class="value" id="event-count">0</div>
+            <div class="label">Total Events</div>
+          </div>
+          <div class="stat-box">
+            <div class="value" id="zoom-level">12</div>
+            <div class="label">Months Shown</div>
+          </div>
+          <div class="stat-box">
+            <div class="value" id="ring-count-display">5</div>
+            <div class="label">Active Rings</div>
+          </div>
+        </div>
+
+        <h3 style="margin-top: 30px;">Upcoming Events</h3>
+        <div id="event-list" class="event-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Include the Circalify library -->
+  <script src="circalify.js"></script>
+
+  <script>
+    // Sample data generators
+    const dataPresets = {
+      company: () => {
+        const events = [];
+        const rings = ['Operations', 'Finance', 'HR', 'Marketing', 'Development'];
+        const year = new Date().getFullYear();
+
+        // Operations events
+        events.push(
+          { date: new Date(year, 0, 15), label: 'Q1 Planning', ring: 'Operations', color: '#3498db' },
+          { date: new Date(year, 3, 1), label: 'Q2 Review', ring: 'Operations', color: '#3498db' },
+          { date: new Date(year, 6, 1), label: 'Mid-year Assessment', ring: 'Operations', color: '#3498db' },
+          { date: new Date(year, 9, 1), label: 'Q4 Planning', ring: 'Operations', color: '#3498db' }
+        );
+
+        // Finance events
+        events.push(
+          { date: new Date(year, 0, 31), label: 'Year-end Close', ring: 'Finance', color: '#9b59b6' },
+          { date: new Date(year, 3, 15), label: 'Q1 Earnings', ring: 'Finance', color: '#9b59b6' },
+          { date: new Date(year, 6, 15), label: 'Q2 Earnings', ring: 'Finance', color: '#9b59b6' },
+          { date: new Date(year, 9, 15), label: 'Q3 Earnings', ring: 'Finance', color: '#9b59b6' },
+          { date: new Date(year, 11, 31), label: 'Annual Budget', ring: 'Finance', color: '#9b59b6' }
+        );
+
+        // HR events
+        events.push(
+          { date: new Date(year, 1, 14), label: 'Valentine\'s Party', ring: 'HR', color: '#e74c3c' },
+          { date: new Date(year, 5, 15), label: 'Summer Picnic', ring: 'HR', color: '#e74c3c' },
+          { date: new Date(year, 8, 1), label: 'Performance Reviews', ring: 'HR', color: '#e74c3c' },
+          { date: new Date(year, 11, 20), label: 'Holiday Party', ring: 'HR', color: '#e74c3c' }
+        );
+
+        // Marketing events
+        events.push(
+          { date: new Date(year, 2, 15), label: 'Spring Campaign', ring: 'Marketing', color: '#2ecc71' },
+          { date: new Date(year, 5, 1), label: 'Summer Launch', ring: 'Marketing', color: '#2ecc71' },
+          { date: new Date(year, 8, 15), label: 'Fall Promotion', ring: 'Marketing', color: '#2ecc71' },
+          { date: new Date(year, 10, 25), label: 'Black Friday', ring: 'Marketing', color: '#2ecc71' }
+        );
+
+        // Development events
+        events.push(
+          { date: new Date(year, 0, 10), label: 'Sprint 1', ring: 'Development', color: '#f39c12' },
+          { date: new Date(year, 1, 10), label: 'Sprint 2', ring: 'Development', color: '#f39c12' },
+          { date: new Date(year, 2, 10), label: 'Release 1.0', ring: 'Development', color: '#f39c12' },
+          { date: new Date(year, 4, 10), label: 'Sprint 5', ring: 'Development', color: '#f39c12' },
+          { date: new Date(year, 6, 10), label: 'Release 2.0', ring: 'Development', color: '#f39c12' },
+          { date: new Date(year, 9, 10), label: 'Sprint 10', ring: 'Development', color: '#f39c12' },
+          { date: new Date(year, 11, 10), label: 'Release 3.0', ring: 'Development', color: '#f39c12' }
+        );
+
+        return { events, rings };
+      },
+
+      personal: () => {
+        const events = [];
+        const rings = ['Work', 'Health', 'Family', 'Hobbies', 'Finance'];
+        const year = new Date().getFullYear();
+
+        events.push(
+          { date: new Date(year, 0, 1), label: 'New Year Goals', ring: 'Health', color: '#e74c3c' },
+          { date: new Date(year, 1, 14), label: 'Anniversary', ring: 'Family', color: '#f39c12' },
+          { date: new Date(year, 3, 15), label: 'Tax Day', ring: 'Finance', color: '#9b59b6' },
+          { date: new Date(year, 5, 21), label: 'Vacation Start', ring: 'Family', color: '#f39c12' },
+          { date: new Date(year, 6, 4), label: 'Marathon', ring: 'Health', color: '#e74c3c' },
+          { date: new Date(year, 8, 1), label: 'Project Deadline', ring: 'Work', color: '#3498db' },
+          { date: new Date(year, 10, 23), label: 'Thanksgiving', ring: 'Family', color: '#f39c12' },
+          { date: new Date(year, 11, 25), label: 'Christmas', ring: 'Family', color: '#f39c12' }
+        );
+
+        return { events, rings };
+      },
+
+      project: () => {
+        const events = [];
+        const rings = ['Planning', 'Design', 'Development', 'Testing', 'Deployment'];
+        const year = new Date().getFullYear();
+
+        // Generate project milestones
+        for (let month = 0; month < 12; month++) {
+          const ringIndex = month % 5;
+          const ring = rings[ringIndex];
+          events.push({
+            date: new Date(year, month, 15),
+            label: `${ring} Phase ${Math.floor(month / 5) + 1}`,
+            ring: ring,
+            color: ['#3498db', '#9b59b6', '#2ecc71', '#f39c12', '#e74c3c'][ringIndex]
+          });
+        }
+
+        return { events, rings };
+      },
+
+      random: () => {
+        const events = [];
+        const rings = ['Priority 1', 'Priority 2', 'Priority 3', 'Priority 4', 'Priority 5'];
+        const year = new Date().getFullYear();
+
+        // Generate random events
+        for (let i = 0; i < 30; i++) {
+          const month = Math.floor(Math.random() * 12);
+          const day = Math.floor(Math.random() * 28) + 1;
+          const ringIndex = Math.floor(Math.random() * 5);
+
+          events.push({
+            date: new Date(year, month, day),
+            label: `Event ${i + 1}`,
+            ring: rings[ringIndex],
+            description: `Random event generated for demonstration`,
+            color: ['#3498db', '#9b59b6', '#2ecc71', '#f39c12', '#e74c3c'][ringIndex]
+          });
+        }
+
+        return { events, rings };
+      }
+    };
+
+    // Color schemes
+    const colorSchemes = {
+      default: ['#c0c0c0', '#9b59b6', '#3498db', '#7fb069', '#d4a5a5'],
+      pastel: ['#FFE5E5', '#FFE5F1', '#FFF0F5', '#F0F8FF', '#E6F3FF'],
+      vibrant: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8'],
+      monochrome: ['#f0f0f0', '#c0c0c0', '#909090', '#606060', '#303030']
+    };
+
+    // Global wheel instance
+    let wheel = null;
+    let currentData = [];
+
+    // Initialize the wheel
+    function initWheel() {
+      const container = document.getElementById('wheel');
+      const preset = document.getElementById('data-preset').value;
+      const colorScheme = document.getElementById('color-scheme').value;
+      const { events, rings } = dataPresets[preset]();
+
+      currentData = events;
+
+      // Destroy existing wheel if any
+      if (wheel) {
+        wheel.destroy();
+      }
+
+      // Create new wheel
+      wheel = new Circalify(container, events, {
+        rings: rings,
+        colors: colorSchemes[colorScheme],
+        enableZoom: true,
+        showTimeline: true,
+        onEventClick: (event, e) => {
+          alert(`Clicked: ${event.label}\nDate: ${event.date.toDateString()}\nRing: ${event.ring}`);
+        },
+        onEventHover: (event, e) => {
+          console.log('Hovering:', event);
+        },
+        onZoom: (level) => {
+          document.getElementById('zoom-level').textContent = level;
+        }
+      });
+
+      updateStats();
+      updateEventList();
+    }
+
+    // Update statistics
+    function updateStats() {
+      document.getElementById('event-count').textContent = currentData.length;
+      document.getElementById('ring-count-display').textContent = document.getElementById('ring-count').value;
+    }
+
+    // Update event list
+    function updateEventList() {
+      const listContainer = document.getElementById('event-list');
+      const upcoming = currentData
+        .filter(e => e.date >= new Date())
+        .sort((a, b) => a.date - b.date)
+        .slice(0, 6);
+
+      listContainer.innerHTML = upcoming.map(event => `
+        <div class="event-card">
+          <div class="date">${event.date.toDateString()}</div>
+          <div class="label">${event.label}</div>
+          <div class="ring">${event.ring}</div>
+        </div>
+      `).join('');
+    }
+
+    // Add random event
+    function addRandomEvent() {
+      if (!wheel) return;
+
+      const rings = wheel.options.rings;
+      const year = new Date().getFullYear();
+      const month = Math.floor(Math.random() * 12);
+      const day = Math.floor(Math.random() * 28) + 1;
+      const ringIndex = Math.floor(Math.random() * rings.length);
+
+      const newEvent = {
+        date: new Date(year, month, day),
+        label: `New Event ${currentData.length + 1}`,
+        ring: rings[ringIndex],
+        color: wheel.options.colors[ringIndex]
+      };
+
+      currentData.push(newEvent);
+      wheel.update(currentData);
+      updateStats();
+      updateEventList();
+    }
+
+    // Clear all events
+    function clearEvents() {
+      if (!wheel) return;
+
+      currentData = [];
+      wheel.update(currentData);
+      updateStats();
+      updateEventList();
+    }
+
+    // Export SVG
+    function exportSVG() {
+      if (!wheel) return;
+
+      const svgString = wheel.exportSVG();
+      const blob = new Blob([svgString], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'circalify-wheel.svg';
+      a.click();
+
+      URL.revokeObjectURL(url);
+    }
+
+    // Event listeners
+    document.getElementById('data-preset').addEventListener('change', initWheel);
+    document.getElementById('color-scheme').addEventListener('change', initWheel);
+    document.getElementById('ring-count').addEventListener('change', (e) => {
+      const ringCount = parseInt(e.target.value);
+      const rings = Array(ringCount).fill().map((_, i) => `Ring ${i + 1}`);
+
+      if (wheel) {
+        wheel.destroy();
+        const container = document.getElementById('wheel');
+        wheel = new Circalify(container, currentData, {
+          rings: rings,
+          colors: colorSchemes[document.getElementById('color-scheme').value],
+          enableZoom: true,
+          showTimeline: true
+        });
+        updateStats();
+      }
+    });
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', initWheel);
+  </script>
+</body>
+</html>

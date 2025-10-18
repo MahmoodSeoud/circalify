@@ -174,6 +174,7 @@ const Circalify = AnnualWheel;
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
   module.exports = AnnualWheel;
   module.exports.Circalify = Circalify;
+  module.exports.default = AnnualWheel;
 } else if (typeof define === 'function' && define.amd) {
   define([], function() {
     return AnnualWheel;
@@ -182,3 +183,6 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
   window.AnnualWheel = AnnualWheel;
   window.Circalify = Circalify; // Backward compatibility
 }
+
+// ES6 default export
+export default AnnualWheel;

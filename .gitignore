@@ -1,9 +1,10 @@
+# Internal docs
+CLAUDE.md
+
 # Dependencies
 node_modules/
-package-lock.json
-yarn.lock
 
-# Build output
+# Build outputs (if you add build step later)
 dist/
 build/
 
@@ -11,27 +12,22 @@ build/
 .DS_Store
 Thumbs.db
 
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-
-# Environment variables
-.env
-.env.local
-.env.*.local
-
-.playwright*
-
-# Cache
-.cache/
-.temp/
-
-# IDE
+# Editor files
 .vscode/
 .idea/
 *.swp
 *.swo
 
+# Logs
+*.log
+npm-debug.log*
 
+# Environment
+.env
+.env.local
+
+# Playwright cache
+.playwright*
+
+# Screenshots
 screenshots/

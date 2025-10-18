@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CircularTimeline.js Demo</title>
+    <style>
+      /* Clean, simple styling */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        text-align: center;
+        color: white;
+        margin-bottom: 10px;
+        font-size: 2.5em;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .subtitle {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 30px;
+        font-size: 1.1em;
+      }
+
+      #timeline {
+        width: 100%;
+        max-width: 700px;
+        height: 700px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+      }
+
+      .info {
+        text-align: center;
+        color: white;
+        margin-top: 30px;
+        font-size: 0.95em;
+      }
+
+      .info a {
+        color: white;
+        text-decoration: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+        padding-bottom: 2px;
+        transition: border-color 0.3s;
+      }
+
+      .info a:hover {
+        border-bottom-color: white;
+      }
+
+      .info-divider {
+        margin: 0 10px;
+        opacity: 0.5;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>CircularTimeline.js</h1>
+      <p class="subtitle">
+        Circular timeline visualization for annual planning
+      </p>
+      <div id="timeline"></div>
+      <div class="info">
+        <p>Built with pure JavaScript • No dependencies • Fully customizable</p>
+        <p style="margin-top: 10px">
+          <a href="https://github.com/MahmoodSeoud/circular-timeline">GitHub</a>
+          <span class="info-divider">|</span>
+          <a href="https://npmjs.com/package/circular-timeline">npm</a>
+        </p>
+      </div>
+    </div>
+
+    <script type="module">
+      // Import the main library from parent directory
+      import CircularTimeline from "../src/index.js";
+
+      // Sample events for demonstration
+      const sampleEvents = [
+        {
+          label: "Q1 Planning",
+          startDate: "2025-01-15",
+          endDate: "2025-01-15",
+          color: "#FF6B6B",
+          description: "Quarterly planning session",
+        },
+        {
+          label: "Product Launch",
+          startDate: "2025-03-01",
+          endDate: "2025-03-15",
+          color: "#4ECDC4",
+          description: "New product release",
+        },
+        {
+          label: "Team Retreat",
+          startDate: "2025-05-20",
+          endDate: "2025-05-22",
+          color: "#95E1D3",
+          description: "Annual team building",
+        },
+        {
+          label: "Mid-Year Review",
+          startDate: "2025-06-30",
+          endDate: "2025-06-30",
+          color: "#F38181",
+          description: "Half-year performance review",
+        },
+        {
+          label: "Feature Release",
+          startDate: "2025-08-01",
+          endDate: "2025-08-31",
+          color: "#AA96DA",
+          description: "Major feature development",
+        },
+        {
+          label: "Conference",
+          startDate: "2025-09-15",
+          endDate: "2025-09-17",
+          color: "#FCBAD3",
+          description: "Industry conference attendance",
+        },
+        {
+          label: "Q4 Planning",
+          startDate: "2025-10-01",
+          endDate: "2025-10-01",
+          color: "#FF6B6B",
+          description: "Final quarter planning",
+        },
+        {
+          label: "Year-End Review",
+          startDate: "2025-12-15",
+          endDate: "2025-12-20",
+          color: "#FFFFD2",
+          description: "Annual performance review",
+        },
+      ];
+
+      // Create timeline with example configuration
+      const timeline = new CircularTimeline(
+        document.getElementById("timeline"),
+        {
+          title: "2025 Annual Plan",
+          startYear: 2025,
+          startMonth: 0,
+          numberOfMonths: 12,
+          sameRingHeight: false,
+          backgroundColor: "#ffffff",
+          interactive: true,
+
+          rings: [
+            // Outer ring - Month names
+            {
+              type: "calendar",
+              calendarType: "month-names",
+              active: true,
+              showYear: true,
+              color: "#F0F8FF",
+              height: 18,
+              separator: {
+                show: true,
+                color: "#b0c4de",
+                width: 1.5,
+              },
+              fontSize: 11,
+              fontColor: "#1e3a5f",
+            },
+            // Week numbers ring
+            {
+              type: "calendar",
+              calendarType: "weeks",
+              active: true,
+              showYear: false,
+              color: "#B8E6E6",
+              height: 16,
+              separator: {
+                show: true,
+                color: "#90c9c9",
+                width: 1,
+              },
+              fontSize: 9,
+              fontColor: "#2c5f77",
+            },
+            // Header ring
+            {
+              type: "header",
+              headerText: "Annual Events",
+              active: true,
+              cells: 4,
+              color: "#ffffff",
+              height: 12,
+              fontSize: 9,
+              fontColor: "#666",
+              separator: true,
+            },
+            // Data ring for events
+            {
+              type: "data",
+              name: "Events",
+              active: true,
+              color: "#E8F4F8",
+              unit: "day",
+              height: 25,
+              fontSize: 10,
+              fontColor: "#2c5f6f",
+              separator: false,
+            },
+          ],
+        },
+        {
+          // Optional: Add callbacks for interactivity
+          onSegmentClick: (event) => {
+            console.log("Clicked event:", event);
+          },
+          onSegmentHover: (event) => {
+            console.log("Hovering:", event.label);
+          },
+        },
+      );
+
+      // Add sample events to the timeline
+      timeline.setData(sampleEvents, "Events");
+
+      console.log("CircularTimeline.js demo loaded successfully!");
+    </script>
+  </body>
+</html>

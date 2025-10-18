@@ -160,7 +160,7 @@ const DIMENSIONS = {
 
 const STYLING = {
     // Brand colors
-    BRAND_COLOR: '#3c3485',  // Plandisc purple
+    BRAND_COLOR: '#3c3485',
 
     // Opacity values
     RING_BACKGROUND_OPACITY: 0.6,

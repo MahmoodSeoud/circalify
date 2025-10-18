@@ -1,13 +1,33 @@
 {
   "name": "circalify",
-  "version": "2.0.0",
-  "description": "Circalify - Flexible Ring-Based Annual Wheel Visualization",
-  "main": "circalify.js",
-  "scripts": {
-    "start": "python3 -m http.server 8080",
-    "dev": "python3 -m http.server 8080"
-  },
+  "version": "0.1.0",
+  "description": "JavaScript library for creating circular timeline visualizations for annual and cyclical data",
+  "main": "src/index.js",
   "type": "module",
-  "keywords": ["visualization", "calendar", "annual", "wheel", "circular"],
-  "license": "MIT"
+  "scripts": {
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MahmoodSeoud/circalify.git"
+  },
+  "keywords": [
+    "timeline",
+    "circular",
+    "calendar",
+    "visualization",
+    "annual-wheel",
+    "radial",
+    "cyclical-data",
+    "data-visualization"
+  ],
+  "author": "Mahmood Seoud",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/MahmoodSeoud/circalify/issues"
+  },
+  "homepage": "https://github.com/MahmoodSeoud/circalify#readme",
+  "files": [
+    "src/"
+  ]
 }

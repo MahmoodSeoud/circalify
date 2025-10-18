@@ -544,7 +544,7 @@ class CircalifyCore {
 
     const buttonBackground = this._createSVGElement('path', {
       'd': buttonPath,
-      'fill': '#3c3485', // Plandisc purple
+      'fill': '#3c3485',
       'stroke': '#3c3485',
       'stroke-width': '1'
     });
@@ -615,7 +615,7 @@ class CircalifyCore {
 
       // Get month name
       const monthNames = ['Januar', 'Februar', 'Marts', 'April', 'Maj', 'Juni',
-                          'Juli', 'August', 'September', 'Oktober', 'November', 'December'];
+        'Juli', 'August', 'September', 'Oktober', 'November', 'December'];
       const monthName = monthNames[month];
 
       // Update button text to show month
@@ -794,7 +794,7 @@ class CircalifyCore {
 
     // Get month name
     const monthNames = ['Januar', 'Februar', 'Marts', 'April', 'Maj', 'Juni',
-                        'Juli', 'August', 'September', 'Oktober', 'November', 'December'];
+      'Juli', 'August', 'September', 'Oktober', 'November', 'December'];
     const monthName = monthNames[month];
 
     // Update button text to show month

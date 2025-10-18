@@ -6,16 +6,39 @@ Circalify transforms temporal data into beautiful circular visualizations, perfe
 
 ## Installation
 
+### Via npm (for bundlers like Webpack, Vite, etc.)
+
 ```bash
 npm install circalify
 ```
 
+### Via CDN (for direct use in HTML)
+
+```html
+<script type="module">
+  import CircularTimeline from 'https://unpkg.com/circalify@latest/src/index.js';
+  // Your code here
+</script>
+```
+
 ## Quick Start
 
-```javascript
-import CircularTimeline from 'circalify';
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Circalify Example</title>
+    <style>
+        #timeline { width: 100%; height: 600px; }
+    </style>
+</head>
+<body>
+    <div id="timeline"></div>
 
-const timeline = new CircularTimeline(container, {
+    <script type="module">
+        import CircularTimeline from 'https://unpkg.com/circalify@latest/src/index.js';
+
+        const timeline = new CircularTimeline('#timeline', {
   startYear: 2025,
   startMonth: 0, // January
   numberOfMonths: 12,
@@ -51,6 +74,9 @@ timeline.setData([
     color: '#4ECDC4'
   }
 ], 'Events');
+    </script>
+</body>
+</html>
 ```
 
 ## Configuration

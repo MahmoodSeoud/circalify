@@ -179,7 +179,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
   define([], function() {
     return AnnualWheel;
   });
-} else {
+} else if (typeof window !== 'undefined') {
   window.AnnualWheel = AnnualWheel;
   window.Circalify = Circalify; // Backward compatibility
 }

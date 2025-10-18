@@ -348,7 +348,8 @@ class CircalifyCore {
       defs: this.defs,
       callbacks: {
         onSegmentClick: this._handleSegmentClick.bind(this),
-        onSegmentHover: this._handleSegmentHover.bind(this)
+        onSegmentHover: this._handleSegmentHover.bind(this),
+        onSegmentLeave: this._handleSegmentLeave.bind(this)
       }
     };
 
@@ -381,6 +382,14 @@ class CircalifyCore {
    */
   _handleSegmentHover(segmentData) {
     this._showCenterInfo(segmentData);
+  }
+
+  /**
+   * Handle segment leave
+   * @private
+   */
+  _handleSegmentLeave() {
+    this._clearCenterInfo();
   }
 
   /**
@@ -620,7 +629,8 @@ class CircalifyCore {
       'font-family': this.generalConfig.fontFamily,
       'font-size': '18',
       'font-weight': '600',
-      'fill': '#333'
+      'fill': '#333',
+      'style': 'user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
     });
     label.textContent = eventData.label || '';
     this.svgGroups.centerInfo.appendChild(label);
@@ -650,11 +660,20 @@ class CircalifyCore {
         'font-family': this.generalConfig.fontFamily,
         'font-size': '13',
         'font-weight': '400',
-        'fill': '#666'
+        'fill': '#666',
+        'style': 'user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
       });
       dateLabel.textContent = dateText;
       this.svgGroups.centerInfo.appendChild(dateLabel);
     }
+  }
+
+  /**
+   * Clear center info display
+   * @private
+   */
+  _clearCenterInfo() {
+    this.svgGroups.centerInfo.innerHTML = '';
   }
 
   /**

@@ -699,6 +699,11 @@ class DataRing extends BaseRing {
     eventGroup.addEventListener('mouseleave', () => {
       arc.setAttribute('opacity', '0.85');
       arc.setAttribute('stroke-width', '1');
+
+      // Trigger callback if exists
+      if (this.context.callbacks && this.context.callbacks.onSegmentLeave) {
+        this.context.callbacks.onSegmentLeave();
+      }
     });
 
     eventGroup.addEventListener('click', () => {

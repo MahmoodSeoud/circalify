@@ -179,12 +179,26 @@ class DataRing extends BaseRing {
 
     // Add hover interaction if enabled
     if (this.config.interactive !== false) {
+      let hoverIndicator = null;
+
       segment.addEventListener('mouseenter', () => {
         segment.setAttribute('fill', 'rgba(0, 0, 0, 0.05)');
+
+        // Create and show "+" indicator
+        hoverIndicator = this._createPlusIndicator(startAngle, endAngle);
+        if (hoverIndicator) {
+          this.svgGroups.segments.appendChild(hoverIndicator);
+        }
       });
 
       segment.addEventListener('mouseleave', () => {
         segment.setAttribute('fill', 'transparent');
+
+        // Remove "+" indicator
+        if (hoverIndicator && hoverIndicator.parentNode) {
+          hoverIndicator.parentNode.removeChild(hoverIndicator);
+          hoverIndicator = null;
+        }
       });
     }
 
@@ -195,6 +209,59 @@ class DataRing extends BaseRing {
     if (drawSeparator && this.config.separator !== false) {
       this._drawUnitSeparator(startAngle);
     }
+  }
+
+  /**
+   * Create a "+" indicator for hover state
+   * @private
+   */
+  _createPlusIndicator(startAngle, endAngle) {
+    const midAngle = (startAngle + endAngle) / 2;
+    const centerRadius = (this.inner + this.outer) / 2;
+    const point = this._polarToCartesian(centerRadius, midAngle);
+
+    // Calculate rotation angle (convert from radians to degrees and add 90 for proper orientation)
+    const rotationAngle = (midAngle * 180 / Math.PI) + 90;
+
+    // Create a group for the plus indicator
+    const plusGroup = this._createSVGElement('g', {
+      'class': 'plus-indicator',
+      'pointer-events': 'none',
+      'transform': `rotate(${rotationAngle}, ${point.x}, ${point.y})`
+    });
+
+    // Size of the plus icon
+    const size = Math.min(8, (this.outer - this.inner) * 0.3);
+    const strokeWidth = Math.max(1, size / 8);
+
+    // Vertical line (radial - pointing outward from center)
+    const verticalLine = this._createSVGElement('line', {
+      'x1': point.x,
+      'y1': point.y - size / 2,
+      'x2': point.x,
+      'y2': point.y + size / 2,
+      'stroke': this.config.fontColor || '#333',
+      'stroke-width': strokeWidth,
+      'stroke-linecap': 'round',
+      'opacity': '0.8'
+    });
+
+    // Horizontal line (tangential - perpendicular to radius)
+    const horizontalLine = this._createSVGElement('line', {
+      'x1': point.x - size / 2,
+      'y1': point.y,
+      'x2': point.x + size / 2,
+      'y2': point.y,
+      'stroke': this.config.fontColor || '#333',
+      'stroke-width': strokeWidth,
+      'stroke-linecap': 'round',
+      'opacity': '0.8'
+    });
+
+    plusGroup.appendChild(verticalLine);
+    plusGroup.appendChild(horizontalLine);
+
+    return plusGroup;
   }
 
   /**

@@ -201,6 +201,27 @@ class DataRing extends BaseRing {
           hoverIndicator = null;
         }
       });
+
+      // Add click handler to create new event
+      segment.addEventListener('click', () => {
+        if (this.context.callbacks && this.context.callbacks.onSegmentClick) {
+          // Calculate date range for this segment
+          const dateRange = this._calculateSegmentDateRange(startAngle, endAngle);
+
+          // Create new empty event
+          const newEvent = {
+            label: '',
+            startDate: dateRange.startDate,
+            endDate: dateRange.endDate,
+            color: this.config.color,
+            description: '',
+            ringName: this.config.name,
+            _isNew: true  // Flag to indicate this is a new event
+          };
+
+          this.context.callbacks.onSegmentClick(newEvent);
+        }
+      });
     }
 
     this.svgGroups.rings.appendChild(segment);
@@ -210,6 +231,30 @@ class DataRing extends BaseRing {
     if (drawSeparator && this.config.separator !== false) {
       this._drawUnitSeparator(startAngle);
     }
+  }
+
+  /**
+   * Calculate date range for a segment based on angles
+   * @private
+   */
+  _calculateSegmentDateRange(startAngle, endAngle) {
+    const year = this._getYear();
+    const daysInYear = this._getDaysInYear();
+
+    // Convert angles back to day of year
+    // Reverse the formula: angle = (day - 1) / daysInYear * 2π - π/2
+    const startDay = Math.ceil(((startAngle - this.GEOMETRY.ANGLE_OFFSET_TOP) / this.GEOMETRY.FULL_CIRCLE) * daysInYear) + 1;
+    const endDay = Math.floor(((endAngle - this.GEOMETRY.ANGLE_OFFSET_TOP) / this.GEOMETRY.FULL_CIRCLE) * daysInYear);
+
+    // Convert day of year to actual date
+    const startDate = new Date(year, 0, startDay);
+    const endDate = new Date(year, 0, endDay);
+
+    // Format as ISO date strings
+    return {
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0]
+    };
   }
 
   /**
@@ -600,28 +645,107 @@ class DataRing extends BaseRing {
     // Font size based on ring height
     let fontSize = Math.min(this.config.fontSize, Math.max(this.DIMENSIONS.MIN_FONT_SIZE, ringHeight * this.DIMENSIONS.PLUS_INDICATOR_SIZE_RATIO));
 
-    // Truncate based on arc length
+    // Calculate max chars per line
     const charWidth = fontSize * this.DIMENSIONS.CHAR_WIDTH_RATIO;
-    const maxChars = Math.floor(arcLength / charWidth);
-    let displayLabel = this._truncateText(label, maxChars);
+    const maxCharsPerLine = Math.floor(arcLength / charWidth);
+    const canFitMultipleLines = ringHeight >= fontSize * 2.5; // Need space for at least 2 lines
 
-    // Only show if there's enough space
-    if (arcLength > fontSize * this.DIMENSIONS.ELLIPSIS_WIDTH_CHARS && maxChars >= this.DIMENSIONS.MIN_TRUNCATE_CHARS) {
-      const text = this._createSVGElement('text', {
-        'x': point.x,
-        'y': point.y,
-        'text-anchor': 'middle',
-        'dominant-baseline': 'middle',
-        'font-family': this.generalConfig.fontFamily,
-        'font-size': fontSize,
-        'font-weight': this.config.fontWeight,
-        'fill': this.config.fontColor,
-        'pointer-events': 'none',
-        'transform': `rotate(${rotationAngle}, ${point.x}, ${point.y})`,
-        'style': 'text-shadow: 0 1px 2px rgba(0,0,0,0.3); user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
-      });
-      text.textContent = displayLabel;
-      eventGroup.appendChild(text);
+    // Check if there's enough space for text
+    if (arcLength > fontSize * this.DIMENSIONS.ELLIPSIS_WIDTH_CHARS && maxCharsPerLine >= this.DIMENSIONS.MIN_TRUNCATE_CHARS) {
+      // Try to wrap text into multiple lines first (if tall enough)
+      if (canFitMultipleLines) {
+        const lines = this._wrapTextToLines(label, maxCharsPerLine, 2); // Max 2 lines
+
+        if (lines.length > 1) {
+          // Multi-line text
+          const text = this._createSVGElement('text', {
+            'x': point.x,
+            'y': point.y,
+            'text-anchor': 'middle',
+            'dominant-baseline': 'middle',
+            'font-family': this.generalConfig.fontFamily,
+            'font-size': fontSize * 0.9, // Slightly smaller for multi-line
+            'font-weight': this.config.fontWeight,
+            'fill': this.config.fontColor,
+            'pointer-events': 'none',
+            'transform': `rotate(${rotationAngle}, ${point.x}, ${point.y})`,
+            'style': 'text-shadow: 0 1px 2px rgba(0,0,0,0.3); user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
+          });
+
+          const lineHeight = fontSize * 1.1;
+          const totalHeight = (lines.length - 1) * lineHeight;
+
+          lines.forEach((line, i) => {
+            const tspan = this._createSVGElement('tspan', {
+              'x': point.x,
+              'dy': i === 0 ? -totalHeight / 2 : lineHeight
+            });
+            tspan.textContent = line;
+            text.appendChild(tspan);
+          });
+
+          eventGroup.appendChild(text);
+        } else {
+          // Single line (wrapped into one line or short text)
+          const text = this._createSVGElement('text', {
+            'x': point.x,
+            'y': point.y,
+            'text-anchor': 'middle',
+            'dominant-baseline': 'middle',
+            'font-family': this.generalConfig.fontFamily,
+            'font-size': fontSize,
+            'font-weight': this.config.fontWeight,
+            'fill': this.config.fontColor,
+            'pointer-events': 'none',
+            'transform': `rotate(${rotationAngle}, ${point.x}, ${point.y})`,
+            'style': 'text-shadow: 0 1px 2px rgba(0,0,0,0.3); user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
+          });
+          text.textContent = lines[0];
+          eventGroup.appendChild(text);
+        }
+      } else {
+        // Not tall enough for multiple lines - use single line with truncation
+        const displayLabel = this._truncateText(label, maxCharsPerLine);
+        const text = this._createSVGElement('text', {
+          'x': point.x,
+          'y': point.y,
+          'text-anchor': 'middle',
+          'dominant-baseline': 'middle',
+          'font-family': this.generalConfig.fontFamily,
+          'font-size': fontSize,
+          'font-weight': this.config.fontWeight,
+          'fill': this.config.fontColor,
+          'pointer-events': 'none',
+          'transform': `rotate(${rotationAngle}, ${point.x}, ${point.y})`,
+          'style': 'text-shadow: 0 1px 2px rgba(0,0,0,0.3); user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
+        });
+        text.textContent = displayLabel;
+        eventGroup.appendChild(text);
+      }
+    } else if (arcLength >= fontSize * 1.2 && ringHeight >= fontSize * 1.2) {
+      // Small arc - show just first character with enough space
+      const smallFontSize = Math.min(fontSize * 0.85, Math.min(arcLength * 0.7, ringHeight * 0.6));
+
+      // Only show if the character will actually fit
+      if (smallFontSize >= 6) {  // Minimum readable size
+        // Extract first character or number from label
+        const firstChar = label.trim().charAt(0).toUpperCase();
+
+        const text = this._createSVGElement('text', {
+          'x': point.x,
+          'y': point.y,
+          'text-anchor': 'middle',
+          'dominant-baseline': 'middle',
+          'font-family': this.generalConfig.fontFamily,
+          'font-size': smallFontSize,
+          'font-weight': '700',
+          'fill': this.config.fontColor,
+          'pointer-events': 'none',
+          'style': 'text-shadow: 0 1px 2px rgba(0,0,0,0.3); user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
+        });
+        text.textContent = firstChar;
+        eventGroup.appendChild(text);
+      }
     }
   }
 
@@ -666,6 +790,7 @@ class DataRing extends BaseRing {
     let displayLabel = this._truncateText(label, maxChars);
 
     if (maxChars >= 3) {
+      // Show full/truncated label on curved path
       const text = this._createSVGElement('text', {
         'font-family': this.generalConfig.fontFamily,
         'font-size': fontSize,
@@ -684,7 +809,69 @@ class DataRing extends BaseRing {
 
       text.appendChild(textPath);
       eventGroup.appendChild(text);
+    } else if (arcLength >= fontSize * 1.5 && maxChars >= 1) {
+      // Small arc - show just first character on curved path with enough space
+      const ringHeight = this.outer - this.inner;
+      const smallFontSize = Math.min(fontSize * 0.85, Math.min(arcLength * 0.6, ringHeight * 0.5));
+
+      // Only show if the character will actually fit
+      if (smallFontSize >= 6) {  // Minimum readable size
+        const firstChar = label.trim().charAt(0).toUpperCase();
+
+        const text = this._createSVGElement('text', {
+          'font-family': this.generalConfig.fontFamily,
+          'font-size': smallFontSize,
+          'font-weight': '700',
+          'fill': this.config.fontColor,
+          'pointer-events': 'none',
+          'style': 'text-shadow: 0 1px 2px rgba(0,0,0,0.3); user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
+        });
+
+        const textPath = this._createSVGElement('textPath', {
+          'href': `#${textPathId}`,
+          'startOffset': '50%',
+          'text-anchor': 'middle'
+        });
+        textPath.textContent = firstChar;
+
+        text.appendChild(textPath);
+        eventGroup.appendChild(text);
+      }
     }
+  }
+
+  /**
+   * Wrap text into multiple lines
+   * @private
+   */
+  _wrapTextToLines(text, maxCharsPerLine, maxLines) {
+    const words = text.split(' ');
+    const lines = [];
+    let currentLine = '';
+
+    for (let i = 0; i < words.length && lines.length < maxLines; i++) {
+      const word = words[i];
+      const testLine = currentLine ? `${currentLine} ${word}` : word;
+
+      if (testLine.length <= maxCharsPerLine) {
+        currentLine = testLine;
+      } else {
+        if (currentLine) {
+          lines.push(currentLine);
+          currentLine = word;
+        } else {
+          // Word itself is too long, truncate it
+          lines.push(word.substring(0, maxCharsPerLine));
+          currentLine = '';
+        }
+      }
+    }
+
+    if (currentLine && lines.length < maxLines) {
+      lines.push(currentLine);
+    }
+
+    return lines;
   }
 
   /**
@@ -715,7 +902,11 @@ class DataRing extends BaseRing {
     eventGroup.addEventListener('click', () => {
       // Trigger callback if exists
       if (this.context.callbacks && this.context.callbacks.onSegmentClick) {
-        this.context.callbacks.onSegmentClick(eventData);
+        // Add ringName to event data for editing/deletion
+        this.context.callbacks.onSegmentClick({
+          ...eventData,
+          ringName: this.config.name
+        });
       }
     });
   }

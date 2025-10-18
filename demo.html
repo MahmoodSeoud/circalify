@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Circalify - 10 Ring Demo</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #ffffff;
+        overflow: hidden;
+      }
+
+      #container {
+        width: 100vw;
+        height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+
+    <!-- Circalify library files in correct dependency order -->
+    <script src="constants.js"></script>
+    <script src="layout-calculator.js"></script>
+    <script src="config-parser.js"></script>
+    <script src="base-ring.js"></script>
+    <script src="calendar-ring.js"></script>
+    <script src="header-ring.js"></script>
+    <script src="data-ring.js"></script>
+    <script src="ring-factory.js"></script>
+    <script src="circalify-core.js"></script>
+    <script src="circalify.js"></script>
+
+    <script>
+      // Sample events for Ring 1 (Week-based performance tracking)
+      const ring1Events = [
+        {
+          label: "Performance report",
+          startDate: "2025-01-06",
+          endDate: "2025-01-12",
+          color: "#6B9BD1",
+        },
+        {
+          label: "Performance report",
+          startDate: "2025-02-03",
+          endDate: "2025-02-09",
+          color: "#6B9BD1",
+        },
+        {
+          label: "Performance report",
+          startDate: "2025-03-03",
+          endDate: "2025-03-09",
+          color: "#6B9BD1",
+        },
+        {
+          label: "Performance report",
+          startDate: "2025-04-07",
+          endDate: "2025-04-13",
+          color: "#6B9BD1",
+        },
+        {
+          label: "Performance report",
+          startDate: "2025-05-05",
+          endDate: "2025-05-11",
+          color: "#6B9BD1",
+        },
+        {
+          label: "Performance report",
+          startDate: "2025-06-02",
+          endDate: "2025-06-08",
+          color: "#6B9BD1",
+        },
+        {
+          label: "Performance report",
+          startDate: "2025-07-07",
+          endDate: "2025-07-13",
+          color: "#6B9BD1",
+        },
+        {
+          label: "Performance report",
+          startDate: "2025-08-04",
+          endDate: "2025-08-10",
+          color: "#6B9BD1",
+        },
+        {
+          label: "Performance report",
+          startDate: "2025-09-01",
+          endDate: "2025-09-07",
+          color: "#6B9BD1",
+        },
+        {
+          label: "Performance report",
+          startDate: "2025-10-06",
+          endDate: "2025-10-12",
+          color: "#6B9BD1",
+        },
+        {
+          label: "Performance report",
+          startDate: "2025-11-03",
+          endDate: "2025-11-09",
+          color: "#6B9BD1",
+        },
+        {
+          label: "Performance report",
+          startDate: "2025-12-01",
+          endDate: "2025-12-07",
+          color: "#6B9BD1",
+        },
+      ];
+
+      // Sample events for Ring 3 (Day-based law compliance tasks)
+      const ring3Events = [
+        {
+          label: "Regulatory filing",
+          startDate: "2025-01-15",
+          endDate: "2025-01-17",
+          color: "#7AC7C4",
+          description: "Quarterly regulatory compliance filing",
+        },
+        {
+          label: "Legal compliance",
+          startDate: "2025-02-10",
+          endDate: "2025-02-14",
+          color: "#8BD4D1",
+        },
+        {
+          label: "Regulatory filing",
+          startDate: "2025-04-15",
+          endDate: "2025-04-17",
+          color: "#7AC7C4",
+        },
+        {
+          label: "Legal compliance",
+          startDate: "2025-05-12",
+          endDate: "2025-05-16",
+          color: "#8BD4D1",
+        },
+        {
+          label: "Regulatory filing",
+          startDate: "2025-07-15",
+          endDate: "2025-07-17",
+          color: "#7AC7C4",
+        },
+        {
+          label: "Legal compliance",
+          startDate: "2025-08-11",
+          endDate: "2025-08-15",
+          color: "#8BD4D1",
+        },
+        {
+          label: "Regulatory filing",
+          startDate: "2025-10-15",
+          endDate: "2025-10-17",
+          color: "#7AC7C4",
+        },
+        {
+          label: "Legal compliance",
+          startDate: "2025-11-10",
+          endDate: "2025-11-14",
+          color: "#8BD4D1",
+        },
+      ];
+
+      // Sample events for Ring 5 (Day-based board meetings)
+      const ring5Events = [
+        {
+          label: "Board meeting 1",
+          startDate: "2025-01-20",
+          endDate: "2025-01-20",
+          color: "#D89B7D",
+          description: "Q1 Board Meeting - Strategy Review",
+        },
+        {
+          label: "Board meeting 2",
+          startDate: "2025-03-25",
+          endDate: "2025-03-25",
+          color: "#D89B7D",
+        },
+        {
+          label: "Board meeting 3",
+          startDate: "2025-04-22",
+          endDate: "2025-04-22",
+          color: "#D89B7D",
+          description: "Q2 Board Meeting",
+        },
+        {
+          label: "Board meeting 4",
+          startDate: "2025-06-18",
+          endDate: "2025-06-18",
+          color: "#E3A688",
+        },
+        {
+          label: "Board meeting 5",
+          startDate: "2025-07-28",
+          endDate: "2025-07-28",
+          color: "#D89B7D",
+          description: "Q3 Board Meeting",
+        },
+        {
+          label: "Board meeting 6",
+          startDate: "2025-09-23",
+          endDate: "2025-09-23",
+          color: "#E3A688",
+        },
+        {
+          label: "Board meeting 7",
+          startDate: "2025-10-27",
+          endDate: "2025-10-27",
+          color: "#D89B7D",
+          description: "Q4 Board Meeting",
+        },
+        {
+          label: "Board meeting 8",
+          startDate: "2025-12-15",
+          endDate: "2025-12-15",
+          color: "#E3A688",
+        },
+      ];
+
+      // Sample events for Ring 7 (Day-based general assembly and deep dives)
+      const ring7Events = [
+        {
+          label: "General assembly and deep dives",
+          startDate: "2025-01-08",
+          endDate: "2025-01-10",
+          color: "#2D5F4F",
+          description: "Company-wide strategic planning session",
+        },
+        {
+          label: "Strategy deep dive",
+          startDate: "2025-02-18",
+          endDate: "2025-02-20",
+          color: "#3A7360",
+        },
+        {
+          label: "General assembly and deep dives",
+          startDate: "2025-04-09",
+          endDate: "2025-04-11",
+          color: "#2D5F4F",
+        },
+        {
+          label: "Performance review",
+          startDate: "2025-05-21",
+          endDate: "2025-05-23",
+          color: "#3A7360",
+        },
+        {
+          label: "General assembly and deep dives",
+          startDate: "2025-06-25",
+          endDate: "2025-06-27",
+          color: "#2D5F4F",
+          description: "Mid-year review and planning",
+        },
+        {
+          label: "Board governance",
+          startDate: "2025-08-13",
+          endDate: "2025-08-15",
+          color: "#3A7360",
+        },
+        {
+          label: "General assembly and deep dives",
+          startDate: "2025-09-17",
+          endDate: "2025-09-19",
+          color: "#2D5F4F",
+        },
+        {
+          label: "Annual review",
+          startDate: "2025-11-19",
+          endDate: "2025-11-21",
+          color: "#3A7360",
+        },
+      ];
+
+      const config = {
+        title: "Annual Planning Wheel 2025",
+        startYear: 2025,
+        startMonth: 0,
+        numberOfMonths: 12,
+        calendarSettings: "static",
+        discRetention: "with-year",
+        sameRingHeight: false,
+        backgroundColor: "#ffffff",
+        enableDetailPanel: true,
+        interactive: true,
+
+        rings: [
+          // Ring 1 - Data Ring (Week-based)
+          {
+            type: "data",
+            name: "Performance",
+            active: true,
+            color: "#E8F4F8",
+            unit: "week",
+            height: 20,
+            fontSize: 9,
+            fontColor: "#2c5f6f",
+            separator: false,
+          },
+
+          // Ring 2 - Header
+          {
+            type: "header",
+            headerText: "Performance rapporter",
+            active: true,
+            cells: 4,
+            color: "#ffffff",
+            height: 12,
+            fontSize: 9,
+            fontColor: "#6B9BD1",
+            separator: true,
+          },
+
+          // Ring 3 - Data Ring (Day-based)
+          {
+            type: "data",
+            name: "LawCompliance",
+            active: true,
+            color: "#E0F5F4",
+            unit: "day",
+            height: 20,
+            fontSize: 9,
+            fontColor: "#2c6f6a",
+            separator: false,
+          },
+
+          // Ring 4 - Header
+          {
+            type: "header",
+            headerText: "Lovmæssige opgaver",
+            active: true,
+            cells: 5,
+            color: "#ffffff",
+            height: 12,
+            fontSize: 9,
+            fontColor: "#7AC7C4",
+            separator: true,
+          },
+
+          // Ring 5 - Data Ring (Day-based)
+          {
+            type: "data",
+            name: "BoardMeetings",
+            active: true,
+            color: "#FEF3ED",
+            unit: "day",
+            height: 20,
+            fontSize: 9,
+            fontColor: "#7a4f3d",
+            separator: false,
+          },
+
+          // Ring 6 - Header
+          {
+            type: "header",
+            headerText: "Bestyrelsesmøder",
+            active: true,
+            cells: 5,
+            color: "#ffffff",
+            height: 12,
+            fontSize: 9,
+            fontColor: "#D89B7D",
+            separator: true,
+          },
+
+          // Ring 7 - Data Ring (Day-based)
+          {
+            type: "data",
+            name: "GeneralAssembly",
+            active: true,
+            color: "#D4E8E0",
+            unit: "day",
+            height: 20,
+            fontSize: 8,
+            fontColor: "#1e4d3d",
+            separator: false,
+          },
+
+          // Ring 8 - Header
+          {
+            type: "header",
+            headerText: "Generalforsamling og deep dives",
+            active: true,
+            cells: 5,
+            color: "#ffffff",
+            height: 12,
+            fontSize: 8,
+            fontColor: "#2D5F4F",
+            separator: true,
+          },
+
+          // Ring 9 - Calendar (Week Numbers)
+          {
+            type: "calendar",
+            calendarType: "weeks",
+            active: true,
+            showYear: false,
+            color: "#B8E6E6",
+            height: 16,
+            separator: {
+              show: true,
+              color: "#90c9c9",
+              width: 1,
+            },
+            fontSize: 9,
+            fontColor: "#2c5f77",
+          },
+
+          // Ring 10 - Calendar (Month Names) - Outermost
+          {
+            type: "calendar",
+            calendarType: "month-names",
+            active: true,
+            showYear: true,
+            color: "#F0F8FF",
+            height: 18,
+            separator: {
+              show: true,
+              color: "#b0c4de",
+              width: 1.5,
+            },
+            fontSize: 11,
+            fontColor: "#1e3a5f",
+          },
+        ],
+      };
+
+      // Initialize Circalify
+      const wheel = new AnnualWheel("#container", config);
+
+      // Set data for each data ring
+      wheel.setData(ring1Events, "Performance");
+      wheel.setData(ring3Events, "LawCompliance");
+      wheel.setData(ring5Events, "BoardMeetings");
+      wheel.setData(ring7Events, "GeneralAssembly");
+
+      console.log("10-Ring Circalify Demo loaded!");
+      console.log("Total Rings:", wheel.getRings().length);
+      console.log("Data Rings:", 4);
+      console.log("Header Rings:", 4);
+      console.log("Calendar Rings:", 2);
+    </script>
+  </body>
+</html>

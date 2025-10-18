@@ -356,7 +356,7 @@ class BaseRing {
     if (!text) return '';
     if (text.length <= maxChars) return text;
     if (maxChars < this.DIMENSIONS.MIN_TRUNCATE_CHARS) return '';
-    return text.substring(0, Math.max(this.DIMENSIONS.MIN_TRUNCATE_CHARS, maxChars - this.DIMENSIONS.MIN_TRUNCATE_CHARS)) + '..';
+    return text.substring(0, maxChars);
   }
 
   /**

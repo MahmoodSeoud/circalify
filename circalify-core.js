@@ -550,7 +550,7 @@ class CircalifyCore {
     });
     buttonGroup.appendChild(buttonBackground);
 
-    // Create curved text path for "VIS AGENDA"
+    // Create curved text path for "VIEW AGENDA"
     const textPathId = `agenda-text-path-${month}-${year}`;
     const textStartPoint = LayoutCalculator.polarToCartesian(this.cx, this.cy, buttonRadius, buttonStartAngle);
     const textEndPoint = LayoutCalculator.polarToCartesian(this.cx, this.cy, buttonRadius, buttonEndAngle);
@@ -584,7 +584,7 @@ class CircalifyCore {
       'text-anchor': 'middle',
       'dominant-baseline': 'middle'
     });
-    textPathElement.textContent = 'VIS AGENDA';
+    textPathElement.textContent = 'VIEW AGENDA';
     textElement.appendChild(textPathElement);
     buttonGroup.appendChild(textElement);
 
@@ -607,7 +607,7 @@ class CircalifyCore {
         this.activeMonthButton.classList.remove('active-month');
         // Reset previous button text
         if (this.activeMonthButton._textPathElement) {
-          this.activeMonthButton._textPathElement.textContent = 'VIS AGENDA';
+          this.activeMonthButton._textPathElement.textContent = 'VIEW AGENDA';
         }
         // Reset previous button size
         this._resetButtonSize(this.activeMonthButton);
@@ -780,7 +780,7 @@ class CircalifyCore {
       this.activeMonthButton.classList.remove('active-month');
       // Reset previous button text
       if (this.activeMonthButton._textPathElement) {
-        this.activeMonthButton._textPathElement.textContent = 'VIS AGENDA';
+        this.activeMonthButton._textPathElement.textContent = 'VIEW AGENDA';
       }
       // Reset previous button size
       this._resetButtonSize(this.activeMonthButton);
@@ -850,6 +850,22 @@ class CircalifyCore {
         }
       }
     });
+  }
+
+  /**
+   * Update a single ring after data modification
+   * @param {BaseRing} ring - The ring instance to update
+   * @private
+   */
+  _updateRing(ring) {
+    if (ring instanceof DataRing && ring.data) {
+      // Store in allEvents for month sidebar filtering
+      const allDataRings = this.rings.filter(r => r instanceof DataRing);
+      this.allEvents = allDataRings.flatMap(r => r.data || []);
+
+      // Update the specific ring
+      ring.update(ring.data);
+    }
   }
 
   /**
@@ -941,43 +957,21 @@ class CircalifyCore {
     this.detailPanel = document.createElement('div');
     this.detailPanel.style.cssText = `
       position: absolute;
-      right: 20px;
-      top: 50%;
-      transform: translateY(-50%) translateX(20px);
-      width: 320px;
-      max-height: 80vh;
-      overflow-y: auto;
+      right: 0;
+      top: 0;
+      width: 340px;
+      height: 100%;
       background: white;
-      border-radius: 12px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.08);
-      padding: 24px;
+      box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
       font-family: ${this.generalConfig.fontFamily};
       display: none;
       opacity: 0;
-      z-index: 1000;
+      transform: translateX(100%);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+      overflow: hidden;
     `;
 
-    // Close button
-    const closeBtn = document.createElement('button');
-    closeBtn.innerHTML = '×';
-    closeBtn.style.cssText = `
-      position: absolute;
-      right: 12px;
-      top: 12px;
-      background: #f5f5f5;
-      border: none;
-      border-radius: 50%;
-      width: 32px;
-      height: 32px;
-      font-size: 24px;
-      cursor: pointer;
-      color: #666;
-      transition: all 0.2s ease;
-    `;
-    closeBtn.addEventListener('click', () => this._hideDetailPanel());
-
-    this.detailPanel.appendChild(closeBtn);
     wrapper.appendChild(this.detailPanel);
   }
 
@@ -988,29 +982,323 @@ class CircalifyCore {
   _showDetailPanel(segmentData) {
     if (!this.detailPanel) return;
 
-    // Clear previous content
-    const closeBtn = this.detailPanel.querySelector('button');
-    this.detailPanel.innerHTML = '';
-    this.detailPanel.appendChild(closeBtn);
+    // Close month sidebar if open
+    if (this.monthSidebar && this.monthSidebar.style.opacity === '1') {
+      this._hideMonthSidebar();
+    }
 
-    // Add content
-    const title = document.createElement('h3');
-    title.textContent = segmentData.label || 'Event';
-    title.style.cssText = `
-      margin: 0 0 15px 0;
-      color: #333;
-      font-size: 20px;
-      font-weight: 600;
+    // Clear previous content
+    this.detailPanel.innerHTML = '';
+
+    // Header
+    const header = document.createElement('div');
+    header.style.cssText = `
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid #e5e7eb;
     `;
 
-    this.detailPanel.appendChild(title);
+    const colorCircle = document.createElement('div');
+    colorCircle.style.cssText = `
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: ${segmentData.color || '#5a9aa8'};
+      flex-shrink: 0;
+    `;
+
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '×';
+    closeBtn.style.cssText = `
+      background: transparent;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      color: #666;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: background 0.2s;
+    `;
+    closeBtn.addEventListener('mouseenter', () => closeBtn.style.background = '#f3f4f6');
+    closeBtn.addEventListener('mouseleave', () => closeBtn.style.background = 'transparent');
+    closeBtn.addEventListener('click', () => this._hideDetailPanel());
+
+    header.appendChild(colorCircle);
+    header.appendChild(closeBtn);
+    this.detailPanel.appendChild(header);
+
+    // Content area (scrollable)
+    const contentContainer = document.createElement('div');
+    contentContainer.style.cssText = `
+      padding: 20px;
+      overflow-y: auto;
+      height: calc(100% - 57px);
+    `;
+
+    // Title input
+    const titleInput = document.createElement('input');
+    titleInput.type = 'text';
+    titleInput.value = segmentData.label || '';
+    titleInput.placeholder = 'Add title';
+    titleInput.style.cssText = `
+      width: 100%;
+      border: none;
+      outline: none;
+      font-size: 22px;
+      font-weight: 500;
+      color: #1a1a1a;
+      padding: 8px 0;
+      margin-bottom: 20px;
+      font-family: ${this.generalConfig.fontFamily};
+      background: transparent;
+    `;
+    contentContainer.appendChild(titleInput);
+
+    // Date inputs
+    const dateInputGroup = document.createElement('div');
+    dateInputGroup.style.cssText = `
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #e5e7eb;
+    `;
+
+    const startDateLabel = document.createElement('label');
+    startDateLabel.textContent = 'Start date';
+    startDateLabel.style.cssText = `
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 8px;
+    `;
+
+    const startDateInput = document.createElement('input');
+    startDateInput.type = 'date';
+    startDateInput.value = segmentData.startDate || '';
+    startDateInput.style.cssText = `
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: ${this.generalConfig.fontFamily};
+      margin-bottom: 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    `;
+    startDateInput.addEventListener('focus', () => startDateInput.style.borderColor = '#4ECDC4');
+    startDateInput.addEventListener('blur', () => startDateInput.style.borderColor = '#e5e7eb');
+
+    const endDateLabel = document.createElement('label');
+    endDateLabel.textContent = 'End date';
+    endDateLabel.style.cssText = `
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 8px;
+    `;
+
+    const endDateInput = document.createElement('input');
+    endDateInput.type = 'date';
+    endDateInput.value = segmentData.endDate || segmentData.startDate || '';
+    endDateInput.style.cssText = `
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: ${this.generalConfig.fontFamily};
+      outline: none;
+      transition: border-color 0.2s;
+    `;
+    endDateInput.addEventListener('focus', () => endDateInput.style.borderColor = '#4ECDC4');
+    endDateInput.addEventListener('blur', () => endDateInput.style.borderColor = '#e5e7eb');
+
+    dateInputGroup.appendChild(startDateLabel);
+    dateInputGroup.appendChild(startDateInput);
+    dateInputGroup.appendChild(endDateLabel);
+    dateInputGroup.appendChild(endDateInput);
+    contentContainer.appendChild(dateInputGroup);
+
+    // Description textarea
+    const descLabel = document.createElement('label');
+    descLabel.textContent = 'Description';
+    descLabel.style.cssText = `
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 8px;
+    `;
+
+    const descTextarea = document.createElement('textarea');
+    descTextarea.value = segmentData.description || '';
+    descTextarea.placeholder = 'Add description';
+    descTextarea.rows = 4;
+    descTextarea.style.cssText = `
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: ${this.generalConfig.fontFamily};
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+      line-height: 1.5;
+    `;
+    descTextarea.addEventListener('focus', () => descTextarea.style.borderColor = '#4ECDC4');
+    descTextarea.addEventListener('blur', () => descTextarea.style.borderColor = '#e5e7eb');
+
+    contentContainer.appendChild(descLabel);
+    contentContainer.appendChild(descTextarea);
+
+    // Action buttons
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.cssText = `
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+    `;
+
+    // Save button
+    const saveBtn = document.createElement('button');
+    saveBtn.textContent = 'Save';
+    saveBtn.style.cssText = `
+      flex: 1;
+      padding: 12px 20px;
+      background: #4ECDC4;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-family: ${this.generalConfig.fontFamily};
+    `;
+    saveBtn.addEventListener('mouseenter', () => saveBtn.style.background = '#45b8af');
+    saveBtn.addEventListener('mouseleave', () => saveBtn.style.background = '#4ECDC4');
+    saveBtn.addEventListener('click', () => {
+      // Validate that label is not empty
+      if (!titleInput.value.trim()) {
+        titleInput.style.borderColor = '#dc2626';
+        titleInput.style.border = '2px solid #dc2626';
+        return;
+      }
+
+      // Prepare event data
+      const eventData = {
+        label: titleInput.value,
+        startDate: startDateInput.value,
+        endDate: endDateInput.value,
+        description: descTextarea.value,
+        color: segmentData.color
+      };
+
+      // Add id if updating existing event
+      if (segmentData.id) {
+        eventData.id = segmentData.id;
+      }
+
+      // Find the ring that contains this event
+      const ring = this.rings.find(r => r.config && r.config.name === segmentData.ringName);
+
+      if (!ring) {
+        console.error('Ring not found:', segmentData.ringName);
+        return;
+      }
+
+      if (!ring.data) {
+        ring.data = [];
+      }
+
+      if (segmentData._isNew) {
+        // Adding new event
+        ring.data.push(eventData);
+      } else {
+        // Updating existing event
+        const eventIndex = ring.data.findIndex(e =>
+          e.id === segmentData.id ||
+          (e.label === segmentData.label && e.startDate === segmentData.startDate)
+        );
+
+        if (eventIndex !== -1) {
+          ring.data[eventIndex] = eventData;
+        }
+      }
+
+      // Re-render the ring
+      this._updateRing(ring);
+
+      this._hideDetailPanel();
+    });
+
+    // Delete button
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'Delete';
+    deleteBtn.style.cssText = `
+      padding: 12px 20px;
+      background: transparent;
+      color: #dc2626;
+      border: 1px solid #dc2626;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: ${this.generalConfig.fontFamily};
+    `;
+    deleteBtn.addEventListener('mouseenter', () => {
+      deleteBtn.style.background = '#dc2626';
+      deleteBtn.style.color = 'white';
+    });
+    deleteBtn.addEventListener('mouseleave', () => {
+      deleteBtn.style.background = 'transparent';
+      deleteBtn.style.color = '#dc2626';
+    });
+    deleteBtn.addEventListener('click', () => {
+      // Find the ring that contains this event
+      const ring = this.rings.find(r => r.config && r.config.name === segmentData.ringName);
+      if (ring && ring.data) {
+        ring.data = ring.data.filter(e =>
+          !(e.id === segmentData.id ||
+            (e.label === segmentData.label && e.startDate === segmentData.startDate))
+        );
+        // Re-render the ring
+        this._updateRing(ring);
+      }
+
+      this._hideDetailPanel();
+    });
+
+    buttonContainer.appendChild(saveBtn);
+
+    // Only show delete button for existing events
+    if (!segmentData._isNew) {
+      buttonContainer.appendChild(deleteBtn);
+    }
+
+    contentContainer.appendChild(buttonContainer);
+
+    this.detailPanel.appendChild(contentContainer);
 
     // Show panel
     this.detailPanel.style.display = 'block';
     this.detailPanel.offsetHeight;
     requestAnimationFrame(() => {
       this.detailPanel.style.opacity = '1';
-      this.detailPanel.style.transform = 'translateY(-50%) translateX(0)';
+      this.detailPanel.style.transform = 'translateX(0)';
     });
   }
 
@@ -1021,7 +1309,7 @@ class CircalifyCore {
   _hideDetailPanel() {
     if (!this.detailPanel) return;
     this.detailPanel.style.opacity = '0';
-    this.detailPanel.style.transform = 'translateY(-50%) translateX(20px)';
+    this.detailPanel.style.transform = 'translateX(100%)';
     setTimeout(() => {
       this.detailPanel.style.display = 'none';
     }, 300);
@@ -1059,6 +1347,11 @@ class CircalifyCore {
    */
   _showMonthSidebar(monthData) {
     if (!this.monthSidebar) return;
+
+    // Close detail panel if open
+    if (this.detailPanel && this.detailPanel.style.opacity === '1') {
+      this._hideDetailPanel();
+    }
 
     const { month, year, startDay, endDay } = monthData;
 
@@ -1302,7 +1595,7 @@ class CircalifyCore {
       this.activeMonthButton.classList.remove('active-month');
       // Reset text to default
       if (this.activeMonthButton._textPathElement) {
-        this.activeMonthButton._textPathElement.textContent = 'VIS AGENDA';
+        this.activeMonthButton._textPathElement.textContent = 'VIEW AGENDA';
       }
       // Reset button size
       this._resetButtonSize(this.activeMonthButton);
@@ -1419,6 +1712,11 @@ class CircalifyCore {
     });
     eventItem.addEventListener('mouseleave', () => {
       eventItem.style.background = 'transparent';
+    });
+
+    // Add click handler to show detail panel
+    eventItem.addEventListener('click', () => {
+      this._showDetailPanel(event);
     });
 
     // Circle indicator (not a checkbox)
@@ -1551,20 +1849,38 @@ class CircalifyCore {
     });
     this.svgGroups.centerInfo.appendChild(colorSquare);
 
-    // Event label
-    const label = this._createSVGElement('text', {
+    // Event label with wrapping using foreignObject
+    const maxWidth = (this.generalConfig.innerRadius - 20) * 2 - squareSize - 20;
+    const labelText = eventData.label || '';
+
+    // Use foreignObject for proper text wrapping
+    const foreignObject = this._createSVGElement('foreignObject', {
       'x': this.cx - 80 + squareSize + 10,
-      'y': this.cy - 20,
-      'text-anchor': 'start',
-      'dominant-baseline': 'middle',
-      'font-family': this.generalConfig.fontFamily,
-      'font-size': '18',
-      'font-weight': '600',
-      'fill': '#333',
-      'style': 'user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
+      'y': this.cy - 40,
+      'width': maxWidth - 100,
+      'height': 40
     });
-    label.textContent = eventData.label || '';
-    this.svgGroups.centerInfo.appendChild(label);
+
+    const div = document.createElement('div');
+    div.style.cssText = `
+      font-family: ${this.generalConfig.fontFamily};
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    `;
+    div.textContent = labelText;
+    foreignObject.appendChild(div);
+    this.svgGroups.centerInfo.appendChild(foreignObject);
 
     // Date range (if available)
     if (eventData.startDate || eventData.endDate) {
@@ -1585,7 +1901,7 @@ class CircalifyCore {
 
       const dateLabel = this._createSVGElement('text', {
         'x': this.cx - 80 + squareSize + 10,
-        'y': this.cy + 5,
+        'y': this.cy + 12,
         'text-anchor': 'start',
         'dominant-baseline': 'middle',
         'font-family': this.generalConfig.fontFamily,

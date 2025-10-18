@@ -1585,22 +1585,22 @@ class Circalify {
     const ringHeight = ring.outer - ring.inner;
     const arcLength = Math.abs(endAngle - startAngle) * textRadius;
 
-    // Decide orientation based on aspect ratio (like PlanDisc)
-    // Use radial text for most segments to avoid upside-down issues
-    // Only use curved text for very wide segments (>3x height)
-    const useRadialText = arcLength < ringHeight * 3;
+    // Decide orientation based on aspect ratio
+    // Use tangential text for wide segments (arcLength > ringHeight)
+    // Use radial text for tall/narrow segments (arcLength < ringHeight)
+    const useTangentialText = arcLength > ringHeight;
+    const useRadialText = !useTangentialText;
 
     const maxFontSize = this.options.segmentLabelSize;
     const minFontSize = this.options.segmentLabelMinSize;
 
     if (useRadialText) {
-      // RADIAL TEXT (perpendicular to arc, reading along the tangent)
+      // RADIAL TEXT (pointing outward from center along the radius)
       const textX = this.cx + textRadius * Math.cos(midAngle);
       const textY = this.cy + textRadius * Math.sin(midAngle);
 
-      // Rotation angle in degrees - perpendicular to radius (tangent direction)
-      // Add 90 degrees to get the tangent direction
-      let rotationAngle = (midAngle * 180 / Math.PI) + 90;
+      // Rotation angle in degrees - along the radius direction (pointing outward)
+      let rotationAngle = (midAngle * 180 / Math.PI);
 
       // Keep text upright - flip if upside down
       if (rotationAngle > 90 && rotationAngle < 270) {
@@ -1645,9 +1645,10 @@ class Circalify {
       while (normalizedAngle > Math.PI) normalizedAngle -= 2 * Math.PI;
       while (normalizedAngle < -Math.PI) normalizedAngle += 2 * Math.PI;
 
-      // Flip text on bottom-left side to keep it upright
-      // Invert the logic - text on right side should be normal, left side flipped
-      const shouldFlipText = !(normalizedAngle >= -Math.PI / 2 && normalizedAngle <= Math.PI / 2);
+      // Flip text on bottom half to keep it upright and readable
+      // Bottom half: angles from 0 to π (right side going down to left side at bottom)
+      // Keep normal for top half: angles from -π to 0 (left side going up to right side at top)
+      const shouldFlipText = normalizedAngle > 0;
 
       const textPathId = `event-text-path-${eventData.id || Math.random().toString(36).substr(2, 9)}`;
 

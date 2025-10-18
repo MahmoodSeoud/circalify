@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Circalify - PlanDisc Style Demo</title>
+    <title>Circalify - PlanDisc Style</title>
     <style>
       * {
         margin: 0;
@@ -28,408 +28,280 @@
   <body>
     <div id="container"></div>
 
-    <script src="circalify-enhanced.js"></script>
+    <!-- Load modules in correct order -->
+    <script src="layout-calculator.js"></script>
+    <script src="config-parser.js"></script>
+    <script src="base-ring.js"></script>
+    <script src="calendar-ring.js"></script>
+    <script src="header-ring.js"></script>
+    <script src="data-ring.js"></script>
+    <script src="ring-factory.js"></script>
+    <script src="circalify-core.js"></script>
+    <script src="circalify.js"></script>
+
     <script>
-      // PlanDisc-style sample data with events across multiple rings
-      const planDiscData = [
-        // Outer Ring - Annual Events
+      // Outer Ring - Board Meetings and Major Events
+      const outerRingEvents = [
         {
-          label: "Q1 Planning",
+          label: "Bestyrelsesmøder",
           startDate: "2025-01-06",
           endDate: "2025-01-12",
-          ring: "Outer",
-          color: "#5090d3",
-          description: "First quarter planning session",
+          color: "#5a9aa8",
         },
         {
           label: "Bestyrelsesmøder",
           startDate: "2025-02-10",
           endDate: "2025-02-15",
-          ring: "Outer",
-          color: "#5090d3",
-          description: "Board meetings",
+          color: "#5a9aa8",
         },
         {
-          label: "Extra tegi",
+          label: "Generalforsamling og deep dives",
           startDate: "2025-03-12",
-          endDate: "2025-03-18",
-          ring: "Outer",
+          endDate: "2025-03-25",
           color: "#d89b7d",
-          description: "Extra meetings",
-        },
-        {
-          label: "2. b",
-          startDate: "2025-03-20",
-          endDate: "2025-03-22",
-          ring: "Outer",
-          color: "#2d6a5c",
-          description: "Second board meeting",
         },
         {
           label: "Bestyrelsesmøder",
           startDate: "2025-04-20",
           endDate: "2025-04-25",
-          ring: "Outer",
-          color: "#5090d3",
-          description: "Board meetings Q2",
+          color: "#5a9aa8",
         },
         {
           label: "Generalforsamling og deep dives",
           startDate: "2025-05-20",
           endDate: "2025-06-05",
-          ring: "Outer",
           color: "#d89b7d",
-          description: "General assembly and deep dive sessions",
-        },
-        {
-          label: "Summer Campaign",
-          startDate: "2025-06-15",
-          endDate: "2025-07-15",
-          ring: "Outer",
-          color: "#88c7d0",
-          description: "Summer marketing campaign",
         },
         {
           label: "Forre",
           startDate: "2025-08-01",
           endDate: "2025-08-10",
-          ring: "Outer",
           color: "#88c7d0",
-          description: "Forre activities",
         },
         {
-          label: "Board (Q3)",
+          label: "Bestyrelsesmøder",
           startDate: "2025-08-25",
           endDate: "2025-09-05",
-          ring: "Outer",
-          color: "#c79c9c",
-          description: "Third quarter board meeting",
+          color: "#5a9aa8",
         },
         {
-          label: "4. b",
-          startDate: "2025-09-10",
-          endDate: "2025-09-18",
-          ring: "Outer",
-          color: "#2d6a5c",
-          description: "Fourth board session",
-        },
-        {
-          label: "Month Review",
-          startDate: "2025-10-10",
-          endDate: "2025-10-20",
-          ring: "Outer",
-          color: "#7a6f9e",
-          description: "Monthly performance review",
-        },
-        {
-          label: "3. b",
+          label: "Bestyrelsesmøder",
           startDate: "2025-11-05",
           endDate: "2025-11-12",
-          ring: "Outer",
-          color: "#2d6a5c",
-          description: "Third board meeting",
+          color: "#5a9aa8",
         },
-        {
-          label: "Year-End",
-          startDate: "2025-12-15",
-          endDate: "2025-12-31",
-          ring: "Outer",
-          color: "#8b5a7d",
-          description: "Year-end activities",
-        },
+      ];
 
-        // Middle Ring - Regular Tasks
+      // Middle Ring - Regular Tasks
+      const middleRingEvents = [
         {
-          label: "GeneralforFamling og deep dives",
+          label: "Generalforsamling og deep dives",
           startDate: "2025-01-15",
           endDate: "2025-01-25",
-          ring: "Middle",
-          color: "#ffa69e",
-          description: "Family general assembly",
+          color: "#d89b7d",
         },
         {
           label: "Lovmæssige opgaver",
           startDate: "2025-02-01",
           endDate: "2025-02-20",
-          ring: "Middle",
           color: "#88c7d0",
-          description: "Legal compliance tasks",
         },
         {
           label: "Generalforsamling og deep dives",
           startDate: "2025-03-05",
           endDate: "2025-03-25",
-          ring: "Middle",
-          color: "#ffa69e",
-          description: "General assembly and analysis",
+          color: "#d89b7d",
         },
         {
           label: "Lovmæssige opgaver",
           startDate: "2025-04-01",
           endDate: "2025-04-15",
-          ring: "Middle",
           color: "#88c7d0",
-          description: "Legal tasks Q2",
-        },
-        {
-          label: "Gene og deep diver",
-          startDate: "2025-05-01",
-          endDate: "2025-05-15",
-          ring: "Middle",
-          color: "#a8dadc",
-          description: "General activities",
         },
         {
           label: "Lovmæssige opgaver",
           startDate: "2025-06-10",
           endDate: "2025-06-28",
-          ring: "Middle",
           color: "#88c7d0",
-          description: "Mid-year legal review",
         },
         {
           label: "Generalforsamling og deep dives",
           startDate: "2025-07-15",
           endDate: "2025-08-05",
-          ring: "Middle",
-          color: "#ffa69e",
-          description: "Summer assembly",
+          color: "#d89b7d",
         },
         {
           label: "Lovmæssige opgaver",
           startDate: "2025-09-01",
           endDate: "2025-09-20",
-          ring: "Middle",
           color: "#88c7d0",
-          description: "Fall legal tasks",
         },
         {
           label: "Generalforsamling og deep dives",
           startDate: "2025-10-25",
           endDate: "2025-11-15",
-          ring: "Middle",
-          color: "#ffa69e",
-          description: "Late year assembly",
+          color: "#d89b7d",
         },
         {
           label: "Lovmæssige opgaver",
           startDate: "2025-11-20",
           endDate: "2025-12-10",
-          ring: "Middle",
           color: "#88c7d0",
-          description: "Year-end legal work",
         },
+      ];
 
-        // Inner Ring - Performance and Reports
+      // Inner Ring - Performance Reports
+      const innerRingEvents = [
         {
-          label: "Q1 Planning",
+          label: "Performance rapporter",
           startDate: "2025-01-02",
           endDate: "2025-01-08",
-          ring: "Inner",
-          color: "#5ab1bb",
-          description: "Q1 strategic planning",
+          color: "#5090d3",
         },
         {
-          label: "Forre Get",
-          startDate: "2025-01-20",
-          endDate: "2025-02-02",
-          ring: "Inner",
-          color: "#d89b7d",
-          description: "Initial forecasting",
-        },
-        {
-          label: "OT Planning",
+          label: "Performance rapporter",
           startDate: "2025-02-08",
           endDate: "2025-02-18",
-          ring: "Inner",
-          color: "#4d7c4f",
-          description: "Overtime planning",
+          color: "#5090d3",
         },
         {
-          label: "Year End (1 Gen)",
-          startDate: "2025-02-22",
-          endDate: "2025-03-05",
-          ring: "Inner",
-          color: "#c65d5d",
-          description: "Previous year end processing",
-        },
-        {
-          label: "Q. Selfs",
+          label: "Performance rapporter",
           startDate: "2025-03-08",
           endDate: "2025-03-15",
-          ring: "Inner",
-          color: "#5ab1bb",
-          description: "Quarterly self-assessment",
-        },
-        {
-          label: "Perfo",
-          startDate: "2025-03-25",
-          endDate: "2025-04-05",
-          ring: "Inner",
           color: "#5090d3",
-          description: "Performance review",
         },
         {
-          label: "Per for",
+          label: "Performance rapporter",
           startDate: "2025-04-10",
           endDate: "2025-04-18",
-          ring: "Inner",
           color: "#5090d3",
-          description: "Performance forecasting",
-        },
-        {
-          label: "Perf",
-          startDate: "2025-04-22",
-          endDate: "2025-05-02",
-          ring: "Inner",
-          color: "#8ba3d7",
-          description: "Performance metrics",
         },
         {
           label: "Performance rapporter",
           startDate: "2025-05-08",
           endDate: "2025-05-20",
-          ring: "Inner",
           color: "#5090d3",
-          description: "Performance reports",
-        },
-        {
-          label: "Perf",
-          startDate: "2025-05-25",
-          endDate: "2025-06-05",
-          ring: "Inner",
-          color: "#8ba3d7",
-          description: "Performance check",
         },
         {
           label: "Evaluering af året",
           startDate: "2025-06-15",
           endDate: "2025-06-28",
-          ring: "Inner",
           color: "#90c495",
-          description: "Mid-year evaluation",
         },
         {
-          label: "Perfo",
+          label: "Performance rapporter",
           startDate: "2025-07-05",
           endDate: "2025-07-18",
-          ring: "Inner",
           color: "#5090d3",
-          description: "Q3 performance planning",
         },
         {
-          label: "Gene og deep diver",
-          startDate: "2025-08-15",
-          endDate: "2025-08-28",
-          ring: "Inner",
-          color: "#5ab1bb",
-          description: "Deep dive analysis",
-        },
-        {
-          label: "Perfo",
+          label: "Performance rapporter",
           startDate: "2025-09-05",
           endDate: "2025-09-15",
-          ring: "Inner",
           color: "#5090d3",
-          description: "Performance tracking",
         },
         {
-          label: "Performance af året",
-          startDate: "2025-09-22",
-          endDate: "2025-10-05",
-          ring: "Inner",
-          color: "#5090d3",
-          description: "Year-to-date performance",
-        },
-        {
-          label: "Perf for",
+          label: "Performance rapporter",
           startDate: "2025-10-12",
           endDate: "2025-10-22",
-          ring: "Inner",
-          color: "#8ba3d7",
-          description: "Q4 performance forecast",
+          color: "#5090d3",
         },
         {
-          label: "Perfo",
+          label: "Performance rapporter",
           startDate: "2025-11-01",
           endDate: "2025-11-12",
-          ring: "Inner",
           color: "#5090d3",
-          description: "November performance review",
-        },
-        {
-          label: "Lovmæssige opgaver",
-          startDate: "2025-11-18",
-          endDate: "2025-11-28",
-          ring: "Inner",
-          color: "#88c7d0",
-          description: "Legal year-end tasks",
-        },
-        {
-          label: "R. g.",
-          startDate: "2025-12-05",
-          endDate: "2025-12-12",
-          ring: "Inner",
-          color: "#7a6f9e",
-          description: "Final reporting",
         },
       ];
 
-      // Initialize Circalify with PlanDisc styling
-      const container = document.getElementById("container");
-      const circalify = new Circalify(container, planDiscData, {
-        // Ring configuration
-        rings: ["Outer", "Middle", "Inner"],
-        ringThickness: 50,
-        ringGap: 2,
-
-        // Size
-        innerRadius: 50,
-        outerRadius: 220,
-        viewBoxPadding: 40,
-
-        // Colors - PlanDisc palette
-        colors: ["#b8e6e6", "#ffd4d4", "#d4f4f4"],
+      // Configuration using new API
+      const config = {
+        title: "Plandisc Opsætning",
+        startYear: 2025,
+        startMonth: 0,
+        numberOfMonths: 12,
+        sameRingHeight: false,
+        innerRadius: 70,
+        outerRadius: 320,
+        viewBoxPadding: 80,
         backgroundColor: "#f5f7fa",
+        colorPalette: ["#b8e6e6", "#ffd4d4", "#d4e8e0", "#f0dcd4"],
 
-        // Enhanced features
-        showWeekNumbers: true,
-        showTimeline: true,
-        enableZoom: true,
-        enableDetailPanel: true,
-        useCurvedText: true,
+        rings: [
+          // Inner Ring - Performance
+          {
+            type: "data",
+            name: "Performance rapporter",
+            color: "#e3f2fd",
+            unit: "day",
+            height: 20,
+            fontSize: 9,
+            fontColor: "#1976d2",
+            separator: true,
+          },
 
-        // Font styling
-        monthLabelSize: 12,
-        monthLabelWeight: "600",
-        monthLabelColor: "#333",
-        monthLabelOffset: 55,
+          // Middle Ring - Legal Tasks
+          {
+            type: "data",
+            name: "Lovmæssige opgaver",
+            color: "#e8f5e9",
+            unit: "day",
+            height: 20,
+            fontSize: 9,
+            fontColor: "#2e7d32",
+            separator: true,
+          },
 
-        // Segment labels
-        segmentLabelSize: 10,
-        segmentLabelMinSize: 6,
-        segmentLabelWeight: "700",
+          // Outer Ring - Board Meetings
+          {
+            type: "data",
+            name: "Bestyrelsesmøder",
+            color: "#fff3e0",
+            unit: "day",
+            height: 20,
+            fontSize: 9,
+            fontColor: "#e65100",
+            separator: true,
+          },
 
-        // Week numbers
-        weekNumberSize: 8,
-        weekNumberColor: "#999",
-        weekNumberOpacity: 0.6,
-        weekNumberOffset: 18,
+          // Week Numbers
+          {
+            type: "calendar",
+            calendarType: "Week Numbers",
+            showYear: false,
+            color: "#f5f5f5",
+            height: 10,
+            separator: true,
+            fontSize: 8,
+            fontColor: "#999",
+          },
 
-        // Interactive
-        interactive: true,
-        showTooltips: true,
+          // Month Names with Year
+          {
+            type: "calendar",
+            calendarType: "Month Names",
+            showYear: true,
+            color: "#e0e0e0",
+            height: 17,
+            separator: true,
+            fontSize: 11,
+            fontColor: "#333",
+          },
+        ],
+      };
 
-        // Callbacks
-        onSegmentClick: (segment) => {
-          console.log("Clicked:", segment);
-        },
-        onSegmentHover: (segment) => {
-          console.log("Hovering:", segment);
-        },
-      });
+      // Initialize
+      const container = document.getElementById("container");
+      const wheel = new AnnualWheel(container, config);
 
-      console.log("Circalify initialized with", planDiscData.length, "events");
+      // Set data for each ring
+      wheel.setData(innerRingEvents, "Performance rapporter");
+      wheel.setData(middleRingEvents, "Lovmæssige opgaver");
+      wheel.setData(outerRingEvents, "Bestyrelsesmøder");
+
+      console.log("PlanDisc visualization loaded!");
+      console.log("Total Rings:", wheel.getRings().length);
+      console.log("DataRings:", wheel.getDataRings().length);
     </script>
   </body>
 </html>

@@ -214,7 +214,8 @@ class BaseRing {
       'font-size': fontSize,
       'font-weight': fontWeight,
       'fill': fontColor,
-      'class': `${this.config.type}-label`
+      'class': `${this.config.type}-label`,
+      'style': 'user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
     });
 
     const textPath = this._createSVGElement('textPath', {
@@ -262,7 +263,8 @@ class BaseRing {
       'font-weight': fontWeight,
       'fill': fontColor,
       'transform': `rotate(${rotationAngle}, ${point.x}, ${point.y})`,
-      'class': `${this.config.type}-label`
+      'class': `${this.config.type}-label`,
+      'style': 'user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
     });
     textElement.textContent = text;
 

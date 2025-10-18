@@ -170,6 +170,42 @@ class LayoutCalculator {
   }
 
   /**
+   * Calculate week segments for a year (actual 7-day weeks)
+   * @param {number} year - Year
+   * @returns {Array} Array of {week, startDay, endDay, days}
+   */
+  static getWeekSegments(year) {
+    const segments = [];
+    const daysInYear = this.getDaysInYear(year);
+    const totalWeeks = Math.floor(daysInYear / 7); // Number of complete 7-day weeks
+    let currentDay = 1;
+
+    // Create complete 7-day weeks
+    for (let week = 1; week <= totalWeeks; week++) {
+      segments.push({
+        week,
+        startDay: currentDay,
+        endDay: currentDay + 6,
+        days: 7
+      });
+      currentDay += 7;
+    }
+
+    // Add remaining days as a partial week (if any)
+    const remainingDays = daysInYear - (totalWeeks * 7);
+    if (remainingDays > 0) {
+      segments.push({
+        week: totalWeeks + 1,
+        startDay: currentDay,
+        endDay: daysInYear,
+        days: remainingDays
+      });
+    }
+
+    return segments;
+  }
+
+  /**
    * Calculate quarter segments for a year
    * @param {number} year - Year
    * @returns {Array} Array of {quarter, startDay, endDay, days, months}

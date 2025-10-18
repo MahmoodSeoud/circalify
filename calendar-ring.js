@@ -75,41 +75,37 @@ class CalendarRing extends BaseRing {
   }
 
   /**
-   * Render week numbers (52 segments)
+   * Render week numbers (actual 7-day weeks)
    * @private
    */
   _renderWeekNumbers() {
     const year = this._getYear();
+    const weekSegments = LayoutCalculator.getWeekSegments(year);
     const daysInYear = this._getDaysInYear();
-    const totalWeeks = 52;
     const labelRadius = this.center;
 
-    // Create 52 week segments
-    for (let week = 1; week <= totalWeeks; week++) {
-      const startDay = (week - 1) * 7 + 1;
-      const endDay = Math.min(week * 7, daysInYear);
+    // Render each week segment with actual 7-day duration
+    weekSegments.forEach((weekData, index) => {
+      const { week, startDay, endDay, days } = weekData;
 
+      // Calculate angles for this week
       const startAngle = ((startDay - 1) / daysInYear) * 2 * Math.PI - Math.PI / 2;
       const endAngle = (endDay / daysInYear) * 2 * Math.PI - Math.PI / 2;
       const centerAngle = (startAngle + endAngle) / 2;
       const arcSpan = endAngle - startAngle;
 
-      // Draw separator every 4 weeks (monthly markers)
-      if (week % 4 === 1) {
-        this._drawSeparator(startAngle);
-      }
+      // Draw separator at each week boundary
+      this._drawSeparator(startAngle);
 
-      // Add week number label (show every other week to avoid crowding)
-      if (week % 2 === 1 || totalWeeks <= 26) {
-        this._addCurvedLabel(
-          String(week),
-          centerAngle,
-          arcSpan * 0.7,
-          labelRadius,
-          { fontSize: Math.max(this.config.fontSize - 2, 7) }
-        );
-      }
-    }
+      // Add week number label for all weeks
+      this._addCurvedLabel(
+        String(week),
+        centerAngle,
+        arcSpan * 0.7,
+        labelRadius,
+        { fontSize: Math.max(this.config.fontSize - 2, 7) }
+      );
+    });
 
     // Add year label if configured
     if (this.config.showYear) {
@@ -142,10 +138,8 @@ class CalendarRing extends BaseRing {
       const centerAngle = (startAngle + endAngle) / 2;
       const arcSpan = endAngle - startAngle;
 
-      // Draw separator every 10 days
-      if (day % 10 === 1) {
-        this._drawSeparator(startAngle);
-      }
+      // Draw separator at each day boundary
+      this._drawSeparator(startAngle);
 
       // Add day label at intervals
       if (day % labelInterval === 0 || day === 1) {
@@ -212,32 +206,34 @@ class CalendarRing extends BaseRing {
         }
       );
 
-      // Add month indicators within each quarter
-      quarterData.months.forEach(monthIndex => {
-        const monthSegments = LayoutCalculator.getMonthSegments(year);
-        const monthData = monthSegments[monthIndex];
-        const monthStartAngle = ((monthData.startDay - 1) / daysInYear) * 2 * Math.PI - Math.PI / 2;
+      // Add month indicators within each quarter (optional, more subtle)
+      if (this.config.showMonthsInQuarters !== false) {
+        quarterData.months.forEach(monthIndex => {
+          const monthSegments = LayoutCalculator.getMonthSegments(year);
+          const monthData = monthSegments[monthIndex];
+          const monthStartAngle = ((monthData.startDay - 1) / daysInYear) * 2 * Math.PI - Math.PI / 2;
 
-        // Draw lighter separator for months within quarters
-        if (monthIndex !== quarterData.months[0]) {
-          const innerPoint = this._polarToCartesian(this.inner, monthStartAngle);
-          const outerPoint = this._polarToCartesian(this.outer, monthStartAngle);
+          // Draw lighter separator for months within quarters
+          if (monthIndex !== quarterData.months[0]) {
+            const innerPoint = this._polarToCartesian(this.inner, monthStartAngle);
+            const outerPoint = this._polarToCartesian(this.outer, monthStartAngle);
 
-          const separator = this._createSVGElement('line', {
-            'x1': innerPoint.x,
-            'y1': innerPoint.y,
-            'x2': outerPoint.x,
-            'y2': outerPoint.y,
-            'stroke': 'rgba(255, 255, 255, 0.3)',
-            'stroke-width': '1',
-            'stroke-dasharray': '3,3',
-            'class': 'month-separator'
-          });
+            const separator = this._createSVGElement('line', {
+              'x1': innerPoint.x,
+              'y1': innerPoint.y,
+              'x2': outerPoint.x,
+              'y2': outerPoint.y,
+              'stroke': 'rgba(255, 255, 255, 0.15)',
+              'stroke-width': '0.5',
+              'stroke-dasharray': '2,2',
+              'class': 'month-separator'
+            });
 
-          this.svgGroups.rings.appendChild(separator);
-          this.elements.push(separator);
-        }
-      });
+            this.svgGroups.rings.appendChild(separator);
+            this.elements.push(separator);
+          }
+        });
+      }
     });
   }
 }

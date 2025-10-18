@@ -204,10 +204,11 @@
             active: true,
             name: "Core Events",
             color: "#e3f2fd",
-            unit: "week",
-            height: 18,
+            unit: "month",
+            height: 4,
             fontSize: 9,
             fontColor: "#1976d2",
+            separator: true,
           },
 
           // Ring 1: Data Ring 2
@@ -220,6 +221,20 @@
             height: 16,
             fontSize: 9,
             fontColor: "#2e7d32",
+            separator: true,
+          },
+
+          // Ring 0 - Innermost: Data Ring 1
+          {
+            type: "data",
+            active: true,
+            name: "Core Events",
+            color: "#e3f2fd",
+            unit: "month",
+            height: 4,
+            fontSize: 9,
+            fontColor: "#1976d2",
+            separator: true,
           },
 
           // Ring 2: Calendar - Month Names
@@ -227,9 +242,9 @@
             type: "calendar",
             active: true,
             calendarType: "Week Numbers",
-            showYear: false,
             color: "gray",
-            height: 4,
+            showYear: false,
+            height: 2,
             separator: true,
             fontSize: 10,
             fontColor: "#e65100",
@@ -240,7 +255,7 @@
             type: "calendar",
             active: true,
             calendarType: "Month Names",
-            showYear: false,
+            showYear: true,
             color: "gray",
             height: 4,
             separator: true,

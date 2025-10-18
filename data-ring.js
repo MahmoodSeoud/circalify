@@ -40,10 +40,34 @@ class DataRing extends BaseRing {
   }
 
   /**
-   * Draw day segments (365 segments with hover interaction)
+   * Draw segments based on the unit (day/week/month/quarter)
    * @private
    */
   _drawDaySegments() {
+    const unit = this.config.unit || 'day';
+
+    switch(unit.toLowerCase()) {
+      case 'week':
+        this._drawWeekSegments();
+        break;
+      case 'month':
+        this._drawMonthSegments();
+        break;
+      case 'quarter':
+        this._drawQuarterSegments();
+        break;
+      case 'day':
+      default:
+        this._drawIndividualDaySegments();
+        break;
+    }
+  }
+
+  /**
+   * Draw individual day segments (365 segments)
+   * @private
+   */
+  _drawIndividualDaySegments() {
     const daysInYear = this._getDaysInYear();
     const year = this._getYear();
 
@@ -51,42 +75,148 @@ class DataRing extends BaseRing {
       const startAngle = ((day - 1) / daysInYear) * 2 * Math.PI - Math.PI / 2;
       const endAngle = (day / daysInYear) * 2 * Math.PI - Math.PI / 2;
 
-      const segmentPath = this._createArcPath(
-        this.inner,
-        this.outer,
-        startAngle,
-        endAngle
-      );
-
-      const segment = this._createSVGElement('path', {
-        'd': segmentPath,
-        'fill': 'transparent',
-        'stroke': 'rgba(255, 255, 255, 0.3)',
-        'stroke-width': '0.5',
-        'class': 'day-segment',
+      this._createSegment(startAngle, endAngle, {
         'data-day': day,
         'data-year': year,
-        'cursor': 'pointer'
+        'data-unit': 'day'
+      });
+    }
+  }
+
+  /**
+   * Draw week segments (actual 7-day weeks)
+   * @private
+   */
+  _drawWeekSegments() {
+    const year = this._getYear();
+    const daysInYear = this._getDaysInYear();
+    const weekSegments = LayoutCalculator.getWeekSegments(year);
+
+    weekSegments.forEach(weekData => {
+      const { week, startDay, endDay } = weekData;
+      const startAngle = ((startDay - 1) / daysInYear) * 2 * Math.PI - Math.PI / 2;
+      const endAngle = (endDay / daysInYear) * 2 * Math.PI - Math.PI / 2;
+
+      this._createSegment(startAngle, endAngle, {
+        'data-week': week,
+        'data-start-day': startDay,
+        'data-end-day': endDay,
+        'data-year': year,
+        'data-unit': 'week'
+      });
+    });
+  }
+
+  /**
+   * Draw month segments (actual days in each month)
+   * @private
+   */
+  _drawMonthSegments() {
+    const year = this._getYear();
+    const daysInYear = this._getDaysInYear();
+    const monthSegments = LayoutCalculator.getMonthSegments(year);
+
+    monthSegments.forEach(monthData => {
+      const { month, startDay, endDay } = monthData;
+      const startAngle = ((startDay - 1) / daysInYear) * 2 * Math.PI - Math.PI / 2;
+      const endAngle = (endDay / daysInYear) * 2 * Math.PI - Math.PI / 2;
+
+      this._createSegment(startAngle, endAngle, {
+        'data-month': month,
+        'data-start-day': startDay,
+        'data-end-day': endDay,
+        'data-year': year,
+        'data-unit': 'month'
+      });
+    });
+  }
+
+  /**
+   * Draw quarter segments (actual days in each quarter)
+   * @private
+   */
+  _drawQuarterSegments() {
+    const year = this._getYear();
+    const daysInYear = this._getDaysInYear();
+    const quarterSegments = LayoutCalculator.getQuarterSegments(year);
+
+    quarterSegments.forEach(quarterData => {
+      const { quarter, startDay, endDay } = quarterData;
+      const startAngle = ((startDay - 1) / daysInYear) * 2 * Math.PI - Math.PI / 2;
+      const endAngle = (endDay / daysInYear) * 2 * Math.PI - Math.PI / 2;
+
+      this._createSegment(startAngle, endAngle, {
+        'data-quarter': quarter,
+        'data-start-day': startDay,
+        'data-end-day': endDay,
+        'data-year': year,
+        'data-unit': 'quarter'
+      });
+    });
+  }
+
+  /**
+   * Create a single clickable segment
+   * @private
+   */
+  _createSegment(startAngle, endAngle, attributes = {}, drawSeparator = true) {
+    const segmentPath = this._createArcPath(
+      this.inner,
+      this.outer,
+      startAngle,
+      endAngle
+    );
+
+    const segment = this._createSVGElement('path', {
+      'd': segmentPath,
+      'fill': 'transparent',
+      'stroke': 'rgba(255, 255, 255, 0.1)',
+      'stroke-width': '0.5',
+      'class': 'unit-segment',
+      'cursor': 'pointer',
+      ...attributes
+    });
+
+    // Add hover interaction if enabled
+    if (this.config.interactive !== false) {
+      segment.addEventListener('mouseenter', () => {
+        segment.setAttribute('fill', 'rgba(0, 0, 0, 0.05)');
       });
 
-      // Add hover interaction if enabled
-      if (this.config.interactive) {
-        segment.addEventListener('mouseenter', () => {
-          if (!segment.hasAttribute('data-has-event')) {
-            segment.setAttribute('fill', 'rgba(0, 0, 0, 0.05)');
-          }
-        });
-
-        segment.addEventListener('mouseleave', () => {
-          if (!segment.hasAttribute('data-has-event')) {
-            segment.setAttribute('fill', 'transparent');
-          }
-        });
-      }
-
-      this.svgGroups.rings.appendChild(segment);
-      this.elements.push(segment);
+      segment.addEventListener('mouseleave', () => {
+        segment.setAttribute('fill', 'transparent');
+      });
     }
+
+    this.svgGroups.rings.appendChild(segment);
+    this.elements.push(segment);
+
+    // Draw separator line at the start of this segment if enabled
+    if (drawSeparator && this.config.separator !== false) {
+      this._drawUnitSeparator(startAngle);
+    }
+  }
+
+  /**
+   * Draw a separator line at a specific angle
+   * @private
+   */
+  _drawUnitSeparator(angle) {
+    const innerPoint = this._polarToCartesian(this.inner, angle);
+    const outerPoint = this._polarToCartesian(this.outer, angle);
+
+    const separator = this._createSVGElement('line', {
+      'x1': innerPoint.x,
+      'y1': innerPoint.y,
+      'x2': outerPoint.x,
+      'y2': outerPoint.y,
+      'stroke': 'rgba(255, 255, 255, 0.8)',
+      'stroke-width': '1.5',
+      'class': 'unit-separator'
+    });
+
+    this.svgGroups.rings.appendChild(separator);
+    this.elements.push(separator);
   }
 
   /**
@@ -113,20 +243,24 @@ class DataRing extends BaseRing {
   }
 
   /**
-   * Render a single event arc (preserves original logic from circalify-enhanced.js)
+   * Render a single event arc - expands to fill entire unit segments
    * @private
    */
   _renderEventArc(eventData) {
     const year = this._getYear();
     const daysInYear = this._getDaysInYear();
+    const unit = this.config.unit || 'day';
 
     // Parse event dates
     const startDate = new Date(eventData.startDate || eventData.date);
     const endDate = new Date(eventData.endDate || eventData.date);
 
     // Calculate day of year
-    const startDay = LayoutCalculator.getDayOfYear(startDate);
-    const endDay = LayoutCalculator.getDayOfYear(endDate);
+    const eventStartDay = LayoutCalculator.getDayOfYear(startDate);
+    const eventEndDay = LayoutCalculator.getDayOfYear(endDate);
+
+    // Expand to fill entire unit segments
+    const { startDay, endDay } = this._expandToUnitBoundaries(eventStartDay, eventEndDay, unit, year);
 
     // Calculate angles
     const startAngle = (startDay - 1) / daysInYear * 2 * Math.PI - Math.PI / 2;
@@ -166,15 +300,83 @@ class DataRing extends BaseRing {
     this.svgGroups.segments.appendChild(eventGroup);
     this.eventElements.push(eventGroup);
 
-    // Mark day segments as having events
-    for (let day = startDay; day <= endDay; day++) {
-      const segments = this.svgGroups.rings.querySelectorAll(
-        `[data-day="${day}"][data-year="${year}"]`
-      );
-      segments.forEach(seg => {
-        seg.setAttribute('data-has-event', 'true');
-      });
+    // Mark segments as having events
+    this._markSegmentsWithEvent(startDay, endDay, year);
+  }
+
+  /**
+   * Expand event to fill entire unit segment boundaries
+   * @private
+   */
+  _expandToUnitBoundaries(eventStartDay, eventEndDay, unit, year) {
+    let startDay = eventStartDay;
+    let endDay = eventEndDay;
+
+    switch(unit.toLowerCase()) {
+      case 'week':
+        const weekSegments = LayoutCalculator.getWeekSegments(year);
+        // Find all weeks that the event touches
+        const affectedWeeks = weekSegments.filter(week =>
+          week.startDay <= eventEndDay && week.endDay >= eventStartDay
+        );
+        if (affectedWeeks.length > 0) {
+          startDay = affectedWeeks[0].startDay;
+          endDay = affectedWeeks[affectedWeeks.length - 1].endDay;
+        }
+        break;
+
+      case 'month':
+        const monthSegments = LayoutCalculator.getMonthSegments(year);
+        // Find all months that the event touches
+        const affectedMonths = monthSegments.filter(month =>
+          month.startDay <= eventEndDay && month.endDay >= eventStartDay
+        );
+        if (affectedMonths.length > 0) {
+          startDay = affectedMonths[0].startDay;
+          endDay = affectedMonths[affectedMonths.length - 1].endDay;
+        }
+        break;
+
+      case 'quarter':
+        const quarterSegments = LayoutCalculator.getQuarterSegments(year);
+        // Find all quarters that the event touches
+        const affectedQuarters = quarterSegments.filter(quarter =>
+          quarter.startDay <= eventEndDay && quarter.endDay >= eventStartDay
+        );
+        if (affectedQuarters.length > 0) {
+          startDay = affectedQuarters[0].startDay;
+          endDay = affectedQuarters[affectedQuarters.length - 1].endDay;
+        }
+        break;
+
+      case 'day':
+      default:
+        // No expansion needed for day unit
+        break;
     }
+
+    return { startDay, endDay };
+  }
+
+  /**
+   * Mark segments that contain events
+   * @private
+   */
+  _markSegmentsWithEvent(startDay, endDay, year) {
+    const unit = this.config.unit || 'day';
+
+    // Get all segments in this ring
+    const allSegments = this.svgGroups.rings.querySelectorAll('.unit-segment');
+
+    allSegments.forEach(segment => {
+      const segmentStartDay = parseInt(segment.getAttribute('data-start-day') || segment.getAttribute('data-day') || '0');
+      const segmentEndDay = parseInt(segment.getAttribute('data-end-day') || segment.getAttribute('data-day') || '0');
+
+      // Check if this segment overlaps with the event date range
+      if (segmentStartDay <= endDay && segmentEndDay >= startDay) {
+        segment.setAttribute('data-has-event', 'true');
+      }
+    });
   }
 
   /**
@@ -239,7 +441,7 @@ class DataRing extends BaseRing {
         'fill': this.config.fontColor,
         'pointer-events': 'none',
         'transform': `rotate(${rotationAngle}, ${point.x}, ${point.y})`,
-        'style': 'text-shadow: 0 1px 2px rgba(0,0,0,0.3);'
+        'style': 'text-shadow: 0 1px 2px rgba(0,0,0,0.3); user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
       });
       text.textContent = displayLabel;
       eventGroup.appendChild(text);
@@ -293,7 +495,7 @@ class DataRing extends BaseRing {
         'font-weight': this.config.fontWeight,
         'fill': this.config.fontColor,
         'pointer-events': 'none',
-        'style': 'text-shadow: 0 1px 2px rgba(0,0,0,0.3);'
+        'style': 'text-shadow: 0 1px 2px rgba(0,0,0,0.3); user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
       });
 
       const textPath = this._createSVGElement('textPath', {

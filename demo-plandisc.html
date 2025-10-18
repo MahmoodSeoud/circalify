@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circalify - PlanDisc Style Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f5f7fa;
+            overflow: hidden;
+        }
+
+        #container {
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+
+    <script src="circalify-enhanced.js"></script>
+    <script>
+        // PlanDisc-style sample data with events across multiple rings
+        const planDiscData = [
+            // Outer Ring - Annual Events
+            {
+                label: 'Q1 Planning',
+                startDate: '2025-01-06',
+                endDate: '2025-01-12',
+                ring: 'Outer',
+                color: '#5090d3',
+                description: 'First quarter planning session'
+            },
+            {
+                label: 'Bestyrelsesmøder',
+                startDate: '2025-02-10',
+                endDate: '2025-02-15',
+                ring: 'Outer',
+                color: '#5090d3',
+                description: 'Board meetings'
+            },
+            {
+                label: 'Extra tegi',
+                startDate: '2025-03-12',
+                endDate: '2025-03-18',
+                ring: 'Outer',
+                color: '#d89b7d',
+                description: 'Extra meetings'
+            },
+            {
+                label: '2. b',
+                startDate: '2025-03-20',
+                endDate: '2025-03-22',
+                ring: 'Outer',
+                color: '#2d6a5c',
+                description: 'Second board meeting'
+            },
+            {
+                label: 'Bestyrelsesmøder',
+                startDate: '2025-04-20',
+                endDate: '2025-04-25',
+                ring: 'Outer',
+                color: '#5090d3',
+                description: 'Board meetings Q2'
+            },
+            {
+                label: 'Generalforsamling og deep dives',
+                startDate: '2025-05-20',
+                endDate: '2025-06-05',
+                ring: 'Outer',
+                color: '#d89b7d',
+                description: 'General assembly and deep dive sessions'
+            },
+            {
+                label: 'Summer Campaign',
+                startDate: '2025-06-15',
+                endDate: '2025-07-15',
+                ring: 'Outer',
+                color: '#88c7d0',
+                description: 'Summer marketing campaign'
+            },
+            {
+                label: 'Forre',
+                startDate: '2025-08-01',
+                endDate: '2025-08-10',
+                ring: 'Outer',
+                color: '#88c7d0',
+                description: 'Forre activities'
+            },
+            {
+                label: 'Board (Q3)',
+                startDate: '2025-08-25',
+                endDate: '2025-09-05',
+                ring: 'Outer',
+                color: '#c79c9c',
+                description: 'Third quarter board meeting'
+            },
+            {
+                label: '4. b',
+                startDate: '2025-09-10',
+                endDate: '2025-09-18',
+                ring: 'Outer',
+                color: '#2d6a5c',
+                description: 'Fourth board session'
+            },
+            {
+                label: 'Month Review',
+                startDate: '2025-10-10',
+                endDate: '2025-10-20',
+                ring: 'Outer',
+                color: '#7a6f9e',
+                description: 'Monthly performance review'
+            },
+            {
+                label: '3. b',
+                startDate: '2025-11-05',
+                endDate: '2025-11-12',
+                ring: 'Outer',
+                color: '#2d6a5c',
+                description: 'Third board meeting'
+            },
+            {
+                label: 'Year-End',
+                startDate: '2025-12-15',
+                endDate: '2025-12-31',
+                ring: 'Outer',
+                color: '#8b5a7d',
+                description: 'Year-end activities'
+            },
+
+            // Middle Ring - Regular Tasks
+            {
+                label: 'GeneralforFamling og deep dives',
+                startDate: '2025-01-15',
+                endDate: '2025-01-25',
+                ring: 'Middle',
+                color: '#ffa69e',
+                description: 'Family general assembly'
+            },
+            {
+                label: 'Lovmæssige opgaver',
+                startDate: '2025-02-01',
+                endDate: '2025-02-20',
+                ring: 'Middle',
+                color: '#88c7d0',
+                description: 'Legal compliance tasks'
+            },
+            {
+                label: 'Generalforsamling og deep dives',
+                startDate: '2025-03-05',
+                endDate: '2025-03-25',
+                ring: 'Middle',
+                color: '#ffa69e',
+                description: 'General assembly and analysis'
+            },
+            {
+                label: 'Lovmæssige opgaver',
+                startDate: '2025-04-01',
+                endDate: '2025-04-15',
+                ring: 'Middle',
+                color: '#88c7d0',
+                description: 'Legal tasks Q2'
+            },
+            {
+                label: 'Gene og deep diver',
+                startDate: '2025-05-01',
+                endDate: '2025-05-15',
+                ring: 'Middle',
+                color: '#a8dadc',
+                description: 'General activities'
+            },
+            {
+                label: 'Lovmæssige opgaver',
+                startDate: '2025-06-10',
+                endDate: '2025-06-28',
+                ring: 'Middle',
+                color: '#88c7d0',
+                description: 'Mid-year legal review'
+            },
+            {
+                label: 'Generalforsamling og deep dives',
+                startDate: '2025-07-15',
+                endDate: '2025-08-05',
+                ring: 'Middle',
+                color: '#ffa69e',
+                description: 'Summer assembly'
+            },
+            {
+                label: 'Lovmæssige opgaver',
+                startDate: '2025-09-01',
+                endDate: '2025-09-20',
+                ring: 'Middle',
+                color: '#88c7d0',
+                description: 'Fall legal tasks'
+            },
+            {
+                label: 'Generalforsamling og deep dives',
+                startDate: '2025-10-25',
+                endDate: '2025-11-15',
+                ring: 'Middle',
+                color: '#ffa69e',
+                description: 'Late year assembly'
+            },
+            {
+                label: 'Lovmæssige opgaver',
+                startDate: '2025-11-20',
+                endDate: '2025-12-10',
+                ring: 'Middle',
+                color: '#88c7d0',
+                description: 'Year-end legal work'
+            },
+
+            // Inner Ring - Performance and Reports
+            {
+                label: 'Q1 Planning',
+                startDate: '2025-01-02',
+                endDate: '2025-01-08',
+                ring: 'Inner',
+                color: '#5ab1bb',
+                description: 'Q1 strategic planning'
+            },
+            {
+                label: 'Forre Get',
+                startDate: '2025-01-20',
+                endDate: '2025-02-02',
+                ring: 'Inner',
+                color: '#d89b7d',
+                description: 'Initial forecasting'
+            },
+            {
+                label: 'OT Planning',
+                startDate: '2025-02-08',
+                endDate: '2025-02-18',
+                ring: 'Inner',
+                color: '#4d7c4f',
+                description: 'Overtime planning'
+            },
+            {
+                label: 'Year End (1 Gen)',
+                startDate: '2025-02-22',
+                endDate: '2025-03-05',
+                ring: 'Inner',
+                color: '#c65d5d',
+                description: 'Previous year end processing'
+            },
+            {
+                label: 'Q. Selfs',
+                startDate: '2025-03-08',
+                endDate: '2025-03-15',
+                ring: 'Inner',
+                color: '#5ab1bb',
+                description: 'Quarterly self-assessment'
+            },
+            {
+                label: 'Perfo',
+                startDate: '2025-03-25',
+                endDate: '2025-04-05',
+                ring: 'Inner',
+                color: '#5090d3',
+                description: 'Performance review'
+            },
+            {
+                label: 'Per for',
+                startDate: '2025-04-10',
+                endDate: '2025-04-18',
+                ring: 'Inner',
+                color: '#5090d3',
+                description: 'Performance forecasting'
+            },
+            {
+                label: 'Perf',
+                startDate: '2025-04-22',
+                endDate: '2025-05-02',
+                ring: 'Inner',
+                color: '#8ba3d7',
+                description: 'Performance metrics'
+            },
+            {
+                label: 'Performance rapporter',
+                startDate: '2025-05-08',
+                endDate: '2025-05-20',
+                ring: 'Inner',
+                color: '#5090d3',
+                description: 'Performance reports'
+            },
+            {
+                label: 'Perf',
+                startDate: '2025-05-25',
+                endDate: '2025-06-05',
+                ring: 'Inner',
+                color: '#8ba3d7',
+                description: 'Performance check'
+            },
+            {
+                label: 'Evaluering af året',
+                startDate: '2025-06-15',
+                endDate: '2025-06-28',
+                ring: 'Inner',
+                color: '#90c495',
+                description: 'Mid-year evaluation'
+            },
+            {
+                label: 'Perfo',
+                startDate: '2025-07-05',
+                endDate: '2025-07-18',
+                ring: 'Inner',
+                color: '#5090d3',
+                description: 'Q3 performance planning'
+            },
+            {
+                label: 'Gene og deep diver',
+                startDate: '2025-08-15',
+                endDate: '2025-08-28',
+                ring: 'Inner',
+                color: '#5ab1bb',
+                description: 'Deep dive analysis'
+            },
+            {
+                label: 'Perfo',
+                startDate: '2025-09-05',
+                endDate: '2025-09-15',
+                ring: 'Inner',
+                color: '#5090d3',
+                description: 'Performance tracking'
+            },
+            {
+                label: 'Performance af året',
+                startDate: '2025-09-22',
+                endDate: '2025-10-05',
+                ring: 'Inner',
+                color: '#5090d3',
+                description: 'Year-to-date performance'
+            },
+            {
+                label: 'Perf for',
+                startDate: '2025-10-12',
+                endDate: '2025-10-22',
+                ring: 'Inner',
+                color: '#8ba3d7',
+                description: 'Q4 performance forecast'
+            },
+            {
+                label: 'Perfo',
+                startDate: '2025-11-01',
+                endDate: '2025-11-12',
+                ring: 'Inner',
+                color: '#5090d3',
+                description: 'November performance review'
+            },
+            {
+                label: 'Lovmæssige opgaver',
+                startDate: '2025-11-18',
+                endDate: '2025-11-28',
+                ring: 'Inner',
+                color: '#88c7d0',
+                description: 'Legal year-end tasks'
+            },
+            {
+                label: 'R. g.',
+                startDate: '2025-12-05',
+                endDate: '2025-12-12',
+                ring: 'Inner',
+                color: '#7a6f9e',
+                description: 'Final reporting'
+            }
+        ];
+
+        // Initialize Circalify with PlanDisc styling
+        const container = document.getElementById('container');
+        const circalify = new Circalify(container, planDiscData, {
+            // Ring configuration
+            rings: ['Outer', 'Middle', 'Inner'],
+            ringThickness: 50,
+            ringGap: 2,
+
+            // Size
+            innerRadius: 50,
+            outerRadius: 220,
+            viewBoxPadding: 40,
+
+            // Colors - PlanDisc palette
+            colors: ['#b8e6e6', '#ffd4d4', '#d4f4f4'],
+            backgroundColor: '#f5f7fa',
+
+            // Enhanced features
+            showWeekNumbers: true,
+            showTimeline: true,
+            enableZoom: true,
+            enableDetailPanel: true,
+            useCurvedText: true,
+
+            // Font styling
+            monthLabelSize: 12,
+            monthLabelWeight: '600',
+            monthLabelColor: '#333',
+            monthLabelOffset: 25,
+
+            // Segment labels
+            segmentLabelSize: 10,
+            segmentLabelMinSize: 6,
+            segmentLabelWeight: '700',
+
+            // Week numbers
+            weekNumberSize: 8,
+            weekNumberColor: '#999',
+            weekNumberOpacity: 0.6,
+            weekNumberOffset: 18,
+
+            // Interactive
+            interactive: true,
+            showTooltips: true,
+
+            // Callbacks
+            onSegmentClick: (segment) => {
+                console.log('Clicked:', segment);
+            },
+            onSegmentHover: (segment) => {
+                console.log('Hovering:', segment);
+            }
+        });
+
+        console.log('Circalify initialized with', planDiscData.length, 'events');
+    </script>
+</body>
+</html>

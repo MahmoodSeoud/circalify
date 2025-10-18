@@ -121,6 +121,7 @@ class CircalifyCore {
     this.svgGroups = {
       background: this._createSVGElement('g', { 'class': 'circalify-background' }),
       rings: this._createSVGElement('g', { 'class': 'circalify-rings' }),
+      monthHoverAreas: this._createSVGElement('g', { 'class': 'circalify-month-hover-areas' }),
       segments: this._createSVGElement('g', { 'class': 'circalify-segments' }),
       centerInfo: this._createSVGElement('g', { 'class': 'circalify-center-info' }),
       timeline: this._createSVGElement('g', { 'class': 'circalify-timeline' }),
@@ -393,7 +394,10 @@ class CircalifyCore {
     const innermost = Math.min(...this.rings.map(ring => ring.inner));
     const outermost = Math.max(...this.rings.map(ring => ring.outer));
 
-    // Render permanent buttons and invisible hover areas for each month
+    // Store all month buttons
+    this.monthButtons = [];
+
+    // Create button and hover area for each month
     monthSegments.forEach((monthData, index) => {
       const { month, startDay, endDay } = monthData;
 
@@ -416,83 +420,84 @@ class CircalifyCore {
         endDay
       );
 
-      // Create TWO hover areas: one below the wheel and one above the button
-      // This avoids blocking the button itself while still providing hover detection
+      // Store button with metadata for mouse position detection
+      button._startAngle = startAngle;
+      button._endAngle = endAngle;
+      button._month = month;
 
-      // Area 1: Just inside the outer edge of the wheel (to detect hover near edge)
-      const innerHoverArea = this._createSVGElement('path', {
-        'd': LayoutCalculator.createArcPath(this.cx, this.cy, outermost - 15, outermost, startAngle, endAngle),
-        'fill': 'transparent',
-        'stroke': 'none',
-        'cursor': 'pointer',
-        'class': 'month-hover-area-inner',
-        'pointer-events': 'all'
-      });
+      this.monthButtons.push(button);
+    });
 
-      // Area 2: Beyond the button area (to detect hover in outer region)
-      const outerHoverArea = this._createSVGElement('path', {
-        'd': LayoutCalculator.createArcPath(this.cx, this.cy, outermost + 35, outermost + 60, startAngle, endAngle),
-        'fill': 'transparent',
-        'stroke': 'none',
-        'cursor': 'pointer',
-        'class': 'month-hover-area-outer',
-        'pointer-events': 'all'
-      });
+    // Use global mousemove on SVG to detect which month we're in
+    // This doesn't block any other hover events
+    let currentMonth = null;
 
-      // Combined hover area reference for event handling
-      const hoverArea = innerHoverArea; // Use inner as primary reference
+    this.svg.addEventListener('mousemove', (e) => {
+      // Use SVG's built-in coordinate conversion for accuracy
+      const pt = this.svg.createSVGPoint();
+      pt.x = e.clientX;
+      pt.y = e.clientY;
+      const svgPt = pt.matrixTransform(this.svg.getScreenCTM().inverse());
 
-      // Show button when hovering over either hover area
-      const showButton = () => {
-        if (button !== this.activeMonthButton) {
-          button.style.opacity = '1';
-        }
-      };
+      // Convert to polar coordinates
+      const dx = svgPt.x - this.cx;
+      const dy = svgPt.y - this.cy;
+      const radius = Math.sqrt(dx * dx + dy * dy);
+      const angle = Math.atan2(dy, dx);
 
-      const hideButton = (e) => {
-        const relatedTarget = e.relatedTarget;
-        // Don't hide if moving to button, other hover area, or if this is the active button
-        if (!button.contains(relatedTarget) &&
-            relatedTarget !== innerHoverArea &&
-            relatedTarget !== outerHoverArea &&
-            button !== this.activeMonthButton) {
-          button.style.opacity = '0';
-          if (button._textPathElement) {
-            button._textPathElement.textContent = 'VIS AGENDA';
+      // Check if we're within the wheel area
+      if (radius >= innermost && radius <= outermost + 60) {
+        // Find which month this angle belongs to
+        let foundMonth = null;
+
+        for (const btn of this.monthButtons) {
+          let start = btn._startAngle;
+          let end = btn._endAngle;
+          let testAngle = angle;
+
+          // Normalize angles to handle ±π boundary
+          // If segment crosses the boundary, normalize everything to [0, 2π]
+          if (end < start) {
+            // Segment wraps around (e.g., December to January)
+            if (start < 0) start += 2 * Math.PI;
+            if (end < 0) end += 2 * Math.PI;
+            if (testAngle < 0) testAngle += 2 * Math.PI;
+          } else {
+            // Check if we need to shift testAngle to match the segment's range
+            // If testAngle and start are on opposite sides of ±π, normalize
+            if (Math.abs(testAngle - start) > Math.PI) {
+              if (testAngle < 0) testAngle += 2 * Math.PI;
+              else if (start < 0) {
+                start += 2 * Math.PI;
+                end += 2 * Math.PI;
+              }
+            }
+          }
+
+          const inRange = (testAngle >= start && testAngle <= end);
+
+          if (inRange) {
+            foundMonth = btn._month;
+            if (btn !== this.activeMonthButton) {
+              btn.style.opacity = '1';
+            }
+          } else {
+            if (btn !== this.activeMonthButton) {
+              btn.style.opacity = '0';
+            }
           }
         }
-      };
 
-      innerHoverArea.addEventListener('mouseenter', showButton);
-      innerHoverArea.addEventListener('mouseleave', hideButton);
-      outerHoverArea.addEventListener('mouseenter', showButton);
-      outerHoverArea.addEventListener('mouseleave', hideButton);
-
-      // Keep button visible when hovering over it
-      button.addEventListener('mouseenter', () => {
-        // Only set to full opacity if not the active button
-        if (button !== this.activeMonthButton) {
-          button.style.opacity = '1';
-        }
-      });
-
-      button.addEventListener('mouseleave', (e) => {
-        // Only hide if not moving back to hover areas and not the active button
-        const relatedTarget = e.relatedTarget;
-        if (relatedTarget !== innerHoverArea &&
-            relatedTarget !== outerHoverArea &&
-            button !== this.activeMonthButton) {
-          button.style.opacity = '0';
-          // Reset text to default
-          if (button._textPathElement) {
-            button._textPathElement.textContent = 'VIS AGENDA';
+        currentMonth = foundMonth;
+      } else {
+        // Outside wheel - hide all non-active buttons
+        for (const btn of this.monthButtons) {
+          if (btn !== this.activeMonthButton) {
+            btn.style.opacity = '0';
           }
         }
-      });
-
-      // Append both hover areas (they don't overlap with button region)
-      this.svgGroups.overlay.appendChild(innerHoverArea);
-      this.svgGroups.overlay.appendChild(outerHoverArea);
+        currentMonth = null;
+      }
     });
   }
 
@@ -521,7 +526,7 @@ class CircalifyCore {
       'pointer-events': 'all', // Ensure button receives clicks even at low opacity
       'data-month': month,
       'data-year': year,
-      'style': 'opacity: 0; transition: opacity 0.2s ease;'
+      'style': 'opacity: 0; transition: opacity 0.1s ease;'
     });
 
     // Create pill-shaped button background using arc path

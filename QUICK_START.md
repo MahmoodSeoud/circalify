@@ -238,13 +238,12 @@ wheel.setData(personalEvents, "Personal");
 
 ## 📚 Next Steps
 
-1. Check out the demo files:
-   - `demo-new-api.html` - Basic usage
-   - `demo-multi-dataring.html` - **Multiple DataRings** (See how each ring has separate data!)
-   - `demo-showcase.html` - Interactive showcase
+1. Check out the demo file:
+   - `demo-plandisc.html` - Complete demonstration of all features
 
 2. Read full documentation:
    - `README.md` - Complete API reference
+   - `MULTI_DATARING_GUIDE.md` - Guide for using multiple DataRings
 
 3. Explore examples:
    - Try different calendar types
@@ -275,4 +274,4 @@ Start building your circular annual calendar visualization!
 
 For more details, see:
 - `README.md` - Full API documentation
-- `REFACTORING_SUMMARY.md` - Architecture details
+- `MULTI_DATARING_GUIDE.md` - Multi-ring usage guide

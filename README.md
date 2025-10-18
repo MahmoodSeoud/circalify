@@ -415,20 +415,11 @@ This is a refactored version with a modular architecture. Contributions welcome!
 
 ## 📚 Examples
 
-See included demo files:
-- `demo-new-api.html` - Basic usage with single DataRing
-- `demo-multi-dataring.html` - **Multiple DataRings with separate data** (Recommended!)
-- `demo-showcase.html` - All ring types with interactive calendar switching
-- `demo-plandisc.html` - Original PlanDisc-style demo (legacy)
+See included demo file:
+- `demo-plandisc.html` - Complete demonstration of all features
 
 ## 🎉 Version
 
 Current version: **2.0.0**
 
 Complete rewrite with flexible ring system.
-
----
-
-## Legacy Version 1.0
-
-The original implementation is still available in `circalify-enhanced.js` with the old API. See git history for documentation.

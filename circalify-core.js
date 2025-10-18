@@ -416,9 +416,12 @@ class CircalifyCore {
         endDay
       );
 
-      // Create invisible hover area spanning all rings
+      // Create invisible hover area ONLY in the button region (not covering data rings)
+      // This prevents blocking hover events on data ring segments
+      const buttonRegionInner = outermost;
+      const buttonRegionOuter = outermost + 40; // Extend 40px beyond outer edge for button area
       const hoverArea = this._createSVGElement('path', {
-        'd': LayoutCalculator.createArcPath(this.cx, this.cy, innermost, outermost, startAngle, endAngle),
+        'd': LayoutCalculator.createArcPath(this.cx, this.cy, buttonRegionInner, buttonRegionOuter, startAngle, endAngle),
         'fill': 'transparent',
         'stroke': 'none',
         'cursor': 'pointer',

@@ -24,6 +24,9 @@ class CircalifyCore {
     this.svgGroups = {};
     this.rings = [];
     this.detailPanel = null;
+    this.monthSidebar = null;
+    this.allEvents = [];
+    this.activeMonthButton = null;  // Track which month button is currently active
 
     // Calculate dimensions
     this._calculateDimensions();
@@ -136,6 +139,9 @@ class CircalifyCore {
     if (this.generalConfig.enableDetailPanel) {
       this._createDetailPanel(contentWrapper);
     }
+
+    // Create month sidebar (always available)
+    this._createMonthSidebar(contentWrapper);
 
     wrapper.appendChild(contentWrapper);
     this.container.appendChild(wrapper);
@@ -349,7 +355,10 @@ class CircalifyCore {
       callbacks: {
         onSegmentClick: this._handleSegmentClick.bind(this),
         onSegmentHover: this._handleSegmentHover.bind(this),
-        onSegmentLeave: this._handleSegmentLeave.bind(this)
+        onSegmentLeave: this._handleSegmentLeave.bind(this),
+        onMonthClick: this._handleMonthClick.bind(this),
+        onMonthHover: this._handleMonthHover.bind(this),
+        onMonthLeave: this._handleMonthLeave.bind(this)
       }
     };
 
@@ -364,6 +373,325 @@ class CircalifyCore {
     this.rings.forEach(ring => {
       ring.render();
     });
+
+    // Add month interaction overlays spanning all rings
+    this._addMonthInteractionOverlays();
+  }
+
+  /**
+   * Add permanent month agenda buttons with opacity transitions
+   * @private
+   */
+  _addMonthInteractionOverlays() {
+    if (this.rings.length === 0) return;
+
+    const year = this.generalConfig.startYear;
+    const monthSegments = LayoutCalculator.getMonthSegments(year);
+    const daysInYear = LayoutCalculator.getDaysInYear(year);
+
+    // Find innermost and outermost ring boundaries
+    const innermost = Math.min(...this.rings.map(ring => ring.inner));
+    const outermost = Math.max(...this.rings.map(ring => ring.outer));
+
+    // Render permanent buttons and invisible hover areas for each month
+    monthSegments.forEach((monthData, index) => {
+      const { month, startDay, endDay } = monthData;
+
+      // Calculate angles for this month
+      const startAngle = ((startDay - 1) / daysInYear) * 2 * Math.PI - Math.PI / 2;
+      const endAngle = (endDay / daysInYear) * 2 * Math.PI - Math.PI / 2;
+      const centerAngle = (startAngle + endAngle) / 2;
+      const arcSpan = endAngle - startAngle;
+
+      // Create permanent button (initially invisible with opacity: 0)
+      const button = this._createMonthButtonOverlay(
+        startAngle,
+        endAngle,
+        centerAngle,
+        arcSpan,
+        outermost,
+        month,
+        year,
+        startDay,
+        endDay
+      );
+
+      // Create invisible hover area spanning all rings
+      const hoverArea = this._createSVGElement('path', {
+        'd': LayoutCalculator.createArcPath(this.cx, this.cy, innermost, outermost, startAngle, endAngle),
+        'fill': 'transparent',
+        'stroke': 'none',
+        'cursor': 'pointer',
+        'class': 'month-hover-area'
+      });
+
+      // Show button when hovering over the month segment
+      hoverArea.addEventListener('mouseenter', () => {
+        // Only set to full opacity if not the active button
+        if (button !== this.activeMonthButton) {
+          button.style.opacity = '1';
+        }
+      });
+
+      hoverArea.addEventListener('mouseleave', (e) => {
+        // Only hide if not moving to the button and not the active button
+        const relatedTarget = e.relatedTarget;
+        if (!button.contains(relatedTarget) && button !== this.activeMonthButton) {
+          button.style.opacity = '0';
+          // Reset text to default
+          if (button._textPathElement) {
+            button._textPathElement.textContent = 'VIS AGENDA';
+          }
+        }
+      });
+
+      // Keep button visible when hovering over it
+      button.addEventListener('mouseenter', () => {
+        // Only set to full opacity if not the active button
+        if (button !== this.activeMonthButton) {
+          button.style.opacity = '1';
+        }
+      });
+
+      button.addEventListener('mouseleave', (e) => {
+        // Only hide if not moving back to hover area and not the active button
+        const relatedTarget = e.relatedTarget;
+        if (!hoverArea.contains(relatedTarget) && relatedTarget !== hoverArea && button !== this.activeMonthButton) {
+          button.style.opacity = '0';
+          // Reset text to default
+          if (button._textPathElement) {
+            button._textPathElement.textContent = 'VIS AGENDA';
+          }
+        }
+      });
+
+      this.svgGroups.overlay.appendChild(hoverArea);
+    });
+  }
+
+  /**
+   * Create permanent month agenda button (pill-shaped with curved text)
+   * @private
+   */
+  _createMonthButtonOverlay(startAngle, endAngle, centerAngle, arcSpan, outermost, month, year, startDay, endDay) {
+    // Position button closer to the wheel
+    const buttonRadius = outermost + 15;
+
+    // Calculate button path along the arc (smaller initially)
+    const buttonArcSpan = arcSpan * 0.5; // Button takes 50% of month arc initially
+    const buttonStartAngle = centerAngle - buttonArcSpan / 2;
+    const buttonEndAngle = centerAngle + buttonArcSpan / 2;
+
+    // Button thickness (smaller initially)
+    const buttonThickness = 16;
+    const buttonInnerRadius = buttonRadius - buttonThickness / 2;
+    const buttonOuterRadius = buttonRadius + buttonThickness / 2;
+
+    // Create button group (initially invisible)
+    const buttonGroup = this._createSVGElement('g', {
+      'class': 'month-agenda-button',
+      'cursor': 'pointer',
+      'data-month': month,
+      'data-year': year,
+      'style': 'opacity: 0; transition: opacity 0.2s ease;'
+    });
+
+    // Create pill-shaped button background using arc path
+    const buttonPath = LayoutCalculator.createArcPath(
+      this.cx,
+      this.cy,
+      buttonInnerRadius,
+      buttonOuterRadius,
+      buttonStartAngle,
+      buttonEndAngle
+    );
+
+    const buttonBackground = this._createSVGElement('path', {
+      'd': buttonPath,
+      'fill': '#3c3485', // Plandisc purple
+      'stroke': '#3c3485',
+      'stroke-width': '1'
+    });
+    buttonGroup.appendChild(buttonBackground);
+
+    // Create curved text path for "VIS AGENDA"
+    const textPathId = `agenda-text-path-${month}-${year}`;
+    const textStartPoint = LayoutCalculator.polarToCartesian(this.cx, this.cy, buttonRadius, buttonStartAngle);
+    const textEndPoint = LayoutCalculator.polarToCartesian(this.cx, this.cy, buttonRadius, buttonEndAngle);
+
+    const textAngleDiff = buttonEndAngle - buttonStartAngle;
+    const largeArc = textAngleDiff > Math.PI ? 1 : 0;
+
+    const textPathD = `M ${textStartPoint.x} ${textStartPoint.y} A ${buttonRadius} ${buttonRadius} 0 ${largeArc} 1 ${textEndPoint.x} ${textEndPoint.y}`;
+
+    const textPath = this._createSVGElement('path', {
+      'id': textPathId,
+      'd': textPathD,
+      'fill': 'none'
+    });
+    this.defs.appendChild(textPath);
+
+    // Create text element with curved text
+    const textElement = this._createSVGElement('text', {
+      'font-family': this.generalConfig.fontFamily,
+      'font-size': '8',
+      'font-weight': '600',
+      'fill': '#ffffff',
+      'letter-spacing': '0.5',
+      'pointer-events': 'none',
+      'style': 'user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
+    });
+
+    const textPathElement = this._createSVGElement('textPath', {
+      'href': `#${textPathId}`,
+      'startOffset': '50%',
+      'text-anchor': 'middle',
+      'dominant-baseline': 'middle'
+    });
+    textPathElement.textContent = 'VIS AGENDA';
+    textElement.appendChild(textPathElement);
+    buttonGroup.appendChild(textElement);
+
+    // Store references for updating
+    buttonGroup._textPathElement = textPathElement;
+    buttonGroup._textPath = textPath;
+    buttonGroup._textPathId = textPathId;
+    buttonGroup._month = month;
+    buttonGroup._buttonBackground = buttonBackground;
+    buttonGroup._centerAngle = centerAngle;
+    buttonGroup._arcSpan = arcSpan;
+    buttonGroup._outermost = outermost;
+    buttonGroup._buttonRadius = buttonRadius;
+
+    // Make button clickable to open sidebar and update text
+    buttonGroup.addEventListener('click', () => {
+      // Close any previously open sidebar and reset previous button
+      if (this.activeMonthButton && this.activeMonthButton !== buttonGroup) {
+        this.activeMonthButton.style.opacity = '0';
+        this.activeMonthButton.classList.remove('active-month');
+        // Reset previous button text
+        if (this.activeMonthButton._textPathElement) {
+          this.activeMonthButton._textPathElement.textContent = 'VIS AGENDA';
+        }
+        // Reset previous button size
+        this._resetButtonSize(this.activeMonthButton);
+      }
+
+      // Get month name
+      const monthNames = ['Januar', 'Februar', 'Marts', 'April', 'Maj', 'Juni',
+                          'Juli', 'August', 'September', 'Oktober', 'November', 'December'];
+      const monthName = monthNames[month];
+
+      // Update button text to show month
+      textPathElement.textContent = `${monthName.toUpperCase()} AGENDA`;
+
+      // Expand the button
+      this._expandButton(buttonGroup);
+
+      // Set this button as active (grayed out while sidebar is open)
+      this.activeMonthButton = buttonGroup;
+      buttonGroup.style.opacity = '0.5';  // Gray out the button
+      buttonGroup.classList.add('active-month');
+
+      // Open sidebar
+      this._handleMonthClick({ month, year, startDay, endDay });
+    });
+
+    this.svgGroups.overlay.appendChild(buttonGroup);
+
+    return buttonGroup;
+  }
+
+  /**
+   * Expand button when clicked
+   * @private
+   */
+  _expandButton(buttonGroup) {
+    if (!buttonGroup._buttonBackground) return;
+
+    const centerAngle = buttonGroup._centerAngle;
+    const arcSpan = buttonGroup._arcSpan;
+    const outermost = buttonGroup._outermost;
+    const buttonRadius = buttonGroup._buttonRadius;
+
+    // Expanded dimensions
+    const expandedRadius = outermost + 15;
+    const expandedArcSpan = arcSpan * 0.7; // Expand to 70% of month arc
+    const expandedThickness = 20; // Thicker when active
+
+    const expandedStartAngle = centerAngle - expandedArcSpan / 2;
+    const expandedEndAngle = centerAngle + expandedArcSpan / 2;
+    const expandedInnerRadius = expandedRadius - expandedThickness / 2;
+    const expandedOuterRadius = expandedRadius + expandedThickness / 2;
+
+    // Create expanded path
+    const expandedPath = LayoutCalculator.createArcPath(
+      this.cx,
+      this.cy,
+      expandedInnerRadius,
+      expandedOuterRadius,
+      expandedStartAngle,
+      expandedEndAngle
+    );
+
+    // Update button background path with transition
+    buttonGroup._buttonBackground.style.transition = 'd 0.2s ease';
+    buttonGroup._buttonBackground.setAttribute('d', expandedPath);
+
+    // Update text path to match expanded button
+    if (buttonGroup._textPath) {
+      const textStartPoint = LayoutCalculator.polarToCartesian(this.cx, this.cy, buttonRadius, expandedStartAngle);
+      const textEndPoint = LayoutCalculator.polarToCartesian(this.cx, this.cy, buttonRadius, expandedEndAngle);
+      const textAngleDiff = expandedEndAngle - expandedStartAngle;
+      const largeArc = textAngleDiff > Math.PI ? 1 : 0;
+      const expandedTextPath = `M ${textStartPoint.x} ${textStartPoint.y} A ${buttonRadius} ${buttonRadius} 0 ${largeArc} 1 ${textEndPoint.x} ${textEndPoint.y}`;
+      buttonGroup._textPath.setAttribute('d', expandedTextPath);
+    }
+  }
+
+  /**
+   * Reset button to original size
+   * @private
+   */
+  _resetButtonSize(buttonGroup) {
+    if (!buttonGroup._buttonBackground) return;
+
+    const centerAngle = buttonGroup._centerAngle;
+    const arcSpan = buttonGroup._arcSpan;
+    const outermost = buttonGroup._outermost;
+    const buttonRadius = buttonGroup._buttonRadius;
+
+    // Original dimensions
+    const buttonArcSpan = arcSpan * 0.5;
+    const buttonThickness = 16;
+
+    const buttonStartAngle = centerAngle - buttonArcSpan / 2;
+    const buttonEndAngle = centerAngle + buttonArcSpan / 2;
+    const buttonInnerRadius = buttonRadius - buttonThickness / 2;
+    const buttonOuterRadius = buttonRadius + buttonThickness / 2;
+
+    // Create original path
+    const originalPath = LayoutCalculator.createArcPath(
+      this.cx,
+      this.cy,
+      buttonInnerRadius,
+      buttonOuterRadius,
+      buttonStartAngle,
+      buttonEndAngle
+    );
+
+    // Reset button background path
+    buttonGroup._buttonBackground.setAttribute('d', originalPath);
+
+    // Reset text path to original size
+    if (buttonGroup._textPath) {
+      const textStartPoint = LayoutCalculator.polarToCartesian(this.cx, this.cy, buttonRadius, buttonStartAngle);
+      const textEndPoint = LayoutCalculator.polarToCartesian(this.cx, this.cy, buttonRadius, buttonEndAngle);
+      const textAngleDiff = buttonEndAngle - buttonStartAngle;
+      const largeArc = textAngleDiff > Math.PI ? 1 : 0;
+      const originalTextPath = `M ${textStartPoint.x} ${textStartPoint.y} A ${buttonRadius} ${buttonRadius} 0 ${largeArc} 1 ${textEndPoint.x} ${textEndPoint.y}`;
+      buttonGroup._textPath.setAttribute('d', originalTextPath);
+    }
   }
 
   /**
@@ -393,6 +721,30 @@ class CircalifyCore {
   }
 
   /**
+   * Handle month click - open month events sidebar
+   * @private
+   */
+  _handleMonthClick(monthData) {
+    this._showMonthSidebar(monthData);
+  }
+
+  /**
+   * Handle month hover
+   * @private
+   */
+  _handleMonthHover(monthData) {
+    // Optional: could show additional info
+  }
+
+  /**
+   * Handle month leave
+   * @private
+   */
+  _handleMonthLeave() {
+    // Optional: clear any month-specific info
+  }
+
+  /**
    * Update data for DataRings
    * @param {Array} data - Event data
    * @param {string} ringName - Optional: target specific ring by name
@@ -401,6 +753,9 @@ class CircalifyCore {
     if (!Array.isArray(data)) {
       throw new Error('CircalifyCore: Data must be an array');
     }
+
+    // Store all events for month sidebar filtering
+    this.allEvents = data;
 
     this.rings.forEach(ring => {
       if (ring instanceof DataRing) {
@@ -584,6 +939,464 @@ class CircalifyCore {
     setTimeout(() => {
       this.detailPanel.style.display = 'none';
     }, 300);
+  }
+
+  /**
+   * Create month sidebar
+   * @private
+   */
+  _createMonthSidebar(wrapper) {
+    this.monthSidebar = document.createElement('div');
+    this.monthSidebar.style.cssText = `
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 340px;
+      height: 100%;
+      background: white;
+      box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+      font-family: ${this.generalConfig.fontFamily};
+      display: none;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+      overflow: hidden;
+    `;
+
+    wrapper.appendChild(this.monthSidebar);
+  }
+
+  /**
+   * Show month sidebar with events
+   * @private
+   */
+  _showMonthSidebar(monthData) {
+    if (!this.monthSidebar) return;
+
+    const { month, year, startDay, endDay } = monthData;
+
+    // Filter events for this month
+    const monthEvents = this._filterMonthEvents(startDay, endDay, year);
+
+    // Build sidebar content
+    this.monthSidebar.innerHTML = '';
+
+    // Header
+    const header = document.createElement('div');
+    header.style.cssText = `
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid #e5e7eb;
+    `;
+
+    const monthNames = ['Januar', 'Februar', 'Marts', 'April', 'Maj', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'December'];
+
+    // Left arrow
+    const leftArrow = document.createElement('button');
+    leftArrow.innerHTML = '&lt;';
+    leftArrow.style.cssText = `
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: #666;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    `;
+    leftArrow.addEventListener('mouseenter', () => leftArrow.style.background = '#f3f4f6');
+    leftArrow.addEventListener('mouseleave', () => leftArrow.style.background = 'transparent');
+
+    // Title
+    const title = document.createElement('h2');
+    title.textContent = `${monthNames[month]} ${year}`;
+    title.style.cssText = `
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #111827;
+      flex: 1;
+      text-align: center;
+    `;
+
+    // Right arrow
+    const rightArrow = document.createElement('button');
+    rightArrow.innerHTML = '&gt;';
+    rightArrow.style.cssText = `
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: #666;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    `;
+    rightArrow.addEventListener('mouseenter', () => rightArrow.style.background = '#f3f4f6');
+    rightArrow.addEventListener('mouseleave', () => rightArrow.style.background = 'transparent');
+
+    // Close button
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '×';
+    closeBtn.style.cssText = `
+      background: transparent;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+      padding: 0;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: background 0.2s;
+      margin-left: 8px;
+    `;
+    closeBtn.addEventListener('click', () => this._hideMonthSidebar());
+    closeBtn.addEventListener('mouseenter', () => closeBtn.style.background = '#f3f4f6');
+    closeBtn.addEventListener('mouseleave', () => closeBtn.style.background = 'transparent');
+
+    header.appendChild(leftArrow);
+    header.appendChild(title);
+    header.appendChild(rightArrow);
+    header.appendChild(closeBtn);
+    this.monthSidebar.appendChild(header);
+
+    // Toggle for zoom
+    const toggleSection = document.createElement('div');
+    toggleSection.style.cssText = `
+      padding: 12px 20px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    `;
+
+    const toggleLabel = document.createElement('span');
+    toggleLabel.textContent = 'Zoom Ind Måned';
+    toggleLabel.style.cssText = `
+      font-size: 13px;
+      color: #374151;
+      font-weight: 500;
+    `;
+
+    const toggle = document.createElement('label');
+    toggle.style.cssText = `
+      position: relative;
+      display: inline-block;
+      width: 42px;
+      height: 24px;
+      cursor: pointer;
+    `;
+
+    const toggleInput = document.createElement('input');
+    toggleInput.type = 'checkbox';
+    toggleInput.style.cssText = `
+      opacity: 0;
+      width: 0;
+      height: 0;
+    `;
+
+    const toggleSlider = document.createElement('span');
+    toggleSlider.style.cssText = `
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #d1d5db;
+      transition: 0.3s;
+      border-radius: 24px;
+    `;
+
+    const toggleKnob = document.createElement('span');
+    toggleKnob.style.cssText = `
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.3s;
+      border-radius: 50%;
+    `;
+
+    toggleSlider.appendChild(toggleKnob);
+    toggle.appendChild(toggleInput);
+    toggle.appendChild(toggleSlider);
+    toggleSection.appendChild(toggleLabel);
+    toggleSection.appendChild(toggle);
+    this.monthSidebar.appendChild(toggleSection);
+
+    // Events list
+    const eventsContainer = document.createElement('div');
+    eventsContainer.style.cssText = `
+      overflow-y: auto;
+      height: calc(100% - 140px);
+      padding: 16px 0;
+    `;
+
+    if (monthEvents.length === 0) {
+      const emptyState = document.createElement('div');
+      emptyState.textContent = 'Ingen begivenheder i denne måned';
+      emptyState.style.cssText = `
+        padding: 24px;
+        text-align: center;
+        color: #999;
+        font-size: 14px;
+      `;
+      eventsContainer.appendChild(emptyState);
+    } else {
+      // Render events directly without day grouping
+      monthEvents.forEach(event => {
+        const eventItem = this._createEventItem(event);
+        eventsContainer.appendChild(eventItem);
+      });
+    }
+
+    this.monthSidebar.appendChild(eventsContainer);
+
+    // Show sidebar
+    this.monthSidebar.style.display = 'block';
+    requestAnimationFrame(() => {
+      this.monthSidebar.style.opacity = '1';
+      this.monthSidebar.style.transform = 'translateX(0)';
+    });
+  }
+
+  /**
+   * Hide month sidebar
+   * @private
+   */
+  _hideMonthSidebar() {
+    if (!this.monthSidebar) return;
+
+    // Reset active button state
+    if (this.activeMonthButton) {
+      this.activeMonthButton.style.opacity = '0';
+      this.activeMonthButton.classList.remove('active-month');
+      // Reset text to default
+      if (this.activeMonthButton._textPathElement) {
+        this.activeMonthButton._textPathElement.textContent = 'VIS AGENDA';
+      }
+      // Reset button size
+      this._resetButtonSize(this.activeMonthButton);
+      this.activeMonthButton = null;
+    }
+
+    this.monthSidebar.style.opacity = '0';
+    this.monthSidebar.style.transform = 'translateX(100%)';
+    setTimeout(() => {
+      this.monthSidebar.style.display = 'none';
+    }, 300);
+  }
+
+  /**
+   * Filter events for a specific month
+   * @private
+   */
+  _filterMonthEvents(startDay, endDay, year) {
+    return this.allEvents.filter(event => {
+      const eventStartDate = new Date(event.startDate || event.date);
+      const eventEndDate = new Date(event.endDate || event.date);
+      const eventStartDay = LayoutCalculator.getDayOfYear(eventStartDate);
+      const eventEndDay = LayoutCalculator.getDayOfYear(eventEndDate);
+
+      // Check if event overlaps with month
+      return eventStartDay <= endDay && eventEndDay >= startDay;
+    });
+  }
+
+  /**
+   * Group events by day
+   * @private
+   */
+  _groupEventsByDay(events, year) {
+    const grouped = {};
+
+    events.forEach(event => {
+      const startDate = new Date(event.startDate || event.date);
+      const endDate = new Date(event.endDate || event.date);
+
+      // Add event to each day it spans
+      const startDay = LayoutCalculator.getDayOfYear(startDate);
+      const endDay = LayoutCalculator.getDayOfYear(endDate);
+
+      for (let day = startDay; day <= endDay; day++) {
+        if (!grouped[day]) {
+          grouped[day] = [];
+        }
+        // Avoid duplicates
+        if (!grouped[day].find(e => e === event)) {
+          grouped[day].push(event);
+        }
+      }
+    });
+
+    return grouped;
+  }
+
+  /**
+   * Create day group element
+   * @private
+   */
+  _createDayGroup(dayNum, events, year) {
+    const dayGroup = document.createElement('div');
+    dayGroup.style.cssText = `
+      margin-bottom: 20px;
+    `;
+
+    // Day header
+    const date = new Date(year, 0, dayNum);
+    const dayNames = ['søn.', 'man.', 'tirs.', 'ons.', 'tors.', 'fre.', 'lør.'];
+    const dayName = dayNames[date.getDay()];
+
+    const dayHeader = document.createElement('div');
+    dayHeader.style.cssText = `
+      padding: 6px 20px;
+      font-size: 11px;
+      color: #6b7280;
+      font-weight: 600;
+      background: #f9fafb;
+      border-bottom: 1px solid #e5e7eb;
+    `;
+    dayHeader.textContent = `${date.getDate()} ${dayName}`;
+
+    dayGroup.appendChild(dayHeader);
+
+    // Events for this day
+    events.forEach(event => {
+      const eventItem = this._createEventItem(event);
+      dayGroup.appendChild(eventItem);
+    });
+
+    return dayGroup;
+  }
+
+  /**
+   * Create event item element
+   * @private
+   */
+  _createEventItem(event) {
+    const eventItem = document.createElement('div');
+    eventItem.style.cssText = `
+      display: flex;
+      align-items: center;
+      padding: 14px 20px;
+      gap: 12px;
+      cursor: pointer;
+      transition: background 0.15s;
+      border-bottom: 1px solid #f3f4f6;
+    `;
+
+    eventItem.addEventListener('mouseenter', () => {
+      eventItem.style.background = '#fafafa';
+    });
+    eventItem.addEventListener('mouseleave', () => {
+      eventItem.style.background = 'transparent';
+    });
+
+    // Circle indicator (not a checkbox)
+    const circle = document.createElement('div');
+    circle.style.cssText = `
+      width: 20px;
+      height: 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 50%;
+      cursor: pointer;
+      flex-shrink: 0;
+      background: white;
+      transition: all 0.2s;
+    `;
+
+    // Add hover effect to circle
+    circle.addEventListener('mouseenter', () => {
+      circle.style.borderColor = '#b0b0b0';
+    });
+    circle.addEventListener('mouseleave', () => {
+      circle.style.borderColor = '#e0e0e0';
+    });
+
+    // Vertical color bar + content container
+    const contentWrapper = document.createElement('div');
+    contentWrapper.style.cssText = `
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+    `;
+
+    // Vertical color bar
+    const colorBar = document.createElement('div');
+    colorBar.style.cssText = `
+      width: 4px;
+      height: 40px;
+      background: ${event.color || '#5a9aa8'};
+      border-radius: 2px;
+      flex-shrink: 0;
+    `;
+
+    // Content container
+    const content = document.createElement('div');
+    content.style.cssText = `
+      flex: 1;
+      min-width: 0;
+    `;
+
+    // Event title
+    const title = document.createElement('div');
+    title.textContent = event.label || 'Untitled Event';
+    title.style.cssText = `
+      font-size: 14px;
+      font-weight: 400;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+      word-wrap: break-word;
+      line-height: 1.3;
+    `;
+
+    // Event dates
+    const dates = document.createElement('div');
+    const formatDate = (dateStr) => {
+      const d = new Date(dateStr);
+      return `${String(d.getDate()).padStart(2, '0')} ${['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'][d.getMonth()]}`;
+    };
+
+    let dateText = '';
+    if (event.startDate && event.endDate && event.startDate !== event.endDate) {
+      dateText = `${formatDate(event.startDate)} - ${formatDate(event.endDate)}`;
+    } else if (event.startDate) {
+      dateText = formatDate(event.startDate);
+    }
+
+    if (dateText) {
+      dates.textContent = dateText;
+      dates.style.cssText = `
+        font-size: 12px;
+        color: #999;
+        line-height: 1.3;
+      `;
+      content.appendChild(title);
+      content.appendChild(dates);
+    } else {
+      content.appendChild(title);
+    }
+
+    contentWrapper.appendChild(colorBar);
+    contentWrapper.appendChild(content);
+
+    eventItem.appendChild(circle);
+    eventItem.appendChild(contentWrapper);
+
+    return eventItem;
   }
 
   /**

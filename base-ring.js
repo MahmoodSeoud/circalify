@@ -173,13 +173,17 @@ class BaseRing {
    * Add curved text label to ring
    * @protected
    */
-  _addCurvedLabel(text, centerAngle, arcSpan, radius, options = {}) {
+  _addCurvedLabel(text, centerAngle, arcSpan, radius, options = {}, parentGroup = null) {
     const {
       fontSize = this.config.fontSize,
       fontColor = this.config.fontColor,
       fontWeight = this.config.fontWeight || '500',
+      opacity = '1',
       group = this.svgGroups.rings
     } = options;
+
+    // Use parentGroup if provided, otherwise use group from options
+    const targetGroup = parentGroup || group;
 
     // Determine if text should be flipped to stay upright
     let adjustedAngle = centerAngle + Math.PI / 2;
@@ -214,6 +218,7 @@ class BaseRing {
       'font-size': fontSize,
       'font-weight': fontWeight,
       'fill': fontColor,
+      'opacity': opacity,
       'class': `${this.config.type}-label`,
       'style': 'user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
     });
@@ -227,7 +232,7 @@ class BaseRing {
     textPath.textContent = text;
 
     textElement.appendChild(textPath);
-    group.appendChild(textElement);
+    targetGroup.appendChild(textElement);
     this.elements.push(textElement);
 
     return textElement;

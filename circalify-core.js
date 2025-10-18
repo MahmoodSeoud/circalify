@@ -424,6 +424,9 @@ class CircalifyCore {
       button._startAngle = startAngle;
       button._endAngle = endAngle;
       button._month = month;
+      button._year = year;
+      button._startDay = startDay;
+      button._endDay = endDay;
 
       this.monthButtons.push(button);
     });
@@ -762,6 +765,56 @@ class CircalifyCore {
   }
 
   /**
+   * Navigate to a specific month by button index
+   * @private
+   */
+  _navigateToMonthByIndex(buttonIndex) {
+    if (buttonIndex < 0 || buttonIndex >= this.monthButtons.length) return;
+
+    const targetButton = this.monthButtons[buttonIndex];
+    if (!targetButton) return;
+
+    // Close any previously open sidebar and reset previous button
+    if (this.activeMonthButton && this.activeMonthButton !== targetButton) {
+      this.activeMonthButton.style.opacity = '0';
+      this.activeMonthButton.classList.remove('active-month');
+      // Reset previous button text
+      if (this.activeMonthButton._textPathElement) {
+        this.activeMonthButton._textPathElement.textContent = 'VIS AGENDA';
+      }
+      // Reset previous button size
+      this._resetButtonSize(this.activeMonthButton);
+    }
+
+    // Get month data from button
+    const month = targetButton._month;
+    const year = targetButton._year;
+    const startDay = targetButton._startDay;
+    const endDay = targetButton._endDay;
+
+    // Get month name
+    const monthNames = ['Januar', 'Februar', 'Marts', 'April', 'Maj', 'Juni',
+                        'Juli', 'August', 'September', 'Oktober', 'November', 'December'];
+    const monthName = monthNames[month];
+
+    // Update button text to show month
+    if (targetButton._textPathElement) {
+      targetButton._textPathElement.textContent = `${monthName.toUpperCase()} AGENDA`;
+    }
+
+    // Expand the button
+    this._expandButton(targetButton);
+
+    // Set this button as active (grayed out while sidebar is open)
+    this.activeMonthButton = targetButton;
+    targetButton.style.opacity = '0.5';  // Gray out the button
+    targetButton.classList.add('active-month');
+
+    // Open sidebar
+    this._handleMonthClick({ month, year, startDay, endDay });
+  }
+
+  /**
    * Handle month hover
    * @private
    */
@@ -1042,6 +1095,22 @@ class CircalifyCore {
     `;
     leftArrow.addEventListener('mouseenter', () => leftArrow.style.background = '#f3f4f6');
     leftArrow.addEventListener('mouseleave', () => leftArrow.style.background = 'transparent');
+    leftArrow.addEventListener('click', (e) => {
+      e.stopPropagation();
+      // Navigate to previous month
+      // Find current button index
+      const currentIndex = this.monthButtons.findIndex(btn => btn._month === month && btn._year === year);
+      // Use setTimeout to break the call stack and prevent infinite loops
+      setTimeout(() => {
+        if (currentIndex > 0) {
+          // Navigate to previous button in array
+          this._navigateToMonthByIndex(currentIndex - 1);
+        } else if (currentIndex === 0 && this.monthButtons.length > 1) {
+          // Wrap around to last month
+          this._navigateToMonthByIndex(this.monthButtons.length - 1);
+        }
+      }, 0);
+    });
 
     // Title
     const title = document.createElement('h2');
@@ -1070,6 +1139,22 @@ class CircalifyCore {
     `;
     rightArrow.addEventListener('mouseenter', () => rightArrow.style.background = '#f3f4f6');
     rightArrow.addEventListener('mouseleave', () => rightArrow.style.background = 'transparent');
+    rightArrow.addEventListener('click', (e) => {
+      e.stopPropagation();
+      // Navigate to next month
+      // Find current button index
+      const currentIndex = this.monthButtons.findIndex(btn => btn._month === month && btn._year === year);
+      // Use setTimeout to break the call stack and prevent infinite loops
+      setTimeout(() => {
+        if (currentIndex >= 0 && currentIndex < this.monthButtons.length - 1) {
+          // Navigate to next button in array
+          this._navigateToMonthByIndex(currentIndex + 1);
+        } else if (currentIndex === this.monthButtons.length - 1 && this.monthButtons.length > 1) {
+          // Wrap around to first month
+          this._navigateToMonthByIndex(0);
+        }
+      }, 0);
+    });
 
     // Close button
     const closeBtn = document.createElement('button');

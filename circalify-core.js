@@ -409,15 +409,27 @@ class CircalifyCore {
   _drawTimeline() {
     this.svgGroups.timeline.innerHTML = '';
 
+    // Find calendar rings to determine timeline boundaries
+    const calendarRings = this.rings.filter(ring => ring instanceof CalendarRing);
+
+    if (calendarRings.length === 0) {
+      // No calendar rings, use default boundaries
+      return;
+    }
+
+    // Get innermost and outermost boundaries of calendar rings
+    const innermost = Math.min(...calendarRings.map(ring => ring.inner));
+    const outermost = Math.max(...calendarRings.map(ring => ring.outer));
+
     const now = new Date();
     const dayOfYear = LayoutCalculator.getDayOfYear(now);
     const daysInYear = LayoutCalculator.getDaysInYear(now.getFullYear());
     const angle = (dayOfYear / daysInYear) * 2 * Math.PI - Math.PI / 2;
 
-    const innerX = this.cx + (this.generalConfig.innerRadius - 10) * Math.cos(angle);
-    const innerY = this.cy + (this.generalConfig.innerRadius - 10) * Math.sin(angle);
-    const outerX = this.cx + (this.generalConfig.outerRadius + 10) * Math.cos(angle);
-    const outerY = this.cy + (this.generalConfig.outerRadius + 10) * Math.sin(angle);
+    const innerX = this.cx + innermost * Math.cos(angle);
+    const innerY = this.cy + innermost * Math.sin(angle);
+    const outerX = this.cx + outermost * Math.cos(angle);
+    const outerY = this.cy + outermost * Math.sin(angle);
 
     const timeline = this._createSVGElement('line', {
       'x1': innerX,
@@ -425,7 +437,7 @@ class CircalifyCore {
       'x2': outerX,
       'y2': outerY,
       'stroke': '#e74c3c',
-      'stroke-width': '2',
+      'stroke-width': '1',
       'pointer-events': 'none',
       'filter': 'url(#glow-filter)',
       'class': 'timeline-indicator'

@@ -669,18 +669,50 @@ class Circalify {
     const ringLabel = bufferRing.ring;
     const labelRadius = bufferRing.center;
 
-    // Create curved text paths at four quarters around the buffer ring
-    // Each quarter gets its own curved text following the arc
-    const quarterPositions = [
-      { centerAngle: -Math.PI / 2, arcSpan: Math.PI / 3 },  // Top (12 o'clock)
-      { centerAngle: 0, arcSpan: Math.PI / 3 },             // Right (3 o'clock)
-      { centerAngle: Math.PI / 2, arcSpan: Math.PI / 3 },   // Bottom (6 o'clock)
-      { centerAngle: Math.PI, arcSpan: Math.PI / 3 }        // Left (9 o'clock)
-    ];
+    // Determine number of labels based on ring size
+    // Larger (outer) rings get more labels for better coverage
+    const isOuterRing = index === 0; // First ring is outermost
+    const numLabels = isOuterRing ? 5 : 4;
+
+    // Create curved text paths evenly distributed around the buffer ring
+    const angleStep = (2 * Math.PI) / numLabels;
+    const quarterPositions = [];
+
+    for (let i = 0; i < numLabels; i++) {
+      quarterPositions.push({
+        centerAngle: (angleStep * i) - Math.PI / 2, // Start at top (12 o'clock)
+        arcSpan: Math.PI / 3
+      });
+    }
 
     quarterPositions.forEach((quarter, quarterIndex) => {
-      const startAngle = quarter.centerAngle - quarter.arcSpan / 2;
-      const endAngle = quarter.centerAngle + quarter.arcSpan / 2;
+      // The centerAngle starts at -π/2 (top), so we need to adjust for actual position
+      // Convert to standard angle where 0° is at 3 o'clock (right side)
+      // quarter.centerAngle of -π/2 is actually at top (12 o'clock)
+      // We need to convert this to determine which half of circle we're on
+
+      // Add π/2 to shift coordinate system so 0° is at top
+      let adjustedAngle = quarter.centerAngle + Math.PI / 2;
+
+      // Normalize to 0 to 2π range
+      while (adjustedAngle < 0) adjustedAngle += 2 * Math.PI;
+      while (adjustedAngle >= 2 * Math.PI) adjustedAngle -= 2 * Math.PI;
+
+      // Flip text on left half to keep it readable (right-side up)
+      // When text flows from right-to-left (left side of circle), it appears upside down
+      // Left half is when adjustedAngle is between π/2 and 3π/2 (90° to 270° from top)
+      const shouldFlip = adjustedAngle > Math.PI / 2 && adjustedAngle < 3 * Math.PI / 2;
+
+      let startAngle, endAngle;
+      if (shouldFlip) {
+        // Reverse the path direction for left half
+        startAngle = quarter.centerAngle + quarter.arcSpan / 2;
+        endAngle = quarter.centerAngle - quarter.arcSpan / 2;
+      } else {
+        // Normal path direction for right half
+        startAngle = quarter.centerAngle - quarter.arcSpan / 2;
+        endAngle = quarter.centerAngle + quarter.arcSpan / 2;
+      }
 
       const textPathId = `buffer-label-${index}-q${quarterIndex}`;
       const startX = this.cx + labelRadius * Math.cos(startAngle);
@@ -690,7 +722,9 @@ class Circalify {
 
       // Create arc path for text
       const largeArc = quarter.arcSpan > Math.PI ? 1 : 0;
-      const pathD = `M ${startX} ${startY} A ${labelRadius} ${labelRadius} 0 ${largeArc} 1 ${endX} ${endY}`;
+      // When flipped, we need to reverse the sweep direction too
+      const sweepFlag = shouldFlip ? 0 : 1;
+      const pathD = `M ${startX} ${startY} A ${labelRadius} ${labelRadius} 0 ${largeArc} ${sweepFlag} ${endX} ${endY}`;
 
       // Add path to defs
       const path = this._createSVGElement('path', {
@@ -713,7 +747,7 @@ class Circalify {
 
       const textPath = this._createSVGElement('textPath', {
         'href': `#${textPathId}`,
-        'startOffset': '75%',
+        'startOffset': '50%',
         'text-anchor': 'middle',
         'dominant-baseline': 'middle'
       });

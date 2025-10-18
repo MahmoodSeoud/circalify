@@ -140,33 +140,59 @@ class Circalify {
    */
   _calculateDimensions() {
     const numRings = this.options.rings.length;
-    const totalThickness = numRings * this.options.ringThickness;
+
+    // Buffer ring configuration
+    const bufferRingThickness = 15; // Thin ring for labels
+
+    // Each ring now has: data ring + buffer ring
+    const totalDataThickness = numRings * this.options.ringThickness;
+    const totalBufferThickness = numRings * bufferRingThickness;
     const totalGaps = (numRings - 1) * this.options.ringGap;
     const availableSpace = this.options.outerRadius - this.options.innerRadius;
 
     // Adjust ring thickness if needed
-    if (totalThickness + totalGaps > availableSpace) {
-      this.options.ringThickness = Math.floor((availableSpace - totalGaps) / numRings);
+    const totalNeeded = totalDataThickness + totalBufferThickness + totalGaps;
+    if (totalNeeded > availableSpace) {
+      this.options.ringThickness = Math.floor((availableSpace - totalBufferThickness - totalGaps) / numRings);
     }
 
-    // Calculate ring boundaries with enhanced properties
+    // Calculate ring boundaries with buffer rings
     this.ringBoundaries = [];
+    this.bufferRingBoundaries = [];
     let currentRadius = this.options.outerRadius;
 
     for (let i = 0; i < numRings; i++) {
-      const outer = currentRadius;
-      const inner = currentRadius - this.options.ringThickness;
+      // Data ring
+      const dataOuter = currentRadius;
+      const dataInner = currentRadius - this.options.ringThickness;
       const colorConfig = this.options.colors[i % this.options.colors.length];
 
       this.ringBoundaries.push({
-        outer,
-        inner,
-        center: (outer + inner) / 2,
+        outer: dataOuter,
+        inner: dataInner,
+        center: (dataOuter + dataInner) / 2,
         ring: this.options.rings[i],
         color: typeof colorConfig === 'string' ? colorConfig : colorConfig.start,
         gradient: typeof colorConfig === 'object' ? colorConfig : null
       });
-      currentRadius = inner - this.options.ringGap;
+
+      // Move to buffer ring position
+      currentRadius = dataInner;
+
+      // Buffer ring (for labels)
+      const bufferOuter = currentRadius;
+      const bufferInner = currentRadius - bufferRingThickness;
+
+      this.bufferRingBoundaries.push({
+        outer: bufferOuter,
+        inner: bufferInner,
+        center: (bufferOuter + bufferInner) / 2,
+        ring: this.options.rings[i],
+        index: i
+      });
+
+      // Move to next ring position (with gap)
+      currentRadius = bufferInner - this.options.ringGap;
     }
 
     // Center coordinates
@@ -591,8 +617,9 @@ class Circalify {
     });
     this.groups.rings.appendChild(yearDivider);
 
-    // Draw each ring with base color
+    // Draw each data ring and buffer ring
     this.ringBoundaries.forEach((ring, index) => {
+      // Draw data ring
       const ringPath = this._createDonutPath(ring.inner, ring.outer);
       const ringElement = this._createSVGElement('path', {
         'd': ringPath,
@@ -603,8 +630,20 @@ class Circalify {
       });
       this.groups.rings.appendChild(ringElement);
 
-      // Add curved ring label directly on the ring
-      this._addRingLabelOnRing(ring, index);
+      // Draw buffer ring (white/light ring for labels)
+      const bufferRing = this.bufferRingBoundaries[index];
+      const bufferPath = this._createDonutPath(bufferRing.inner, bufferRing.outer);
+      const bufferElement = this._createSVGElement('path', {
+        'd': bufferPath,
+        'fill': '#ffffff',
+        'stroke': 'rgba(220, 220, 220, 0.5)',
+        'stroke-width': '1',
+        'opacity': '0.9'
+      });
+      this.groups.rings.appendChild(bufferElement);
+
+      // Add curved ring label on the buffer ring
+      this._addRingLabelOnBufferRing(bufferRing, index);
     });
 
     // Draw day segments for each ring
@@ -623,62 +662,66 @@ class Circalify {
   }
 
   /**
-   * Add curved ring label on the ring itself (always upright)
+   * Add ring labels wrapping around the buffer ring (PlanDisc style)
    * @private
    */
-  _addRingLabelOnRing(ring, index) {
-    const ringLabel = ring.ring;
-    const labelRadius = (ring.inner + ring.outer) / 2;
+  _addRingLabelOnBufferRing(bufferRing, index) {
+    const ringLabel = bufferRing.ring;
+    const labelRadius = bufferRing.center;
 
-    // Position label on the bottom-left (around 7-8 o'clock)
-    // This is where PlanDisc shows the ring category names
-    const centerAngle = Math.PI * 1.25; // About 7:30 position (bottom-left)
-    const arcLength = Math.PI * 0.4; // Arc length for label
+    // Create curved text paths at four quarters around the buffer ring
+    // Each quarter gets its own curved text following the arc
+    const quarterPositions = [
+      { centerAngle: -Math.PI / 2, arcSpan: Math.PI / 3 },  // Top (12 o'clock)
+      { centerAngle: 0, arcSpan: Math.PI / 3 },             // Right (3 o'clock)
+      { centerAngle: Math.PI / 2, arcSpan: Math.PI / 3 },   // Bottom (6 o'clock)
+      { centerAngle: Math.PI, arcSpan: Math.PI / 3 }        // Left (9 o'clock)
+    ];
 
-    // For bottom-left side, text goes CLOCKWISE to stay upright
-    // Start from left, go clockwise toward bottom
-    const startAngle = centerAngle - arcLength / 2; // Start on left
-    const endAngle = centerAngle + arcLength / 2; // End toward bottom
+    quarterPositions.forEach((quarter, quarterIndex) => {
+      const startAngle = quarter.centerAngle - quarter.arcSpan / 2;
+      const endAngle = quarter.centerAngle + quarter.arcSpan / 2;
 
-    // Create path for curved text
-    const textPathId = `ring-label-on-ring-${index}`;
-    const startX = this.cx + labelRadius * Math.cos(startAngle);
-    const startY = this.cy + labelRadius * Math.sin(startAngle);
-    const endX = this.cx + labelRadius * Math.cos(endAngle);
-    const endY = this.cy + labelRadius * Math.sin(endAngle);
+      const textPathId = `buffer-label-${index}-q${quarterIndex}`;
+      const startX = this.cx + labelRadius * Math.cos(startAngle);
+      const startY = this.cy + labelRadius * Math.sin(startAngle);
+      const endX = this.cx + labelRadius * Math.cos(endAngle);
+      const endY = this.cy + labelRadius * Math.sin(endAngle);
 
-    // Use sweep-flag 1 for clockwise (upright text on bottom-left)
-    const largeArc = 0;
-    const pathD = `M ${startX} ${startY} A ${labelRadius} ${labelRadius} 0 ${largeArc} 1 ${endX} ${endY}`;
+      // Create arc path for text
+      const largeArc = quarter.arcSpan > Math.PI ? 1 : 0;
+      const pathD = `M ${startX} ${startY} A ${labelRadius} ${labelRadius} 0 ${largeArc} 1 ${endX} ${endY}`;
 
-    // Add path to defs
-    const path = this._createSVGElement('path', {
-      'id': textPathId,
-      'd': pathD,
-      'fill': 'none'
+      // Add path to defs
+      const path = this._createSVGElement('path', {
+        'id': textPathId,
+        'd': pathD,
+        'fill': 'none'
+      });
+      this.defs.appendChild(path);
+
+      // Create curved text element on buffer ring
+      const text = this._createSVGElement('text', {
+        'font-family': this.options.fontFamily,
+        'font-size': '10',
+        'font-weight': '600',
+        'fill': '#666',
+        'opacity': '0.85',
+        'letter-spacing': '0.5',
+        'dominant-baseline': 'middle'
+      });
+
+      const textPath = this._createSVGElement('textPath', {
+        'href': `#${textPathId}`,
+        'startOffset': '75%',
+        'text-anchor': 'middle',
+        'dominant-baseline': 'middle'
+      });
+      textPath.textContent = ringLabel;
+
+      text.appendChild(textPath);
+      this.groups.rings.appendChild(text);
     });
-    this.defs.appendChild(path);
-
-    // Create text element with higher visibility
-    const text = this._createSVGElement('text', {
-      'font-family': this.options.fontFamily,
-      'font-size': '11',
-      'font-weight': '600',
-      'fill': 'rgba(255, 255, 255, 0.95)',
-      'opacity': '1',
-      'letter-spacing': '1',
-      'style': 'text-shadow: 0 1px 4px rgba(0,0,0,0.3);'
-    });
-
-    const textPath = this._createSVGElement('textPath', {
-      'href': `#${textPathId}`,
-      'startOffset': '50%',
-      'text-anchor': 'middle'
-    });
-    textPath.textContent = ringLabel;
-
-    text.appendChild(textPath);
-    this.groups.rings.appendChild(text);
   }
 
   /**
@@ -1853,7 +1896,7 @@ class Circalify {
     document.addEventListener('keydown', (e) => {
       if (e.target !== document.body) return;
 
-      switch(e.key) {
+      switch (e.key) {
         case '+':
         case '=':
           this._zoomIn();

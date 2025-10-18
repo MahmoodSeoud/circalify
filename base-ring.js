@@ -116,7 +116,7 @@ class BaseRing {
     const ringElement = this._createSVGElement('path', {
       'd': ringPath,
       'fill': this.config.color,
-      'stroke': 'rgba(255, 255, 255, 0.8)',
+      'stroke': 'rgba(160, 160, 160, 0.5)',
       'stroke-width': '1',
       'opacity': '0.6',
       'class': `ring-${this.config.type}`
@@ -143,8 +143,8 @@ class BaseRing {
       'y1': innerPoint.y,
       'x2': outerPoint.x,
       'y2': outerPoint.y,
-      'stroke': 'rgba(255, 255, 255, 0.5)',
-      'stroke-width': '1.5',
+      'stroke': 'rgba(160, 160, 160, 0.4)',
+      'stroke-width': '1',
       'class': 'ring-separator'
     });
 

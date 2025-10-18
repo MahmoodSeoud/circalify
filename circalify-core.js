@@ -566,16 +566,44 @@ class CircalifyCore {
   }
 
   /**
-   * Show event info in center
+   * Show event info in center with colored background and color square
    * @private
    */
   _showCenterInfo(eventData) {
     this.svgGroups.centerInfo.innerHTML = '';
 
+    if (!eventData) return;
+
+    // Background circle with event color
+    const bgCircle = this._createSVGElement('circle', {
+      'cx': this.cx,
+      'cy': this.cy,
+      'r': this.generalConfig.innerRadius - 10,
+      'fill': eventData.color || '#5a9aa8',
+      'opacity': '0.15',
+      'class': 'center-info-bg'
+    });
+    this.svgGroups.centerInfo.appendChild(bgCircle);
+
+    // Color indicator square
+    const squareSize = 16;
+    const colorSquare = this._createSVGElement('rect', {
+      'x': this.cx - 80,
+      'y': this.cy - 30,
+      'width': squareSize,
+      'height': squareSize,
+      'fill': eventData.color || '#5a9aa8',
+      'rx': '2',
+      'ry': '2',
+      'class': 'center-color-indicator'
+    });
+    this.svgGroups.centerInfo.appendChild(colorSquare);
+
+    // Event label
     const label = this._createSVGElement('text', {
-      'x': this.cx,
-      'y': this.cy - 15,
-      'text-anchor': 'middle',
+      'x': this.cx - 80 + squareSize + 10,
+      'y': this.cy - 20,
+      'text-anchor': 'start',
       'dominant-baseline': 'middle',
       'font-family': this.generalConfig.fontFamily,
       'font-size': '18',
@@ -583,8 +611,38 @@ class CircalifyCore {
       'fill': '#333'
     });
     label.textContent = eventData.label || '';
-
     this.svgGroups.centerInfo.appendChild(label);
+
+    // Date range (if available)
+    if (eventData.startDate || eventData.endDate) {
+      const formatDate = (dateStr) => {
+        const date = new Date(dateStr);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+      };
+
+      let dateText = '';
+      if (eventData.startDate && eventData.endDate) {
+        dateText = `${formatDate(eventData.startDate)} - ${formatDate(eventData.endDate)}`;
+      } else if (eventData.startDate) {
+        dateText = formatDate(eventData.startDate);
+      }
+
+      const dateLabel = this._createSVGElement('text', {
+        'x': this.cx - 80 + squareSize + 10,
+        'y': this.cy + 5,
+        'text-anchor': 'start',
+        'dominant-baseline': 'middle',
+        'font-family': this.generalConfig.fontFamily,
+        'font-size': '13',
+        'font-weight': '400',
+        'fill': '#666'
+      });
+      dateLabel.textContent = dateText;
+      this.svgGroups.centerInfo.appendChild(dateLabel);
+    }
   }
 
   /**

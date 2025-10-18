@@ -277,8 +277,8 @@ class DataRing extends BaseRing {
       'y1': innerPoint.y,
       'x2': outerPoint.x,
       'y2': outerPoint.y,
-      'stroke': 'rgba(255, 255, 255, 0.8)',
-      'stroke-width': '1.5',
+      'stroke': 'rgba(160, 160, 160, 0.4)',
+      'stroke-width': '1',
       'class': 'unit-separator'
     });
 
@@ -287,13 +287,111 @@ class DataRing extends BaseRing {
   }
 
   /**
-   * Render all events
+   * Render all events with stacking for overlaps
    * @private
    */
   _renderEvents() {
-    this.data.forEach(event => {
-      this._renderEventArc(event);
+    // Calculate overlap layers for all events
+    const eventsWithLayers = this._calculateEventLayers(this.data);
+
+    eventsWithLayers.forEach(eventInfo => {
+      this._renderEventArc(eventInfo.event, eventInfo.layer, eventInfo.totalLayers);
     });
+  }
+
+  /**
+   * Calculate layers for overlapping events - only divide space when events actually overlap
+   * @private
+   */
+  _calculateEventLayers(events) {
+    const year = this._getYear();
+
+    // Convert events to intervals with day ranges
+    const intervals = events.map((event, index) => {
+      const startDate = new Date(event.startDate || event.date);
+      const endDate = new Date(event.endDate || event.date);
+      const startDay = LayoutCalculator.getDayOfYear(startDate);
+      const endDay = LayoutCalculator.getDayOfYear(endDate);
+
+      // Expand to unit boundaries
+      const unit = this.config.unit || 'day';
+      const expanded = this._expandToUnitBoundaries(startDay, endDay, unit, year);
+
+      return {
+        event,
+        startDay: expanded.startDay,
+        endDay: expanded.endDay,
+        index
+      };
+    });
+
+    // Sort by start day, then by duration (longer events first)
+    intervals.sort((a, b) => {
+      if (a.startDay !== b.startDay) {
+        return a.startDay - b.startDay;
+      }
+      return (b.endDay - b.startDay) - (a.endDay - a.startDay);
+    });
+
+    // Assign layers using greedy interval partitioning
+    const layers = [];
+    const result = [];
+
+    intervals.forEach(interval => {
+      // Find first available layer
+      let assignedLayer = 0;
+      let found = false;
+
+      for (let i = 0; i < layers.length; i++) {
+        const layerEndDay = layers[i];
+        if (interval.startDay > layerEndDay) {
+          assignedLayer = i;
+          layers[i] = interval.endDay;
+          found = true;
+          break;
+        }
+      }
+
+      // If no available layer, create new one
+      if (!found) {
+        assignedLayer = layers.length;
+        layers.push(interval.endDay);
+      }
+
+      result.push({
+        event: interval.event,
+        layer: assignedLayer,
+        startDay: interval.startDay,
+        endDay: interval.endDay,
+        index: interval.index
+      });
+    });
+
+    // For each event, calculate how many other events it overlaps with
+    // and adjust layer assignment to use full height when possible
+    result.forEach(item => {
+      // Find all events that overlap with this event
+      const overlappingEvents = result.filter(other => {
+        return !(item.endDay < other.startDay || item.startDay > other.endDay);
+      });
+
+      // The total layers is the maximum number of concurrent overlaps
+      // at any point during this event
+      let maxConcurrent = 1;
+      for (let day = item.startDay; day <= item.endDay; day++) {
+        let concurrent = 0;
+        overlappingEvents.forEach(other => {
+          if (day >= other.startDay && day <= other.endDay) {
+            concurrent++;
+          }
+        });
+        maxConcurrent = Math.max(maxConcurrent, concurrent);
+      }
+
+      item.totalLayers = maxConcurrent;
+    });
+
+    return result;
   }
 
   /**
@@ -313,7 +411,7 @@ class DataRing extends BaseRing {
    * Render a single event arc - expands to fill entire unit segments
    * @private
    */
-  _renderEventArc(eventData) {
+  _renderEventArc(eventData, layer = 0, totalLayers = 1) {
     const year = this._getYear();
     const daysInYear = this._getDaysInYear();
     const unit = this.config.unit || 'day';
@@ -333,8 +431,14 @@ class DataRing extends BaseRing {
     const startAngle = (startDay - 1) / daysInYear * 2 * Math.PI - Math.PI / 2;
     const endAngle = endDay / daysInYear * 2 * Math.PI - Math.PI / 2;
 
-    // Create arc path
-    const arcPath = this._createArcPath(this.inner, this.outer, startAngle, endAngle);
+    // Calculate stacked layer dimensions
+    const ringHeight = this.outer - this.inner;
+    const layerHeight = ringHeight / totalLayers;
+    const layerInner = this.inner + (layer * layerHeight);
+    const layerOuter = layerInner + layerHeight;
+
+    // Create arc path with adjusted radius for stacking
+    const arcPath = this._createArcPath(layerInner, layerOuter, startAngle, endAngle);
 
     const eventId = eventData.id || Math.random().toString(36).substr(2, 9);
     const eventGroup = this._createSVGElement('g', {
@@ -346,7 +450,7 @@ class DataRing extends BaseRing {
     const arc = this._createSVGElement('path', {
       'd': arcPath,
       'fill': eventData.color || this.config.color,
-      'stroke': 'rgba(255, 255, 255, 0.8)',
+      'stroke': 'rgba(160, 160, 160, 0.5)',
       'stroke-width': '1',
       'opacity': '0.85',
       'cursor': this.config.interactive ? 'pointer' : 'default'
@@ -356,7 +460,7 @@ class DataRing extends BaseRing {
 
     // Add label if enabled
     if (this.config.showLabels && eventData.label) {
-      this._addEventLabel(eventData, startAngle, endAngle, eventGroup);
+      this._addEventLabel(eventData, startAngle, endAngle, eventGroup, layerInner, layerOuter);
     }
 
     // Add interactivity if enabled
@@ -450,13 +554,13 @@ class DataRing extends BaseRing {
    * Add label to event arc (curved or radial based on aspect ratio)
    * @private
    */
-  _addEventLabel(eventData, startAngle, endAngle, eventGroup) {
+  _addEventLabel(eventData, startAngle, endAngle, eventGroup, layerInner, layerOuter) {
     const label = eventData.label || '';
     const midAngle = (startAngle + endAngle) / 2;
-    const textRadius = this.center;
+    const textRadius = (layerInner + layerOuter) / 2;
 
     // Calculate segment dimensions
-    const ringHeight = this.outer - this.inner;
+    const ringHeight = layerOuter - layerInner;
     const arcLength = Math.abs(endAngle - startAngle) * textRadius;
 
     // Decide orientation based on aspect ratio

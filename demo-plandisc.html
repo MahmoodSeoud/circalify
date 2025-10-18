@@ -40,249 +40,141 @@
     <script src="circalify.js"></script>
 
     <script>
-      // Outer Ring - Board Meetings and Major Events
-      const outerRingEvents = [
-        {
-          label: "Bestyrelsesmøder",
-          startDate: "2025-01-06",
-          endDate: "2025-01-12",
-          color: "#5a9aa8",
-        },
-        {
-          label: "Bestyrelsesmøder",
-          startDate: "2025-02-10",
-          endDate: "2025-02-15",
-          color: "#5a9aa8",
-        },
-        {
-          label: "Generalforsamling og deep dives",
-          startDate: "2025-03-12",
-          endDate: "2025-03-25",
-          color: "#d89b7d",
-        },
-        {
-          label: "Bestyrelsesmøder",
-          startDate: "2025-04-20",
-          endDate: "2025-04-25",
-          color: "#5a9aa8",
-        },
-        {
-          label: "Generalforsamling og deep dives",
-          startDate: "2025-05-20",
-          endDate: "2025-06-05",
-          color: "#d89b7d",
-        },
-        {
-          label: "Forre",
-          startDate: "2025-08-01",
-          endDate: "2025-08-10",
-          color: "#88c7d0",
-        },
-        {
-          label: "Bestyrelsesmøder",
-          startDate: "2025-08-25",
-          endDate: "2025-09-05",
-          color: "#5a9aa8",
-        },
-        {
-          label: "Bestyrelsesmøder",
-          startDate: "2025-11-05",
-          endDate: "2025-11-12",
-          color: "#5a9aa8",
-        },
+      // Ring 1 Events - Planning & Strategy (overlapping periods)
+      const ring1Events = [
+        { label: "Q1 Strategy", startDate: "2025-01-05", endDate: "2025-03-20", color: "#5a9aa8" },
+        { label: "Budget Review", startDate: "2025-02-10", endDate: "2025-02-28", color: "#6ba5b3" },
+        { label: "Q2 Planning", startDate: "2025-04-01", endDate: "2025-06-15", color: "#5a9aa8" },
+        { label: "Mid-Year Review", startDate: "2025-06-01", endDate: "2025-07-15", color: "#6ba5b3" },
+        { label: "Q3 Strategy", startDate: "2025-07-05", endDate: "2025-09-20", color: "#5a9aa8" },
+        { label: "Q4 Planning", startDate: "2025-10-01", endDate: "2025-12-15", color: "#5a9aa8" },
       ];
 
-      // Middle Ring - Regular Tasks
-      const middleRingEvents = [
-        {
-          label: "Generalforsamling og deep dives",
-          startDate: "2025-01-15",
-          endDate: "2025-01-25",
-          color: "#d89b7d",
-        },
-        {
-          label: "Lovmæssige opgaver",
-          startDate: "2025-02-01",
-          endDate: "2025-02-20",
-          color: "#88c7d0",
-        },
-        {
-          label: "Generalforsamling og deep dives",
-          startDate: "2025-03-05",
-          endDate: "2025-03-25",
-          color: "#d89b7d",
-        },
-        {
-          label: "Lovmæssige opgaver",
-          startDate: "2025-04-01",
-          endDate: "2025-04-15",
-          color: "#88c7d0",
-        },
-        {
-          label: "Lovmæssige opgaver",
-          startDate: "2025-06-10",
-          endDate: "2025-06-28",
-          color: "#88c7d0",
-        },
-        {
-          label: "Generalforsamling og deep dives",
-          startDate: "2025-07-15",
-          endDate: "2025-08-05",
-          color: "#d89b7d",
-        },
-        {
-          label: "Lovmæssige opgaver",
-          startDate: "2025-09-01",
-          endDate: "2025-09-20",
-          color: "#88c7d0",
-        },
-        {
-          label: "Generalforsamling og deep dives",
-          startDate: "2025-10-25",
-          endDate: "2025-11-15",
-          color: "#d89b7d",
-        },
-        {
-          label: "Lovmæssige opgaver",
-          startDate: "2025-11-20",
-          endDate: "2025-12-10",
-          color: "#88c7d0",
-        },
+      // Ring 2 Events - Operations (overlapping periods)
+      const ring2Events = [
+        { label: "Operations A", startDate: "2025-01-10", endDate: "2025-02-15", color: "#7ac7c4" },
+        { label: "Operations B", startDate: "2025-02-01", endDate: "2025-03-10", color: "#8bd4d1" },
+        { label: "Operations C", startDate: "2025-03-15", endDate: "2025-04-25", color: "#7ac7c4" },
+        { label: "Operations D", startDate: "2025-05-01", endDate: "2025-06-20", color: "#8bd4d1" },
+        { label: "Operations E", startDate: "2025-06-10", endDate: "2025-07-25", color: "#7ac7c4" },
+        { label: "Operations F", startDate: "2025-08-01", endDate: "2025-09-15", color: "#8bd4d1" },
+        { label: "Operations G", startDate: "2025-09-10", endDate: "2025-10-30", color: "#7ac7c4" },
+        { label: "Operations H", startDate: "2025-11-01", endDate: "2025-12-20", color: "#8bd4d1" },
       ];
 
-      // Inner Ring - Performance Reports
-      const innerRingEvents = [
-        {
-          label: "Performance rapporter",
-          startDate: "2025-01-02",
-          endDate: "2025-01-08",
-          color: "#5090d3",
-        },
-        {
-          label: "Performance rapporter",
-          startDate: "2025-02-08",
-          endDate: "2025-02-18",
-          color: "#5090d3",
-        },
-        {
-          label: "Performance rapporter",
-          startDate: "2025-03-08",
-          endDate: "2025-03-15",
-          color: "#5090d3",
-        },
-        {
-          label: "Performance rapporter",
-          startDate: "2025-04-10",
-          endDate: "2025-04-18",
-          color: "#5090d3",
-        },
-        {
-          label: "Performance rapporter",
-          startDate: "2025-05-08",
-          endDate: "2025-05-20",
-          color: "#5090d3",
-        },
-        {
-          label: "Evaluering af året",
-          startDate: "2025-06-15",
-          endDate: "2025-06-28",
-          color: "#90c495",
-        },
-        {
-          label: "Performance rapporter",
-          startDate: "2025-07-05",
-          endDate: "2025-07-18",
-          color: "#5090d3",
-        },
-        {
-          label: "Performance rapporter",
-          startDate: "2025-09-05",
-          endDate: "2025-09-15",
-          color: "#5090d3",
-        },
-        {
-          label: "Performance rapporter",
-          startDate: "2025-10-12",
-          endDate: "2025-10-22",
-          color: "#5090d3",
-        },
-        {
-          label: "Performance rapporter",
-          startDate: "2025-11-01",
-          endDate: "2025-11-12",
-          color: "#5090d3",
-        },
+      // Ring 3 Events - Projects (overlapping periods)
+      const ring3Events = [
+        { label: "Project Alpha", startDate: "2025-01-15", endDate: "2025-03-15", color: "#d89b7d" },
+        { label: "Project Beta", startDate: "2025-02-20", endDate: "2025-04-10", color: "#e3a688" },
+        { label: "Project Gamma", startDate: "2025-04-05", endDate: "2025-05-30", color: "#d89b7d" },
+        { label: "Project Delta", startDate: "2025-05-15", endDate: "2025-07-20", color: "#e3a688" },
+        { label: "Project Epsilon", startDate: "2025-07-10", endDate: "2025-09-05", color: "#d89b7d" },
+        { label: "Project Zeta", startDate: "2025-08-20", endDate: "2025-10-15", color: "#e3a688" },
+        { label: "Project Eta", startDate: "2025-10-05", endDate: "2025-11-30", color: "#d89b7d" },
+        { label: "Project Theta", startDate: "2025-11-15", endDate: "2025-12-31", color: "#e3a688" },
       ];
 
       // Configuration using new API
+      // Note: innerRadius, outerRadius, and viewBoxPadding now use
+      // standard values (180, 420, 80) optimized for beautiful display
       const config = {
-        title: "Plandisc Opsætning",
+        title: "Annual Planning Wheel",
         startYear: 2025,
         startMonth: 0,
         numberOfMonths: 12,
         sameRingHeight: false,
-        innerRadius: 140,
-        outerRadius: 390,
-        viewBoxPadding: 80,
         backgroundColor: "#f5f7fa",
         colorPalette: ["#b8e6e6", "#ffd4d4", "#d4e8e0", "#f0dcd4"],
 
         rings: [
-          // Inner Ring - Performance
+          // Ring 1 - Planning & Strategy (Innermost data ring)
           {
             type: "data",
-            name: "Performance rapporter",
-            color: "#e3f2fd",
+            name: "Planning",
+            color: "#e8f4f8",
             unit: "day",
-            height: 20,
+            height: 25,
             fontSize: 9,
-            fontColor: "#1976d2",
+            fontColor: "#2c5f6f",
+            separator: false,
+          },
+
+          // Header 1
+          {
+            type: "header",
+            headerText: "Strategy & Planning",
+            color: "#5a9aa8",
+            height: 12,
+            fontSize: 9,
+            fontColor: "#ffffff",
             separator: true,
           },
 
-          // Middle Ring - Legal Tasks
+          // Ring 2 - Operations
           {
             type: "data",
-            name: "Lovmæssige opgaver",
-            color: "#e8f5e9",
+            name: "Operations",
+            color: "#e0f5f4",
             unit: "day",
-            height: 20,
+            height: 25,
             fontSize: 9,
-            fontColor: "#2e7d32",
+            fontColor: "#2c6f6a",
+            separator: false,
+          },
+
+          // Header 2
+          {
+            type: "header",
+            headerText: "Operations & Execution",
+            color: "#7ac7c4",
+            height: 12,
+            fontSize: 9,
+            fontColor: "#ffffff",
             separator: true,
           },
 
-          // Outer Ring - Board Meetings
+          // Ring 3 - Projects
           {
             type: "data",
-            name: "Bestyrelsesmøder",
-            color: "#fff3e0",
+            name: "Projects",
+            color: "#fef3ed",
             unit: "day",
-            height: 20,
+            height: 25,
             fontSize: 9,
-            fontColor: "#e65100",
+            fontColor: "#7a4f3d",
+            separator: false,
+          },
+
+          // Header 3
+          {
+            type: "header",
+            headerText: "Project Delivery",
+            color: "#d89b7d",
+            height: 12,
+            fontSize: 9,
+            fontColor: "#ffffff",
             separator: true,
           },
 
-          // Week Numbers
+          // Ring 4 - Week Numbers
           {
             type: "calendar",
             calendarType: "Week Numbers",
             showYear: false,
             color: "#f5f5f5",
-            height: 8,
+            height: 14,
             separator: true,
-            fontSize: 8,
-            fontColor: "#999",
+            fontSize: 9,
+            fontColor: "#666",
           },
 
-          // Month Names with Year
+          // Ring 5 - Month Names with Year (Outermost ring)
           {
             type: "calendar",
             calendarType: "Month Names",
             showYear: true,
             color: "#e0e0e0",
-            height: 8,
+            height: 16,
             separator: true,
             fontSize: 11,
             fontColor: "#333",
@@ -294,12 +186,12 @@
       const container = document.getElementById("container");
       const wheel = new AnnualWheel(container, config);
 
-      // Set data for each ring
-      wheel.setData(innerRingEvents, "Performance rapporter");
-      wheel.setData(middleRingEvents, "Lovmæssige opgaver");
-      wheel.setData(outerRingEvents, "Bestyrelsesmøder");
+      // Set data for each ring (with overlapping events)
+      wheel.setData(ring1Events, "Planning");
+      wheel.setData(ring2Events, "Operations");
+      wheel.setData(ring3Events, "Projects");
 
-      console.log("PlanDisc visualization loaded!");
+      console.log("Freestyle Circalify visualization loaded!");
       console.log("Total Rings:", wheel.getRings().length);
       console.log("DataRings:", wheel.getDataRings().length);
     </script>

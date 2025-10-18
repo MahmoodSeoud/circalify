@@ -61,10 +61,12 @@ class ConfigParser {
         : ['#b8e6e6', '#ffd4d4', '#d4e8e0', '#f0dcd4'],
       sameRingHeight: config.sameRingHeight !== false, // Default true
 
-      // Dimension settings
-      innerRadius: this._validateNumber(config.innerRadius, 70, 'innerRadius', 10),
-      outerRadius: this._validateNumber(config.outerRadius, 320, 'outerRadius', 50),
-      viewBoxPadding: this._validateNumber(config.viewBoxPadding, 80, 'viewBoxPadding', 0),
+      // Dimension settings - Standard values optimized for beautiful display
+      // These values provide optimal spacing for event labels in the center
+      // and proper ring proportions.
+      innerRadius: 150,  // Standard value - provides center space for event info
+      outerRadius: 420,  // Standard value - maintains proper proportions
+      viewBoxPadding: 80, // Standard padding
 
       // Visual settings
       backgroundColor: config.backgroundColor || '#f5f7fa',

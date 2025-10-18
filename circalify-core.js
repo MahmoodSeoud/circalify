@@ -416,37 +416,57 @@ class CircalifyCore {
         endDay
       );
 
-      // Create invisible hover area ONLY in the button region (not covering data rings)
-      // This prevents blocking hover events on data ring segments
-      const buttonRegionInner = outermost;
-      const buttonRegionOuter = outermost + 40; // Extend 40px beyond outer edge for button area
-      const hoverArea = this._createSVGElement('path', {
-        'd': LayoutCalculator.createArcPath(this.cx, this.cy, buttonRegionInner, buttonRegionOuter, startAngle, endAngle),
+      // Create TWO hover areas: one below the wheel and one above the button
+      // This avoids blocking the button itself while still providing hover detection
+
+      // Area 1: Just inside the outer edge of the wheel (to detect hover near edge)
+      const innerHoverArea = this._createSVGElement('path', {
+        'd': LayoutCalculator.createArcPath(this.cx, this.cy, outermost - 15, outermost, startAngle, endAngle),
         'fill': 'transparent',
         'stroke': 'none',
         'cursor': 'pointer',
-        'class': 'month-hover-area'
+        'class': 'month-hover-area-inner',
+        'pointer-events': 'all'
       });
 
-      // Show button when hovering over the month segment
-      hoverArea.addEventListener('mouseenter', () => {
-        // Only set to full opacity if not the active button
+      // Area 2: Beyond the button area (to detect hover in outer region)
+      const outerHoverArea = this._createSVGElement('path', {
+        'd': LayoutCalculator.createArcPath(this.cx, this.cy, outermost + 35, outermost + 60, startAngle, endAngle),
+        'fill': 'transparent',
+        'stroke': 'none',
+        'cursor': 'pointer',
+        'class': 'month-hover-area-outer',
+        'pointer-events': 'all'
+      });
+
+      // Combined hover area reference for event handling
+      const hoverArea = innerHoverArea; // Use inner as primary reference
+
+      // Show button when hovering over either hover area
+      const showButton = () => {
         if (button !== this.activeMonthButton) {
           button.style.opacity = '1';
         }
-      });
+      };
 
-      hoverArea.addEventListener('mouseleave', (e) => {
-        // Only hide if not moving to the button and not the active button
+      const hideButton = (e) => {
         const relatedTarget = e.relatedTarget;
-        if (!button.contains(relatedTarget) && button !== this.activeMonthButton) {
+        // Don't hide if moving to button, other hover area, or if this is the active button
+        if (!button.contains(relatedTarget) &&
+            relatedTarget !== innerHoverArea &&
+            relatedTarget !== outerHoverArea &&
+            button !== this.activeMonthButton) {
           button.style.opacity = '0';
-          // Reset text to default
           if (button._textPathElement) {
             button._textPathElement.textContent = 'VIS AGENDA';
           }
         }
-      });
+      };
+
+      innerHoverArea.addEventListener('mouseenter', showButton);
+      innerHoverArea.addEventListener('mouseleave', hideButton);
+      outerHoverArea.addEventListener('mouseenter', showButton);
+      outerHoverArea.addEventListener('mouseleave', hideButton);
 
       // Keep button visible when hovering over it
       button.addEventListener('mouseenter', () => {
@@ -457,9 +477,11 @@ class CircalifyCore {
       });
 
       button.addEventListener('mouseleave', (e) => {
-        // Only hide if not moving back to hover area and not the active button
+        // Only hide if not moving back to hover areas and not the active button
         const relatedTarget = e.relatedTarget;
-        if (!hoverArea.contains(relatedTarget) && relatedTarget !== hoverArea && button !== this.activeMonthButton) {
+        if (relatedTarget !== innerHoverArea &&
+            relatedTarget !== outerHoverArea &&
+            button !== this.activeMonthButton) {
           button.style.opacity = '0';
           // Reset text to default
           if (button._textPathElement) {
@@ -468,7 +490,9 @@ class CircalifyCore {
         }
       });
 
-      this.svgGroups.overlay.appendChild(hoverArea);
+      // Append both hover areas (they don't overlap with button region)
+      this.svgGroups.overlay.appendChild(innerHoverArea);
+      this.svgGroups.overlay.appendChild(outerHoverArea);
     });
   }
 
@@ -494,6 +518,7 @@ class CircalifyCore {
     const buttonGroup = this._createSVGElement('g', {
       'class': 'month-agenda-button',
       'cursor': 'pointer',
+      'pointer-events': 'all', // Ensure button receives clicks even at low opacity
       'data-month': month,
       'data-year': year,
       'style': 'opacity: 0; transition: opacity 0.2s ease;'

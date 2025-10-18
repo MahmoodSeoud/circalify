@@ -172,7 +172,7 @@ class DataRing extends BaseRing {
       'd': segmentPath,
       'fill': 'transparent',
       'stroke': 'rgba(255, 255, 255, 0.1)',
-      'stroke-width': STYLING.RING_SEPARATOR_STROKE,
+      'stroke-width': this.STYLING.RING_SEPARATOR_STROKE,
       'class': 'unit-segment',
       'cursor': 'pointer',
       ...attributes
@@ -232,8 +232,8 @@ class DataRing extends BaseRing {
     });
 
     // Size of the plus icon
-    const size = Math.min(DIMENSIONS.PLUS_INDICATOR_MAX_SIZE, (this.outer - this.inner) * DIMENSIONS.PLUS_INDICATOR_SIZE_RATIO);
-    const strokeWidth = Math.max(DIMENSIONS.PLUS_INDICATOR_STROKE_WIDTH, size / DIMENSIONS.PLUS_INDICATOR_OFFSET);
+    const size = Math.min(this.DIMENSIONS.PLUS_INDICATOR_MAX_SIZE, (this.outer - this.inner) * this.DIMENSIONS.PLUS_INDICATOR_SIZE_RATIO);
+    const strokeWidth = Math.max(this.DIMENSIONS.PLUS_INDICATOR_STROKE_WIDTH, size / this.DIMENSIONS.PLUS_INDICATOR_OFFSET);
 
     // Vertical line (radial - pointing outward from center)
     const verticalLine = this._createSVGElement('line', {
@@ -279,7 +279,7 @@ class DataRing extends BaseRing {
       'x2': outerPoint.x,
       'y2': outerPoint.y,
       'stroke': 'rgba(160, 160, 160, 0.4)',
-      'stroke-width': STYLING.EVENT_STROKE_WIDTH,
+      'stroke-width': this.STYLING.EVENT_STROKE_WIDTH,
       'class': 'unit-separator'
     });
 
@@ -452,8 +452,8 @@ class DataRing extends BaseRing {
       'd': arcPath,
       'fill': eventData.color || this.config.color,
       'stroke': 'rgba(160, 160, 160, 0.5)',
-      'stroke-width': STYLING.EVENT_STROKE_WIDTH,
-      'opacity': STYLING.EVENT_STROKE_OPACITY,
+      'stroke-width': this.STYLING.EVENT_STROKE_WIDTH,
+      'opacity': this.STYLING.EVENT_STROKE_OPACITY,
       'cursor': this.config.interactive ? 'pointer' : 'default'
     });
 
@@ -598,15 +598,15 @@ class DataRing extends BaseRing {
     }
 
     // Font size based on ring height
-    let fontSize = Math.min(this.config.fontSize, Math.max(DIMENSIONS.MIN_FONT_SIZE, ringHeight * DIMENSIONS.PLUS_INDICATOR_SIZE_RATIO));
+    let fontSize = Math.min(this.config.fontSize, Math.max(this.DIMENSIONS.MIN_FONT_SIZE, ringHeight * this.DIMENSIONS.PLUS_INDICATOR_SIZE_RATIO));
 
     // Truncate based on arc length
-    const charWidth = fontSize * DIMENSIONS.CHAR_WIDTH_RATIO;
+    const charWidth = fontSize * this.DIMENSIONS.CHAR_WIDTH_RATIO;
     const maxChars = Math.floor(arcLength / charWidth);
     let displayLabel = this._truncateText(label, maxChars);
 
     // Only show if there's enough space
-    if (arcLength > fontSize * DIMENSIONS.ELLIPSIS_WIDTH_CHARS && maxChars >= DIMENSIONS.MIN_TRUNCATE_CHARS) {
+    if (arcLength > fontSize * this.DIMENSIONS.ELLIPSIS_WIDTH_CHARS && maxChars >= this.DIMENSIONS.MIN_TRUNCATE_CHARS) {
       const text = this._createSVGElement('text', {
         'x': point.x,
         'y': point.y,
@@ -632,8 +632,8 @@ class DataRing extends BaseRing {
   _addCurvedEventLabel(label, midAngle, startAngle, endAngle, textRadius, arcLength, eventGroup) {
     // Normalize angle for flip detection
     let normalizedAngle = midAngle;
-    while (normalizedAngle > Math.PI) normalizedAngle -= GEOMETRY.FULL_CIRCLE;
-    while (normalizedAngle < -Math.PI) normalizedAngle += GEOMETRY.FULL_CIRCLE;
+    while (normalizedAngle > Math.PI) normalizedAngle -= this.GEOMETRY.FULL_CIRCLE;
+    while (normalizedAngle < -Math.PI) normalizedAngle += this.GEOMETRY.FULL_CIRCLE;
 
     // Flip text on bottom half
     const shouldFlipText = normalizedAngle > 0;
@@ -658,10 +658,10 @@ class DataRing extends BaseRing {
 
     // Font size based on ring height
     const ringHeight = this.outer - this.inner;
-    let fontSize = Math.min(this.config.fontSize, Math.max(DIMENSIONS.MIN_FONT_SIZE, ringHeight * DIMENSIONS.PLUS_INDICATOR_SIZE_RATIO));
+    let fontSize = Math.min(this.config.fontSize, Math.max(this.DIMENSIONS.MIN_FONT_SIZE, ringHeight * this.DIMENSIONS.PLUS_INDICATOR_SIZE_RATIO));
 
     // Truncate based on arc length
-    const estimatedCharWidth = fontSize * DIMENSIONS.CHAR_WIDTH_RATIO;
+    const estimatedCharWidth = fontSize * this.DIMENSIONS.CHAR_WIDTH_RATIO;
     const maxChars = Math.floor(arcLength / estimatedCharWidth);
     let displayLabel = this._truncateText(label, maxChars);
 
@@ -694,7 +694,7 @@ class DataRing extends BaseRing {
   _addEventInteractivity(eventGroup, arc, eventData) {
     eventGroup.addEventListener('mouseenter', () => {
       arc.setAttribute('opacity', '1');
-      arc.setAttribute('stroke-width', STYLING.EVENT_HOVER_STROKE_WIDTH);
+      arc.setAttribute('stroke-width', this.STYLING.EVENT_HOVER_STROKE_WIDTH);
 
       // Trigger callback if exists
       if (this.context.callbacks && this.context.callbacks.onSegmentHover) {
@@ -703,8 +703,8 @@ class DataRing extends BaseRing {
     });
 
     eventGroup.addEventListener('mouseleave', () => {
-      arc.setAttribute('opacity', STYLING.EVENT_STROKE_OPACITY);
-      arc.setAttribute('stroke-width', STYLING.EVENT_STROKE_WIDTH);
+      arc.setAttribute('opacity', this.STYLING.EVENT_STROKE_OPACITY);
+      arc.setAttribute('stroke-width', this.STYLING.EVENT_STROKE_WIDTH);
 
       // Trigger callback if exists
       if (this.context.callbacks && this.context.callbacks.onSegmentLeave) {
@@ -725,7 +725,7 @@ class DataRing extends BaseRing {
    * @private
    */
   _generateUniqueId() {
-    return Math.random().toString(ID_GENERATION.RADIX).substr(ID_GENERATION.START_INDEX, ID_GENERATION.LENGTH);
+    return Math.random().toString(this.ID_GENERATION.RADIX).substr(this.ID_GENERATION.START_INDEX, this.ID_GENERATION.LENGTH);
   }
 
   /**

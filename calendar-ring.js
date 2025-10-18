@@ -8,20 +8,14 @@ class CalendarRing extends BaseRing {
   constructor(config, boundaries, context) {
     super(config, boundaries, context);
 
-    // Access constants from window.CIRCALIFY_CONSTANTS
-    this.constants = window.CIRCALIFY_CONSTANTS || {};
-    this.GEOMETRY = this.constants.GEOMETRY || {};
-    this.TIME = this.constants.TIME || {};
-    this.DIMENSIONS = this.constants.DIMENSIONS || {};
-    this.STYLING = this.constants.STYLING || {};
-
+    // Constants are already set by BaseRing, just add calendar-specific properties
     // Use constants for labels (fallback to hardcoded for backward compatibility)
-    this.monthLabels = this.TIME.MONTH_ABBR || [
+    this.monthLabels = (this.TIME && this.TIME.MONTH_ABBR) || [
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
     ];
 
-    this.quarterLabels = this.TIME.QUARTER_LABELS || ['Q1', 'Q2', 'Q3', 'Q4'];
+    this.quarterLabels = (this.TIME && this.TIME.QUARTER_LABELS) || ['Q1', 'Q2', 'Q3', 'Q4'];
   }
 
   /**

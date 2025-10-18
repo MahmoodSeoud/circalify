@@ -45,6 +45,10 @@ class BaseRing {
       THREE_QUARTER_CIRCLE: 3 * Math.PI / 2,
       ANGLE_OFFSET_TOP: -Math.PI / 2
     };
+    this.TIME = constants.TIME || {
+      MONTH_ABBR: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      QUARTER_LABELS: ['Q1', 'Q2', 'Q3', 'Q4']
+    };
     this.STYLING = constants.STYLING || {
       RING_BACKGROUND_OPACITY: 0.6,
       RING_SEPARATOR_OPACITY: 0.4,

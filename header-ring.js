@@ -1,5 +1,6 @@
 /**
  * HeaderRing - Renders header text distributed across cells
+ * Requires: constants.js, base-ring.js
  * @license MIT
  */
 
@@ -33,8 +34,8 @@ class HeaderRing extends BaseRing {
 
     for (let i = 0; i < cells; i++) {
       // Calculate angles for this cell
-      const startAngle = (i * anglePerCell) - Math.PI / 2;
-      const endAngle = ((i + 1) * anglePerCell) - Math.PI / 2;
+      const startAngle = (i * anglePerCell) + GEOMETRY.ANGLE_OFFSET_TOP;
+      const endAngle = ((i + 1) * anglePerCell) + GEOMETRY.ANGLE_OFFSET_TOP;
       const centerAngle = (startAngle + endAngle) / 2;
       const arcSpan = endAngle - startAngle;
 
@@ -49,7 +50,7 @@ class HeaderRing extends BaseRing {
       this._addCurvedLabel(
         headerText,
         centerAngle,
-        arcSpan * 0.75,
+        arcSpan * GEOMETRY.LABEL_ARC_SPAN_HEADER,
         labelRadius,
         {
           fontSize: this.config.fontSize,
@@ -69,7 +70,7 @@ class HeaderRing extends BaseRing {
 
         const cellBg = this._createSVGElement('path', {
           'd': cellPath,
-          'fill': 'rgba(255, 255, 255, 0.05)',
+          'fill': `rgba(255, 255, 255, ${STYLING.CELL_BACKGROUND_OPACITY})`,
           'stroke': 'none',
           'class': 'header-cell-bg'
         });
@@ -84,91 +85,8 @@ class HeaderRing extends BaseRing {
     }
   }
 
-  /**
-   * Alternative rendering: split text across cells
-   * @private
-   */
-  _renderSplitText() {
-    const cells = this.config.cells;
-    const headerText = this.config.headerText;
-    const labelRadius = this.center;
-
-    // Split text into words
-    const words = headerText.split(/\s+/);
-    const wordsPerCell = Math.max(1, Math.ceil(words.length / cells));
-
-    const anglePerCell = (2 * Math.PI) / cells;
-
-    for (let i = 0; i < cells; i++) {
-      const startAngle = (i * anglePerCell) - Math.PI / 2;
-      const endAngle = ((i + 1) * anglePerCell) - Math.PI / 2;
-      const centerAngle = (startAngle + endAngle) / 2;
-      const arcSpan = endAngle - startAngle;
-
-      // Draw separator
-      if (i > 0) {
-        this._drawSeparator(startAngle);
-      }
-
-      // Get words for this cell
-      const startWordIndex = i * wordsPerCell;
-      const endWordIndex = Math.min((i + 1) * wordsPerCell, words.length);
-      const cellWords = words.slice(startWordIndex, endWordIndex);
-      const cellText = cellWords.join(' ');
-
-      if (cellText) {
-        this._addCurvedLabel(
-          cellText,
-          centerAngle,
-          arcSpan * 0.75,
-          labelRadius,
-          {
-            fontSize: this.config.fontSize,
-            fontColor: this.config.fontColor,
-            fontWeight: this.config.fontWeight
-          }
-        );
-      }
-    }
-  }
-
-  /**
-   * Alternative rendering: show text only in specific cells
-   * @private
-   */
-  _renderSelectedCells(cellIndices = [0]) {
-    const cells = this.config.cells;
-    const headerText = this.config.headerText;
-    const labelRadius = this.center;
-    const anglePerCell = (2 * Math.PI) / cells;
-
-    for (let i = 0; i < cells; i++) {
-      const startAngle = (i * anglePerCell) - Math.PI / 2;
-      const endAngle = ((i + 1) * anglePerCell) - Math.PI / 2;
-      const centerAngle = (startAngle + endAngle) / 2;
-      const arcSpan = endAngle - startAngle;
-
-      // Draw separator
-      if (i > 0) {
-        this._drawSeparator(startAngle);
-      }
-
-      // Only show text in selected cells
-      if (cellIndices.includes(i)) {
-        this._addCurvedLabel(
-          headerText,
-          centerAngle,
-          arcSpan * 0.75,
-          labelRadius,
-          {
-            fontSize: this.config.fontSize,
-            fontColor: this.config.fontColor,
-            fontWeight: this.config.fontWeight
-          }
-        );
-      }
-    }
-  }
+  // Removed unused alternative implementations (_renderSplitText, _renderSelectedCells)
+  // These methods were never called and provided duplicate functionality
 }
 
 // Export for different module systems

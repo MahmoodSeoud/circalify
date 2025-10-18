@@ -1,5 +1,6 @@
 /**
  * DataRing - Renders event/data arcs (preserves original arc rendering)
+ * Requires: constants.js, base-ring.js, layout-calculator.js
  * @license MIT
  */
 
@@ -72,8 +73,8 @@ class DataRing extends BaseRing {
     const year = this._getYear();
 
     for (let day = 1; day <= daysInYear; day++) {
-      const startAngle = ((day - 1) / daysInYear) * 2 * Math.PI - Math.PI / 2;
-      const endAngle = (day / daysInYear) * 2 * Math.PI - Math.PI / 2;
+      const startAngle = ((day - 1) / daysInYear) * GEOMETRY.FULL_CIRCLE + GEOMETRY.ANGLE_OFFSET_TOP;
+      const endAngle = (day / daysInYear) * GEOMETRY.FULL_CIRCLE + GEOMETRY.ANGLE_OFFSET_TOP;
 
       this._createSegment(startAngle, endAngle, {
         'data-day': day,
@@ -94,8 +95,8 @@ class DataRing extends BaseRing {
 
     weekSegments.forEach(weekData => {
       const { week, startDay, endDay } = weekData;
-      const startAngle = ((startDay - 1) / daysInYear) * 2 * Math.PI - Math.PI / 2;
-      const endAngle = (endDay / daysInYear) * 2 * Math.PI - Math.PI / 2;
+      const startAngle = ((startDay - 1) / daysInYear) * GEOMETRY.FULL_CIRCLE + GEOMETRY.ANGLE_OFFSET_TOP;
+      const endAngle = (endDay / daysInYear) * GEOMETRY.FULL_CIRCLE + GEOMETRY.ANGLE_OFFSET_TOP;
 
       this._createSegment(startAngle, endAngle, {
         'data-week': week,
@@ -118,8 +119,8 @@ class DataRing extends BaseRing {
 
     monthSegments.forEach(monthData => {
       const { month, startDay, endDay } = monthData;
-      const startAngle = ((startDay - 1) / daysInYear) * 2 * Math.PI - Math.PI / 2;
-      const endAngle = (endDay / daysInYear) * 2 * Math.PI - Math.PI / 2;
+      const startAngle = ((startDay - 1) / daysInYear) * GEOMETRY.FULL_CIRCLE + GEOMETRY.ANGLE_OFFSET_TOP;
+      const endAngle = (endDay / daysInYear) * GEOMETRY.FULL_CIRCLE + GEOMETRY.ANGLE_OFFSET_TOP;
 
       this._createSegment(startAngle, endAngle, {
         'data-month': month,
@@ -142,8 +143,8 @@ class DataRing extends BaseRing {
 
     quarterSegments.forEach(quarterData => {
       const { quarter, startDay, endDay } = quarterData;
-      const startAngle = ((startDay - 1) / daysInYear) * 2 * Math.PI - Math.PI / 2;
-      const endAngle = (endDay / daysInYear) * 2 * Math.PI - Math.PI / 2;
+      const startAngle = ((startDay - 1) / daysInYear) * GEOMETRY.FULL_CIRCLE + GEOMETRY.ANGLE_OFFSET_TOP;
+      const endAngle = (endDay / daysInYear) * GEOMETRY.FULL_CIRCLE + GEOMETRY.ANGLE_OFFSET_TOP;
 
       this._createSegment(startAngle, endAngle, {
         'data-quarter': quarter,
@@ -171,7 +172,7 @@ class DataRing extends BaseRing {
       'd': segmentPath,
       'fill': 'transparent',
       'stroke': 'rgba(255, 255, 255, 0.1)',
-      'stroke-width': '0.5',
+      'stroke-width': STYLING.RING_SEPARATOR_STROKE,
       'class': 'unit-segment',
       'cursor': 'pointer',
       ...attributes
@@ -231,8 +232,8 @@ class DataRing extends BaseRing {
     });
 
     // Size of the plus icon
-    const size = Math.min(8, (this.outer - this.inner) * 0.3);
-    const strokeWidth = Math.max(1, size / 8);
+    const size = Math.min(DIMENSIONS.PLUS_INDICATOR_MAX_SIZE, (this.outer - this.inner) * DIMENSIONS.PLUS_INDICATOR_SIZE_RATIO);
+    const strokeWidth = Math.max(DIMENSIONS.PLUS_INDICATOR_STROKE_WIDTH, size / DIMENSIONS.PLUS_INDICATOR_OFFSET);
 
     // Vertical line (radial - pointing outward from center)
     const verticalLine = this._createSVGElement('line', {
@@ -278,7 +279,7 @@ class DataRing extends BaseRing {
       'x2': outerPoint.x,
       'y2': outerPoint.y,
       'stroke': 'rgba(160, 160, 160, 0.4)',
-      'stroke-width': '1',
+      'stroke-width': STYLING.EVENT_STROKE_WIDTH,
       'class': 'unit-separator'
     });
 
@@ -428,8 +429,8 @@ class DataRing extends BaseRing {
     const { startDay, endDay } = this._expandToUnitBoundaries(eventStartDay, eventEndDay, unit, year);
 
     // Calculate angles
-    const startAngle = (startDay - 1) / daysInYear * 2 * Math.PI - Math.PI / 2;
-    const endAngle = endDay / daysInYear * 2 * Math.PI - Math.PI / 2;
+    const startAngle = (startDay - 1) / daysInYear * GEOMETRY.FULL_CIRCLE + GEOMETRY.ANGLE_OFFSET_TOP;
+    const endAngle = endDay / daysInYear * GEOMETRY.FULL_CIRCLE + GEOMETRY.ANGLE_OFFSET_TOP;
 
     // Calculate stacked layer dimensions
     const ringHeight = this.outer - this.inner;
@@ -440,7 +441,7 @@ class DataRing extends BaseRing {
     // Create arc path with adjusted radius for stacking
     const arcPath = this._createArcPath(layerInner, layerOuter, startAngle, endAngle);
 
-    const eventId = eventData.id || Math.random().toString(36).substr(2, 9);
+    const eventId = eventData.id || this._generateUniqueId();
     const eventGroup = this._createSVGElement('g', {
       'class': 'event-arc',
       'data-event-id': eventId
@@ -451,8 +452,8 @@ class DataRing extends BaseRing {
       'd': arcPath,
       'fill': eventData.color || this.config.color,
       'stroke': 'rgba(160, 160, 160, 0.5)',
-      'stroke-width': '1',
-      'opacity': '0.85',
+      'stroke-width': STYLING.EVENT_STROKE_WIDTH,
+      'opacity': STYLING.EVENT_STROKE_OPACITY,
       'cursor': this.config.interactive ? 'pointer' : 'default'
     });
 
@@ -486,10 +487,7 @@ class DataRing extends BaseRing {
     switch(unit.toLowerCase()) {
       case 'week':
         const weekSegments = LayoutCalculator.getWeekSegments(year);
-        // Find all weeks that the event touches
-        const affectedWeeks = weekSegments.filter(week =>
-          week.startDay <= eventEndDay && week.endDay >= eventStartDay
-        );
+        const affectedWeeks = this._findAffectedSegments(weekSegments, eventStartDay, eventEndDay);
         if (affectedWeeks.length > 0) {
           startDay = affectedWeeks[0].startDay;
           endDay = affectedWeeks[affectedWeeks.length - 1].endDay;
@@ -498,10 +496,7 @@ class DataRing extends BaseRing {
 
       case 'month':
         const monthSegments = LayoutCalculator.getMonthSegments(year);
-        // Find all months that the event touches
-        const affectedMonths = monthSegments.filter(month =>
-          month.startDay <= eventEndDay && month.endDay >= eventStartDay
-        );
+        const affectedMonths = this._findAffectedSegments(monthSegments, eventStartDay, eventEndDay);
         if (affectedMonths.length > 0) {
           startDay = affectedMonths[0].startDay;
           endDay = affectedMonths[affectedMonths.length - 1].endDay;
@@ -510,10 +505,7 @@ class DataRing extends BaseRing {
 
       case 'quarter':
         const quarterSegments = LayoutCalculator.getQuarterSegments(year);
-        // Find all quarters that the event touches
-        const affectedQuarters = quarterSegments.filter(quarter =>
-          quarter.startDay <= eventEndDay && quarter.endDay >= eventStartDay
-        );
+        const affectedQuarters = this._findAffectedSegments(quarterSegments, eventStartDay, eventEndDay);
         if (affectedQuarters.length > 0) {
           startDay = affectedQuarters[0].startDay;
           endDay = affectedQuarters[affectedQuarters.length - 1].endDay;
@@ -527,6 +519,16 @@ class DataRing extends BaseRing {
     }
 
     return { startDay, endDay };
+  }
+
+  /**
+   * Find all segments that the event touches
+   * @private
+   */
+  _findAffectedSegments(segments, eventStartDay, eventEndDay) {
+    return segments.filter(segment =>
+      segment.startDay <= eventEndDay && segment.endDay >= eventStartDay
+    );
   }
 
   /**
@@ -564,18 +566,22 @@ class DataRing extends BaseRing {
     const arcLength = Math.abs(endAngle - startAngle) * textRadius;
 
     // Decide orientation based on aspect ratio
-    const useTangentialText = arcLength > ringHeight;
-
-    const maxFontSize = this.config.fontSize;
-    const minFontSize = Math.max(6, this.config.fontSize - 4);
-
-    if (!useTangentialText) {
+    if (this._shouldUseRadialLabel(arcLength, ringHeight)) {
       // RADIAL TEXT (pointing outward from center)
       this._addRadialEventLabel(label, midAngle, textRadius, ringHeight, arcLength, eventGroup);
     } else {
       // CURVED TEXT (follows the arc)
       this._addCurvedEventLabel(label, midAngle, startAngle, endAngle, textRadius, arcLength, eventGroup);
     }
+  }
+
+  /**
+   * Determine if label should be radial (vs curved/tangential)
+   * @private
+   */
+  _shouldUseRadialLabel(arcLength, ringHeight) {
+    // Use radial text when arc is narrower than it is tall
+    return arcLength <= ringHeight;
   }
 
   /**
@@ -592,15 +598,15 @@ class DataRing extends BaseRing {
     }
 
     // Font size based on ring height
-    let fontSize = Math.min(this.config.fontSize, Math.max(6, ringHeight * 0.3));
+    let fontSize = Math.min(this.config.fontSize, Math.max(DIMENSIONS.MIN_FONT_SIZE, ringHeight * DIMENSIONS.PLUS_INDICATOR_SIZE_RATIO));
 
     // Truncate based on arc length
-    const charWidth = fontSize * 0.6;
+    const charWidth = fontSize * DIMENSIONS.CHAR_WIDTH_RATIO;
     const maxChars = Math.floor(arcLength / charWidth);
     let displayLabel = this._truncateText(label, maxChars);
 
     // Only show if there's enough space
-    if (arcLength > fontSize * 1.5 && maxChars >= 2) {
+    if (arcLength > fontSize * DIMENSIONS.ELLIPSIS_WIDTH_CHARS && maxChars >= DIMENSIONS.MIN_TRUNCATE_CHARS) {
       const text = this._createSVGElement('text', {
         'x': point.x,
         'y': point.y,
@@ -626,13 +632,13 @@ class DataRing extends BaseRing {
   _addCurvedEventLabel(label, midAngle, startAngle, endAngle, textRadius, arcLength, eventGroup) {
     // Normalize angle for flip detection
     let normalizedAngle = midAngle;
-    while (normalizedAngle > Math.PI) normalizedAngle -= 2 * Math.PI;
-    while (normalizedAngle < -Math.PI) normalizedAngle += 2 * Math.PI;
+    while (normalizedAngle > Math.PI) normalizedAngle -= GEOMETRY.FULL_CIRCLE;
+    while (normalizedAngle < -Math.PI) normalizedAngle += GEOMETRY.FULL_CIRCLE;
 
     // Flip text on bottom half
     const shouldFlipText = normalizedAngle > 0;
 
-    const textPathId = `event-text-path-${Math.random().toString(36).substr(2, 9)}`;
+    const textPathId = `event-text-path-${this._generateUniqueId()}`;
 
     // Create arc path - reverse direction if flipped
     let textArcPath;
@@ -652,10 +658,10 @@ class DataRing extends BaseRing {
 
     // Font size based on ring height
     const ringHeight = this.outer - this.inner;
-    let fontSize = Math.min(this.config.fontSize, Math.max(6, ringHeight * 0.3));
+    let fontSize = Math.min(this.config.fontSize, Math.max(DIMENSIONS.MIN_FONT_SIZE, ringHeight * DIMENSIONS.PLUS_INDICATOR_SIZE_RATIO));
 
     // Truncate based on arc length
-    const estimatedCharWidth = fontSize * 0.6;
+    const estimatedCharWidth = fontSize * DIMENSIONS.CHAR_WIDTH_RATIO;
     const maxChars = Math.floor(arcLength / estimatedCharWidth);
     let displayLabel = this._truncateText(label, maxChars);
 
@@ -688,7 +694,7 @@ class DataRing extends BaseRing {
   _addEventInteractivity(eventGroup, arc, eventData) {
     eventGroup.addEventListener('mouseenter', () => {
       arc.setAttribute('opacity', '1');
-      arc.setAttribute('stroke-width', '2');
+      arc.setAttribute('stroke-width', STYLING.EVENT_HOVER_STROKE_WIDTH);
 
       // Trigger callback if exists
       if (this.context.callbacks && this.context.callbacks.onSegmentHover) {
@@ -697,8 +703,8 @@ class DataRing extends BaseRing {
     });
 
     eventGroup.addEventListener('mouseleave', () => {
-      arc.setAttribute('opacity', '0.85');
-      arc.setAttribute('stroke-width', '1');
+      arc.setAttribute('opacity', STYLING.EVENT_STROKE_OPACITY);
+      arc.setAttribute('stroke-width', STYLING.EVENT_STROKE_WIDTH);
 
       // Trigger callback if exists
       if (this.context.callbacks && this.context.callbacks.onSegmentLeave) {
@@ -712,6 +718,14 @@ class DataRing extends BaseRing {
         this.context.callbacks.onSegmentClick(eventData);
       }
     });
+  }
+
+  /**
+   * Generate a unique ID for elements
+   * @private
+   */
+  _generateUniqueId() {
+    return Math.random().toString(ID_GENERATION.RADIX).substr(ID_GENERATION.START_INDEX, ID_GENERATION.LENGTH);
   }
 
   /**

@@ -1,10 +1,31 @@
 /**
  * ConfigParser - Validates and parses Circalify configuration
  * @license MIT
+ *
+ * Requires: constants.js
  */
 
 class ConfigParser {
   constructor() {
+    // Destructure constants
+    const { DIMENSIONS, VALIDATION, TIMING } = window.CIRCALIFY_CONSTANTS || {};
+
+    // Store constants as instance properties for easy access
+    this.DEFAULT_INNER_RADIUS = DIMENSIONS?.DEFAULT_INNER_RADIUS || 150;
+    this.DEFAULT_OUTER_RADIUS = DIMENSIONS?.DEFAULT_OUTER_RADIUS || 420;
+    this.DEFAULT_VIEWBOX_PADDING = DIMENSIONS?.DEFAULT_VIEWBOX_PADDING || 80;
+    this.DEFAULT_RING_HEIGHT = DIMENSIONS?.DEFAULT_RING_HEIGHT || 10;
+    this.MIN_RING_HEIGHT = DIMENSIONS?.MIN_RING_HEIGHT || 1;
+    this.DEFAULT_FONT_SIZE = DIMENSIONS?.DEFAULT_FONT_SIZE || 15;
+    this.MIN_FONT_SIZE = DIMENSIONS?.MIN_FONT_SIZE || 6;
+    this.SMALL_FONT_SIZE = DIMENSIONS?.SMALL_FONT_SIZE || 7;
+    this.MIN_MONTH = VALIDATION?.MIN_MONTH || 0;
+    this.MAX_MONTH = VALIDATION?.MAX_MONTH || 11;
+    this.MIN_MONTHS_COUNT = VALIDATION?.MIN_MONTHS_COUNT || 1;
+    this.MAX_MONTHS_COUNT = VALIDATION?.MAX_MONTHS_COUNT || 60;
+    this.DEFAULT_ANIMATION_DURATION = TIMING?.DEFAULT_ANIMATION_DURATION || 300;
+
+    // Validation arrays
     this.validRingTypes = ['calendar', 'header', 'data'];
     // Support both kebab-case (user spec) and Title Case (legacy) for calendar types
     this.validCalendarTypes = [
@@ -60,8 +81,8 @@ class ConfigParser {
         'discRetention'
       ),
       startYear: this._validateNumber(config.startYear, new Date().getFullYear(), 'startYear'),
-      startMonth: this._validateRange(config.startMonth, 0, 11, 0, 'startMonth'),
-      numberOfMonths: this._validateRange(config.numberOfMonths, 1, 60, 12, 'numberOfMonths'),
+      startMonth: this._validateRange(config.startMonth, this.MIN_MONTH, this.MAX_MONTH, 0, 'startMonth'),
+      numberOfMonths: this._validateRange(config.numberOfMonths, this.MIN_MONTHS_COUNT, this.MAX_MONTHS_COUNT, 12, 'numberOfMonths'),
       colorPalette: Array.isArray(config.colorPalette) && config.colorPalette.length > 0
         ? config.colorPalette
         : ['#b8e6e6', '#ffd4d4', '#d4e8e0', '#f0dcd4'],
@@ -70,9 +91,9 @@ class ConfigParser {
       // Dimension settings - Standard values optimized for beautiful display
       // These values provide optimal spacing for event labels in the center
       // and proper ring proportions.
-      innerRadius: 150,  // Standard value - provides center space for event info
-      outerRadius: 420,  // Standard value - maintains proper proportions
-      viewBoxPadding: 80, // Standard padding
+      innerRadius: this.DEFAULT_INNER_RADIUS,  // Provides center space for event info
+      outerRadius: this.DEFAULT_OUTER_RADIUS,  // Maintains proper proportions
+      viewBoxPadding: this.DEFAULT_VIEWBOX_PADDING, // Standard padding
 
       // Visual settings
       backgroundColor: config.backgroundColor || '#f5f7fa',
@@ -86,7 +107,7 @@ class ConfigParser {
 
       // Animation
       enableAnimations: config.enableAnimations !== false,
-      animationDuration: this._validateNumber(config.animationDuration, 300, 'animationDuration', 0),
+      animationDuration: this._validateNumber(config.animationDuration, this.DEFAULT_ANIMATION_DURATION, 'animationDuration', 0),
       animationEasing: config.animationEasing || 'cubic-bezier(0.4, 0, 0.2, 1)'
     };
   }
@@ -165,9 +186,9 @@ class ConfigParser {
       calendarType: normalizedType,
       showYear,
       color: ring.color || '#CCCCCC',
-      height: this._validateNumber(ring.height, 10, `ring[${index}].height`, 1),
+      height: this._validateNumber(ring.height, this.DEFAULT_RING_HEIGHT, `ring[${index}].height`, this.MIN_RING_HEIGHT),
       separator: ring.separator !== false,
-      fontSize: this._validateNumber(ring.fontSize, 11, `ring[${index}].fontSize`, 6),
+      fontSize: this._validateNumber(ring.fontSize, this.SMALL_FONT_SIZE, `ring[${index}].fontSize`, this.MIN_FONT_SIZE),
       fontColor: ring.fontColor || '#333333',
       fontWeight: ring.fontWeight || '500'
     };
@@ -209,8 +230,8 @@ class ConfigParser {
       separator: ring.separator !== false,
       cells: this._validateNumber(ring.cells, 12, `ring[${index}].cells`, 1),
       color: ring.color || '#4ECDC4',
-      height: this._validateNumber(ring.height, 15, `ring[${index}].height`, 1),
-      fontSize: this._validateNumber(ring.fontSize, 10, `ring[${index}].fontSize`, 6),
+      height: this._validateNumber(ring.height, this.DEFAULT_FONT_SIZE, `ring[${index}].height`, this.MIN_RING_HEIGHT),
+      fontSize: this._validateNumber(ring.fontSize, this.DEFAULT_RING_HEIGHT, `ring[${index}].fontSize`, this.MIN_FONT_SIZE),
       fontColor: ring.fontColor || '#FFFFFF',
       fontWeight: ring.fontWeight || '600'
     };
@@ -236,8 +257,8 @@ class ConfigParser {
       name: ring.name || `Data Ring ${index + 1}`,
       color: ring.color || '#FF6B6B',
       unit,
-      height: this._validateNumber(ring.height, 15, `ring[${index}].height`, 1),
-      fontSize: this._validateNumber(ring.fontSize, 10, `ring[${index}].fontSize`, 6),
+      height: this._validateNumber(ring.height, this.DEFAULT_FONT_SIZE, `ring[${index}].height`, this.MIN_RING_HEIGHT),
+      fontSize: this._validateNumber(ring.fontSize, this.DEFAULT_RING_HEIGHT, `ring[${index}].fontSize`, this.MIN_FONT_SIZE),
       fontColor: ring.fontColor || '#000000',
       fontWeight: ring.fontWeight || '600',
       showLabels: ring.showLabels !== false,

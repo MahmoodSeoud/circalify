@@ -1,5 +1,6 @@
 /**
  * BaseRing - Abstract base class for all ring types
+ * Requires: constants.js
  * @license MIT
  */
 
@@ -33,6 +34,31 @@ class BaseRing {
 
     // Elements created by this ring
     this.elements = [];
+
+    // Store constants as instance properties for easy access
+    // Fallback to defaults if constants.js not loaded
+    const constants = (typeof window !== 'undefined' && window.CIRCALIFY_CONSTANTS) || {};
+    this.GEOMETRY = constants.GEOMETRY || {
+      FULL_CIRCLE: 2 * Math.PI,
+      HALF_CIRCLE: Math.PI,
+      QUARTER_CIRCLE: Math.PI / 2,
+      THREE_QUARTER_CIRCLE: 3 * Math.PI / 2,
+      ANGLE_OFFSET_TOP: -Math.PI / 2
+    };
+    this.STYLING = constants.STYLING || {
+      RING_BACKGROUND_OPACITY: 0.6,
+      RING_SEPARATOR_OPACITY: 0.4,
+      EVENT_STROKE_WIDTH: 1,
+      EVENT_STROKE_OPACITY: 0.85
+    };
+    this.DIMENSIONS = constants.DIMENSIONS || {
+      MIN_TRUNCATE_CHARS: 2
+    };
+    this.ID_GENERATION = constants.ID_GENERATION || {
+      RADIX: 36,
+      START_INDEX: 2,
+      LENGTH: 9
+    };
   }
 
   /**
@@ -117,8 +143,8 @@ class BaseRing {
       'd': ringPath,
       'fill': this.config.color,
       'stroke': 'rgba(160, 160, 160, 0.5)',
-      'stroke-width': '1',
-      'opacity': '0.6',
+      'stroke-width': String(this.STYLING.EVENT_STROKE_WIDTH),
+      'opacity': String(this.STYLING.RING_BACKGROUND_OPACITY),
       'class': `ring-${this.config.type}`
     });
 
@@ -144,7 +170,7 @@ class BaseRing {
       'x2': outerPoint.x,
       'y2': outerPoint.y,
       'stroke': 'rgba(160, 160, 160, 0.4)',
-      'stroke-width': '1',
+      'stroke-width': String(this.STYLING.EVENT_STROKE_WIDTH),
       'class': 'ring-separator'
     });
 
@@ -161,12 +187,41 @@ class BaseRing {
     const endPoint = this._polarToCartesian(radius, endAngle);
 
     let angleDiff = Math.abs(endAngle - startAngle);
-    while (angleDiff > 2 * Math.PI) angleDiff -= 2 * Math.PI;
+    while (angleDiff > this.GEOMETRY.FULL_CIRCLE) {
+      angleDiff -= this.GEOMETRY.FULL_CIRCLE;
+    }
 
-    const largeArc = angleDiff > Math.PI ? 1 : 0;
+    const largeArc = angleDiff > this.GEOMETRY.HALF_CIRCLE ? 1 : 0;
     const sweepFlag = reverse ? 0 : 1;
 
     return `M ${startPoint.x} ${startPoint.y} A ${radius} ${radius} 0 ${largeArc} ${sweepFlag} ${endPoint.x} ${endPoint.y}`;
+  }
+
+  /**
+   * Determine if text should be flipped to remain upright when displayed on a circular path.
+   * Text on the bottom half of the circle (between π/2 and 3π/2 radians) should be flipped
+   * to prevent appearing upside-down to the reader.
+   *
+   * @param {number} angle - The center angle of the text in radians
+   * @returns {boolean} True if text should be flipped, false otherwise
+   * @protected
+   */
+  _shouldFlipText(angle) {
+    // Normalize angle to [0, 2π) range by rotating 90 degrees (π/2) clockwise
+    // This adjustment accounts for the circular layout starting at the top (12 o'clock)
+    let adjustedAngle = angle + this.GEOMETRY.QUARTER_CIRCLE;
+
+    // Ensure angle is in positive range [0, 2π)
+    while (adjustedAngle < 0) {
+      adjustedAngle += this.GEOMETRY.FULL_CIRCLE;
+    }
+    while (adjustedAngle >= this.GEOMETRY.FULL_CIRCLE) {
+      adjustedAngle -= this.GEOMETRY.FULL_CIRCLE;
+    }
+
+    // Flip text if it's on the bottom half of the circle (between π/2 and 3π/2)
+    return adjustedAngle > this.GEOMETRY.QUARTER_CIRCLE &&
+           adjustedAngle < this.GEOMETRY.THREE_QUARTER_CIRCLE;
   }
 
   /**
@@ -186,10 +241,7 @@ class BaseRing {
     const targetGroup = parentGroup || group;
 
     // Determine if text should be flipped to stay upright
-    let adjustedAngle = centerAngle + Math.PI / 2;
-    while (adjustedAngle < 0) adjustedAngle += 2 * Math.PI;
-    while (adjustedAngle >= 2 * Math.PI) adjustedAngle -= 2 * Math.PI;
-    const shouldFlip = adjustedAngle > Math.PI / 2 && adjustedAngle < 3 * Math.PI / 2;
+    const shouldFlip = this._shouldFlipText(centerAngle);
 
     let startAngle, endAngle;
     if (shouldFlip) {
@@ -200,7 +252,7 @@ class BaseRing {
       endAngle = centerAngle + arcSpan / 2;
     }
 
-    const pathId = `text-path-${this.config.type}-${this.config.index}-${Math.random().toString(36).substr(2, 9)}`;
+    const pathId = this._generateUniqueId(`text-path-${this.config.type}-${this.config.index}`);
     const pathD = this._createCurvedTextPath(radius, startAngle, endAngle, shouldFlip);
 
     // Add path to defs
@@ -280,14 +332,27 @@ class BaseRing {
   }
 
   /**
+   * Generate a unique ID for SVG elements
+   * @param {string} prefix - Optional prefix for the ID
+   * @returns {string} A unique ID string
+   * @protected
+   */
+  _generateUniqueId(prefix = 'element') {
+    const randomString = Math.random()
+      .toString(this.ID_GENERATION.RADIX)
+      .substring(this.ID_GENERATION.START_INDEX, this.ID_GENERATION.START_INDEX + this.ID_GENERATION.LENGTH);
+    return `${prefix}-${randomString}`;
+  }
+
+  /**
    * Truncate text to fit available space
    * @protected
    */
   _truncateText(text, maxChars) {
     if (!text) return '';
     if (text.length <= maxChars) return text;
-    if (maxChars < 2) return '';
-    return text.substring(0, Math.max(2, maxChars - 2)) + '..';
+    if (maxChars < this.DIMENSIONS.MIN_TRUNCATE_CHARS) return '';
+    return text.substring(0, Math.max(this.DIMENSIONS.MIN_TRUNCATE_CHARS, maxChars - this.DIMENSIONS.MIN_TRUNCATE_CHARS)) + '..';
   }
 
   /**

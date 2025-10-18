@@ -21,7 +21,7 @@ class Circalify {
       // Size configuration
       innerRadius: options.innerRadius || 70,
       outerRadius: options.outerRadius || 320,
-      viewBoxPadding: options.viewBoxPadding || 50,
+      viewBoxPadding: options.viewBoxPadding || 80,
 
       // PlanDisc exact colors
       colors: options.colors || ['#b8e6e6', '#ffd4d4', '#d4e8e0', '#f0dcd4'],
@@ -58,12 +58,15 @@ class Circalify {
       showLabels: options.showLabels !== false,
       showMonthLabels: options.showMonthLabels !== false,
       monthLabels: options.monthLabels || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-      monthLabelOffset: options.monthLabelOffset || 20,
       showWeekNumbers: options.showWeekNumbers !== false,
       weekNumberSize: options.weekNumberSize || 8,
       weekNumberColor: options.weekNumberColor || '#999',
       weekNumberOpacity: options.weekNumberOpacity || 0.5,
-      weekNumberOffset: options.weekNumberOffset || 15,
+
+      // Ring thicknesses and spacing (auto-calculated offsets)
+      weekRingThickness: options.weekRingThickness || 12,
+      monthRingThickness: options.monthRingThickness || 16,
+      labelRingGap: options.labelRingGap || 8, // Gap between label rings
 
       // Font configuration (enhanced)
       fontFamily: options.fontFamily || '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
@@ -952,26 +955,80 @@ class Circalify {
   _drawWeekNumbers() {
     this.groups.weekNumbers.innerHTML = '';
 
-    // Draw week numbers (1-52) positioned OUTSIDE the outer ring
+    // Draw week numbers (1-52) on a curved ring
+    const weekRingThickness = 12;
     const numberRadius = this.options.outerRadius + this.options.weekNumberOffset;
     const totalWeeks = 52;
 
-    for (let i = 1; i <= totalWeeks; i++) {
-      const angle = (i / totalWeeks) * 2 * Math.PI - Math.PI / 2;
-      const x = this.cx + numberRadius * Math.cos(angle);
-      const y = this.cy + numberRadius * Math.sin(angle);
+    // Draw background ring band for week numbers (donut style)
+    const weekRingInner = numberRadius - weekRingThickness / 2;
+    const weekRingOuter = numberRadius + weekRingThickness / 2;
+    const weekRingPath = this._createDonutPath(weekRingInner, weekRingOuter);
+    const weekRing = this._createSVGElement('path', {
+      'd': weekRingPath,
+      'fill': '#ffffff',
+      'stroke': 'rgba(220, 220, 220, 0.5)',
+      'stroke-width': '1',
+      'opacity': '0.9'
+    });
+    this.groups.weekNumbers.appendChild(weekRing);
 
+    for (let i = 1; i <= totalWeeks; i++) {
+      // Calculate angle range for this week number
+      const centerAngle = ((i - 0.5) / totalWeeks) * 2 * Math.PI - Math.PI / 2;
+      const arcSpan = (1 / totalWeeks) * 2 * Math.PI * 0.8; // 80% of available space
+
+      // Determine if we need to flip the text
+      let adjustedAngle = centerAngle + Math.PI / 2;
+      while (adjustedAngle < 0) adjustedAngle += 2 * Math.PI;
+      while (adjustedAngle >= 2 * Math.PI) adjustedAngle -= 2 * Math.PI;
+      const shouldFlip = adjustedAngle > Math.PI / 2 && adjustedAngle < 3 * Math.PI / 2;
+
+      let startAngle, endAngle;
+      if (shouldFlip) {
+        startAngle = centerAngle + arcSpan / 2;
+        endAngle = centerAngle - arcSpan / 2;
+      } else {
+        startAngle = centerAngle - arcSpan / 2;
+        endAngle = centerAngle + arcSpan / 2;
+      }
+
+      const textPathId = `week-label-${i}`;
+      const startX = this.cx + numberRadius * Math.cos(startAngle);
+      const startY = this.cy + numberRadius * Math.sin(startAngle);
+      const endX = this.cx + numberRadius * Math.cos(endAngle);
+      const endY = this.cy + numberRadius * Math.sin(endAngle);
+
+      // Create arc path for text
+      const largeArc = arcSpan > Math.PI ? 1 : 0;
+      const sweepFlag = shouldFlip ? 0 : 1;
+      const pathD = `M ${startX} ${startY} A ${numberRadius} ${numberRadius} 0 ${largeArc} ${sweepFlag} ${endX} ${endY}`;
+
+      // Add path to defs
+      const path = this._createSVGElement('path', {
+        'id': textPathId,
+        'd': pathD,
+        'fill': 'none'
+      });
+      this.defs.appendChild(path);
+
+      // Create curved text element
       const text = this._createSVGElement('text', {
-        'x': x,
-        'y': y,
-        'text-anchor': 'middle',
-        'dominant-baseline': 'middle',
         'font-family': this.options.fontFamily,
         'font-size': this.options.weekNumberSize,
         'fill': this.options.weekNumberColor,
         'opacity': this.options.weekNumberOpacity
       });
-      text.textContent = i;
+
+      const textPath = this._createSVGElement('textPath', {
+        'href': `#${textPathId}`,
+        'startOffset': '50%',
+        'text-anchor': 'middle',
+        'dominant-baseline': 'middle'
+      });
+      textPath.textContent = i;
+
+      text.appendChild(textPath);
       this.groups.weekNumbers.appendChild(text);
     }
   }
@@ -986,18 +1043,63 @@ class Circalify {
     this.groups.monthLabels.innerHTML = '';
 
     const angleStep = (2 * Math.PI) / 12;
+    const monthRingThickness = 16;
     const labelRadius = this.options.outerRadius + this.options.monthLabelOffset;
 
-    for (let i = 0; i < 12; i++) {
-      const angle = angleStep * i + angleStep / 2 - Math.PI / 2;
-      const x = this.cx + labelRadius * Math.cos(angle);
-      const y = this.cy + labelRadius * Math.sin(angle);
+    // Draw background ring band for month labels (donut style)
+    const monthRingInner = labelRadius - monthRingThickness / 2;
+    const monthRingOuter = labelRadius + monthRingThickness / 2;
+    const monthRingPath = this._createDonutPath(monthRingInner, monthRingOuter);
+    const monthRing = this._createSVGElement('path', {
+      'd': monthRingPath,
+      'fill': '#ffffff',
+      'stroke': 'rgba(220, 220, 220, 0.5)',
+      'stroke-width': '1',
+      'opacity': '0.9'
+    });
+    this.groups.monthLabels.appendChild(monthRing);
 
+    for (let i = 0; i < 12; i++) {
+      // Calculate angle range for this month
+      const centerAngle = angleStep * i + angleStep / 2 - Math.PI / 2;
+      const arcSpan = angleStep * 0.6; // 60% of the month's arc for the label
+
+      // Determine if we need to flip the text
+      let adjustedAngle = centerAngle + Math.PI / 2;
+      while (adjustedAngle < 0) adjustedAngle += 2 * Math.PI;
+      while (adjustedAngle >= 2 * Math.PI) adjustedAngle -= 2 * Math.PI;
+      const shouldFlip = adjustedAngle > Math.PI / 2 && adjustedAngle < 3 * Math.PI / 2;
+
+      let startAngle, endAngle;
+      if (shouldFlip) {
+        startAngle = centerAngle + arcSpan / 2;
+        endAngle = centerAngle - arcSpan / 2;
+      } else {
+        startAngle = centerAngle - arcSpan / 2;
+        endAngle = centerAngle + arcSpan / 2;
+      }
+
+      const textPathId = `month-label-${i}`;
+      const startX = this.cx + labelRadius * Math.cos(startAngle);
+      const startY = this.cy + labelRadius * Math.sin(startAngle);
+      const endX = this.cx + labelRadius * Math.cos(endAngle);
+      const endY = this.cy + labelRadius * Math.sin(endAngle);
+
+      // Create arc path for text
+      const largeArc = arcSpan > Math.PI ? 1 : 0;
+      const sweepFlag = shouldFlip ? 0 : 1;
+      const pathD = `M ${startX} ${startY} A ${labelRadius} ${labelRadius} 0 ${largeArc} ${sweepFlag} ${endX} ${endY}`;
+
+      // Add path to defs
+      const path = this._createSVGElement('path', {
+        'id': textPathId,
+        'd': pathD,
+        'fill': 'none'
+      });
+      this.defs.appendChild(path);
+
+      // Create curved text element
       const text = this._createSVGElement('text', {
-        'x': x,
-        'y': y,
-        'text-anchor': 'middle',
-        'dominant-baseline': 'middle',
         'font-family': this.options.fontFamily,
         'font-size': this.options.monthLabelSize,
         'font-weight': this.options.monthLabelWeight,
@@ -1006,7 +1108,16 @@ class Circalify {
         'opacity': '0',
         'style': `animation: fadeIn ${this.options.animationDuration}ms ${this.options.animationEasing} forwards; animation-delay: ${i * 50}ms;`
       });
-      text.textContent = this.options.monthLabels[i];
+
+      const textPath = this._createSVGElement('textPath', {
+        'href': `#${textPathId}`,
+        'startOffset': '50%',
+        'text-anchor': 'middle',
+        'dominant-baseline': 'middle'
+      });
+      textPath.textContent = this.options.monthLabels[i];
+
+      text.appendChild(textPath);
       this.groups.monthLabels.appendChild(text);
     }
   }

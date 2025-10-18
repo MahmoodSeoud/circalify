@@ -1,19 +1,19 @@
-# CircularTimeline.js
+# Circalify
 
 JavaScript library for creating circular timeline visualizations.
 
-CircularTimeline.js transforms temporal data into beautiful circular visualizations, perfect for annual planning, project timelines, and cyclical data. Built with pure JavaScript and SVG, it requires no dependencies and offers complete customization through a flexible ring-based configuration system.
+Circalify transforms temporal data into beautiful circular visualizations, perfect for annual planning, project timelines, and cyclical data. Built with pure JavaScript and SVG, it requires no dependencies and offers complete customization through a flexible ring-based configuration system.
 
 ## Installation
 
 ```bash
-npm install circular-timeline
+npm install circalify
 ```
 
 ## Quick Start
 
 ```javascript
-import CircularTimeline from 'circular-timeline';
+import CircularTimeline from 'circalify';
 
 const timeline = new CircularTimeline(container, {
   startYear: 2025,
@@ -185,8 +185,13 @@ Works in all modern browsers that support ES6 modules and SVG. No build step req
 
 ## License
 
-MIT License - see LICENSE file for details.
+This software is available under two licenses:
+
+1. AGPL v3.0 for non-commercial use (free)
+2. Commercial License for commercial use (contact for pricing)
+
+See LICENSE file for details.
 
 ## Contributing
 
-Issues and pull requests welcome! Visit the [GitHub repository](https://github.com/MahmoodSeoud/circular-timeline) to contribute.
+Issues and pull requests welcome! Visit the [GitHub repository](https://github.com/MahmoodSeoud/circalify) to contribute.

@@ -163,7 +163,7 @@ class AnnualWheel {
    * @returns {Array} Array of calendar type names
    */
   static getAvailableCalendarTypes() {
-    return ['Month Names', 'Week Numbers', 'Day Numbers', 'Quarters'];
+    return ['month-names', 'weeks', 'days', 'quarters'];
   }
 }
 

@@ -63,9 +63,9 @@ class CalendarRing extends BaseRing {
       // Draw separator at month boundary
       this._drawSeparator(startAngle);
 
-      // Get month label
+      // Get month label with year on every month if enabled
       let monthLabel = this.monthLabels[month];
-      if (this.config.showYear && (month === 0 || month === 11)) {
+      if (this.config.showYear) {
         monthLabel += ` ${year}`;
       }
 

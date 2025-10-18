@@ -6,7 +6,13 @@
 class ConfigParser {
   constructor() {
     this.validRingTypes = ['calendar', 'header', 'data'];
-    this.validCalendarTypes = ['Month Names', 'Week Numbers', 'Day Numbers', 'Quarters'];
+    // Support both kebab-case (user spec) and Title Case (legacy) for calendar types
+    this.validCalendarTypes = [
+      'month-names', 'Month Names',
+      'weeks', 'Week Numbers',
+      'days', 'Day Numbers',
+      'quarters', 'Quarters'
+    ];
     this.validTimeUnits = ['day', 'week', 'month', 'quarter', 'year'];
   }
 
@@ -49,7 +55,7 @@ class ConfigParser {
       ),
       discRetention: this._validateEnum(
         config.discRetention,
-        ['with-year', 'without-year'],
+        ['with-year', 'counter-clockwise'],
         'with-year',
         'discRetention'
       ),
@@ -130,11 +136,25 @@ class ConfigParser {
    * @private
    */
   _parseCalendarRing(ring, index) {
-    const calendarType = ring.calendarType || 'Month Names';
+    const calendarType = ring.calendarType || 'month-names';
     if (!this.validCalendarTypes.includes(calendarType)) {
       throw new Error(
         `ConfigParser: Invalid calendarType '${calendarType}' at ring index ${index}. ` +
-        `Valid types: ${this.validCalendarTypes.join(', ')}`
+        `Valid types: month-names, weeks, days, quarters`
+      );
+    }
+
+    // Normalize calendarType to Title Case for internal use
+    const normalizedType = this._normalizeCalendarType(calendarType);
+
+    // showYear only applies to "Month Names" calendar type
+    let showYear = false;
+    if (normalizedType === 'Month Names') {
+      showYear = ring.showYear !== false;
+    } else if (ring.showYear !== undefined) {
+      console.warn(
+        `ConfigParser: showYear option is only valid for calendarType="month-names" (ring ${index}). ` +
+        `Ignoring showYear for calendarType="${calendarType}".`
       );
     }
 
@@ -142,8 +162,8 @@ class ConfigParser {
       type: 'calendar',
       index,
       active: ring.active !== false,
-      calendarType,
-      showYear: ring.showYear !== false,
+      calendarType: normalizedType,
+      showYear,
       color: ring.color || '#CCCCCC',
       height: this._validateNumber(ring.height, 10, `ring[${index}].height`, 1),
       separator: ring.separator !== false,
@@ -151,6 +171,25 @@ class ConfigParser {
       fontColor: ring.fontColor || '#333333',
       fontWeight: ring.fontWeight || '500'
     };
+  }
+
+  /**
+   * Normalize calendar type from kebab-case to Title Case
+   * @private
+   */
+  _normalizeCalendarType(type) {
+    const mapping = {
+      'month-names': 'Month Names',
+      'weeks': 'Week Numbers',
+      'days': 'Day Numbers',
+      'quarters': 'Quarters',
+      // Also support Title Case directly (legacy)
+      'Month Names': 'Month Names',
+      'Week Numbers': 'Week Numbers',
+      'Day Numbers': 'Day Numbers',
+      'Quarters': 'Quarters'
+    };
+    return mapping[type] || type;
   }
 
   /**

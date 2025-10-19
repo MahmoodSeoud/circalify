@@ -198,10 +198,11 @@ class LayoutCalculator {
     const segments = [];
     const daysInYear = this.getDaysInYear(year);
     const totalWeeks = Math.floor(daysInYear / this.DAYS_PER_WEEK);
+    const remainingDays = daysInYear - (totalWeeks * this.DAYS_PER_WEEK);
     let currentDay = 1;
 
-    // Create complete 7-day weeks
-    for (let week = 1; week <= totalWeeks; week++) {
+    // Create complete 7-day weeks (except the last one)
+    for (let week = 1; week < totalWeeks; week++) {
       segments.push({
         week,
         startDay: currentDay,
@@ -211,16 +212,14 @@ class LayoutCalculator {
       currentDay += this.DAYS_PER_WEEK;
     }
 
-    // Add remaining days as a partial week (if any)
-    const remainingDays = daysInYear - (totalWeeks * this.DAYS_PER_WEEK);
-    if (remainingDays > 0) {
-      segments.push({
-        week: totalWeeks + 1,
-        startDay: currentDay,
-        endDay: daysInYear,
-        days: remainingDays
-      });
-    }
+    // Last week includes any remaining days to complete the year
+    // This prevents a small partial week at the year boundary
+    segments.push({
+      week: totalWeeks,
+      startDay: currentDay,
+      endDay: daysInYear,
+      days: this.DAYS_PER_WEEK + remainingDays
+    });
 
     return segments;
   }

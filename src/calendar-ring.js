@@ -83,10 +83,8 @@ class CalendarRing extends BaseRing {
       const { startAngle, midAngle } = this._calculateSegmentAngles(startDay, endDay, daysInYear);
       const arcSpan = this._calculateSegmentAngles(startDay, endDay, daysInYear).endAngle - startAngle;
 
-      // Draw separator at month boundary (skip first to avoid year boundary line)
-      if (index !== 0) {
-        this._drawSeparator(startAngle);
-      }
+      // Draw separator at month boundary (including year boundary)
+      this._drawSeparator(startAngle);
 
       // Get month label with year on every month if enabled
       let monthLabel = this.monthLabels[month];
@@ -120,10 +118,8 @@ class CalendarRing extends BaseRing {
       const { startAngle, midAngle } = this._calculateSegmentAngles(startDay, endDay, daysInYear);
       const arcSpan = this._calculateSegmentAngles(startDay, endDay, daysInYear).endAngle - startAngle;
 
-      // Draw separator at each week boundary (skip first to avoid year boundary line)
-      if (index !== 0) {
-        this._drawSeparator(startAngle);
-      }
+      // Draw separator at each week boundary (including year boundary)
+      this._drawSeparator(startAngle);
 
       // Add week number label for all weeks
       this._addCurvedLabel(

@@ -1,5 +1,6 @@
 # Internal docs
 CLAUDE.md
+.claude/
 
 # Dependencies
 node_modules/

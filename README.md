@@ -283,13 +283,3 @@ Not sure which applies? Feel free to ask!
 ## Contributing
 
 Issues and pull requests welcome! Visit the [GitHub repository](https://github.com/MahmoodSeoud/circalify) to contribute.
-
-## Changelog
-
-### 0.1.3
-- Fixed year boundary separator rendering issue
-- Improved week segment calculations to eliminate visual artifacts
-- Converted to ES6 modules
-- Simplified usage and examples
-
-See [full changelog](https://github.com/MahmoodSeoud/circalify/releases) for more details.

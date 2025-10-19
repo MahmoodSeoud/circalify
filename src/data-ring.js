@@ -4,6 +4,8 @@
  * @license MIT
  */
 
+import BaseRing from './base-ring.js';
+
 class DataRing extends BaseRing {
   constructor(config, boundaries, context) {
     super(config, boundaries, context);
@@ -928,13 +930,10 @@ class DataRing extends BaseRing {
   }
 }
 
-// Export for different module systems
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-  module.exports = DataRing;
-} else if (typeof define === 'function' && define.amd) {
-  define([], function() {
-    return DataRing;
-  });
-} else {
+// Export for ES6 modules
+export default DataRing;
+
+// Also make available globally for browser compatibility
+if (typeof window !== 'undefined') {
   window.DataRing = DataRing;
 }

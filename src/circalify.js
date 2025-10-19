@@ -4,20 +4,9 @@
  * @license MIT
  */
 
-// This file serves as the bundled entry point
-// In development, load individual modules in order
-// In production, use a bundler to combine these
-
-// Note: When using this directly in HTML, you need to load the modules in the correct order:
-// 1. layout-calculator.js
-// 2. config-parser.js
-// 3. base-ring.js
-// 4. calendar-ring.js
-// 5. header-ring.js
-// 6. data-ring.js
-// 7. ring-factory.js
-// 8. circalify-core.js
-// 9. circalify.js (this file)
+import CircalifyCore from './circalify-core.js';
+import DataRing from './data-ring.js';
+import RingFactory from './ring-factory.js';
 
 /**
  * AnnualWheel - Main API class

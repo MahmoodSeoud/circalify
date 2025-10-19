@@ -3,6 +3,10 @@
  * @license MIT
  */
 
+import LayoutCalculator from './layout-calculator.js';
+import ConfigParser from './config-parser.js';
+import RingFactory from './ring-factory.js';
+
 class CircalifyCore {
   constructor(container, config = {}) {
     // Validate container
@@ -1971,13 +1975,10 @@ class CircalifyCore {
   }
 }
 
-// Export for different module systems
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-  module.exports = CircalifyCore;
-} else if (typeof define === 'function' && define.amd) {
-  define([], function() {
-    return CircalifyCore;
-  });
-} else {
+// Export for ES6 modules
+export default CircalifyCore;
+
+// Also make available globally for browser compatibility
+if (typeof window !== 'undefined') {
   window.CircalifyCore = CircalifyCore;
 }

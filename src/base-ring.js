@@ -376,13 +376,10 @@ class BaseRing {
   }
 }
 
-// Export for different module systems
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-  module.exports = BaseRing;
-} else if (typeof define === 'function' && define.amd) {
-  define([], function() {
-    return BaseRing;
-  });
-} else {
+// Export for ES6 modules
+export default BaseRing;
+
+// Also make available globally for browser compatibility
+if (typeof window !== 'undefined') {
   window.BaseRing = BaseRing;
 }

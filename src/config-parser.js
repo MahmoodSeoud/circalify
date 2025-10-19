@@ -320,13 +320,10 @@ class ConfigParser {
   }
 }
 
-// Export for different module systems
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-  module.exports = ConfigParser;
-} else if (typeof define === 'function' && define.amd) {
-  define([], function() {
-    return ConfigParser;
-  });
-} else {
+// Export for ES6 modules
+export default ConfigParser;
+
+// Also make available globally for browser compatibility
+if (typeof window !== 'undefined') {
   window.ConfigParser = ConfigParser;
 }

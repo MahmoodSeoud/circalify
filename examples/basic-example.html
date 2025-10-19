@@ -39,8 +39,9 @@
     </div>
 
     <script type="module">
-        // Import from CDN (unpkg automatically serves npm packages)
-        import CircularTimeline from 'https://unpkg.com/circalify@latest/src/index.js';
+        // Import from local src (for development)
+        // For production, use: import CircularTimeline from 'https://unpkg.com/circalify@latest/src/index.js';
+        import CircularTimeline from '../src/index.js';
 
         // Create timeline configuration
         const config = {

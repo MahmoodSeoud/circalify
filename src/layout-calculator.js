@@ -335,13 +335,10 @@ class LayoutCalculator {
   }
 }
 
-// Export for different module systems
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-  module.exports = LayoutCalculator;
-} else if (typeof define === 'function' && define.amd) {
-  define([], function() {
-    return LayoutCalculator;
-  });
-} else {
+// Export for ES6 modules
+export default LayoutCalculator;
+
+// Also make available globally for browser compatibility
+if (typeof window !== 'undefined') {
   window.LayoutCalculator = LayoutCalculator;
 }

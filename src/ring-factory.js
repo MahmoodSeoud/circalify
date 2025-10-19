@@ -3,6 +3,10 @@
  * @license MIT
  */
 
+import CalendarRing from './calendar-ring.js';
+import HeaderRing from './header-ring.js';
+import DataRing from './data-ring.js';
+
 class RingFactory {
   /**
    * Create a ring instance based on type
@@ -74,13 +78,10 @@ class RingFactory {
   }
 }
 
-// Export for different module systems
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-  module.exports = RingFactory;
-} else if (typeof define === 'function' && define.amd) {
-  define([], function() {
-    return RingFactory;
-  });
-} else {
+// Export for ES6 modules
+export default RingFactory;
+
+// Also make available globally for browser compatibility
+if (typeof window !== 'undefined') {
   window.RingFactory = RingFactory;
 }

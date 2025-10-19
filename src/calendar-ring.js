@@ -4,6 +4,8 @@
  * @license MIT
  */
 
+import BaseRing from './base-ring.js';
+
 class CalendarRing extends BaseRing {
   constructor(config, boundaries, context) {
     super(config, boundaries, context);
@@ -270,13 +272,10 @@ class CalendarRing extends BaseRing {
   }
 }
 
-// Export for different module systems
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-  module.exports = CalendarRing;
-} else if (typeof define === 'function' && define.amd) {
-  define([], function() {
-    return CalendarRing;
-  });
-} else {
+// Export for ES6 modules
+export default CalendarRing;
+
+// Also make available globally for browser compatibility
+if (typeof window !== 'undefined') {
   window.CalendarRing = CalendarRing;
 }

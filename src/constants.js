@@ -219,17 +219,32 @@ const ID_GENERATION = {
 };
 
 // ============================================================================
-// EXPORT (Browser globals)
+// EXPORT
 // ============================================================================
 
+// Export all constants as a single object for ES6 modules
+const CIRCALIFY_CONSTANTS = {
+    GEOMETRY,
+    TIME,
+    DIMENSIONS,
+    STYLING,
+    TIMING,
+    VALIDATION,
+    ID_GENERATION,
+};
+
+// Export for ES6 modules
+export default CIRCALIFY_CONSTANTS;
+export { GEOMETRY, TIME, DIMENSIONS, STYLING, TIMING, VALIDATION, ID_GENERATION };
+
+// Also make available globally for browser compatibility
 if (typeof window !== 'undefined') {
-    window.CIRCALIFY_CONSTANTS = {
-        GEOMETRY,
-        TIME,
-        DIMENSIONS,
-        STYLING,
-        TIMING,
-        VALIDATION,
-        ID_GENERATION,
-    };
+    window.CIRCALIFY_CONSTANTS = CIRCALIFY_CONSTANTS;
+    window.GEOMETRY = GEOMETRY;
+    window.TIME = TIME;
+    window.DIMENSIONS = DIMENSIONS;
+    window.STYLING = STYLING;
+    window.TIMING = TIMING;
+    window.VALIDATION = VALIDATION;
+    window.ID_GENERATION = ID_GENERATION;
 }

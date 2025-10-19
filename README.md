@@ -1,33 +1,66 @@
 # Circalify
 
-JavaScript library for creating circular timeline visualizations.
+A simple, dependency-free JavaScript library for creating beautiful circular timeline visualizations.
 
-Circalify transforms temporal data into beautiful circular visualizations, perfect for annual planning, project timelines, and cyclical data. Built with pure JavaScript and SVG, it requires no dependencies and offers complete customization through a flexible ring-based configuration system.
+Perfect for annual planning, project timelines, and cyclical data. Built with pure JavaScript and SVG.
 
 ## Installation
-
-### Via npm (for bundlers like Webpack, Vite, etc.)
 
 ```bash
 npm install circalify
 ```
 
-### Via CDN (for direct use in HTML)
+## Quick Start
 
-```html
-<script type="module">
-  import CircularTimeline from 'https://unpkg.com/circalify@latest/src/index.js';
-  // Your code here
-</script>
+### Option 1: Using a Bundler (Webpack, Vite, Parcel, etc.)
+
+```javascript
+import CircularTimeline from 'circalify';
+
+const timeline = new CircularTimeline('#timeline', {
+    startYear: 2025,
+    startMonth: 0, // January
+    numberOfMonths: 12,
+    rings: [
+        {
+            type: 'calendar',
+            calendarType: 'month-names',
+            color: '#f0f0f0',
+            height: 18
+        },
+        {
+            type: 'data',
+            name: 'Events',
+            color: '#4ECDC4',
+            unit: 'day',
+            height: 20
+        }
+    ]
+});
+
+// Add your events
+timeline.setData([
+    {
+        label: 'Project Launch',
+        startDate: '2025-03-15',
+        endDate: '2025-03-15',
+        color: '#FF6B6B'
+    },
+    {
+        label: 'Development Sprint',
+        startDate: '2025-04-01',
+        endDate: '2025-04-30',
+        color: '#4ECDC4'
+    }
+], 'Events');
 ```
 
-## Quick Start
+### Option 2: Directly in HTML (via CDN)
 
 ```html
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Circalify Example</title>
     <style>
         #timeline { width: 100%; height: 600px; }
     </style>
@@ -36,44 +69,21 @@ npm install circalify
     <div id="timeline"></div>
 
     <script type="module">
-        import CircularTimeline from 'https://unpkg.com/circalify@latest/src/index.js';
+        import CircularTimeline from 'https://unpkg.com/circalify/src/index.js';
 
         const timeline = new CircularTimeline('#timeline', {
-  startYear: 2025,
-  startMonth: 0, // January
-  numberOfMonths: 12,
-  rings: [
-    {
-      type: 'calendar',
-      calendarType: 'month-names',
-      color: '#f0f0f0',
-      height: 18
-    },
-    {
-      type: 'data',
-      name: 'Events',
-      color: '#4ECDC4',
-      unit: 'day',
-      height: 20
-    }
-  ]
-});
+            startYear: 2025,
+            startMonth: 0,
+            numberOfMonths: 12,
+            rings: [
+                { type: 'calendar', calendarType: 'month-names', color: '#f0f0f0', height: 18 },
+                { type: 'data', name: 'Events', color: '#4ECDC4', unit: 'day', height: 20 }
+            ]
+        });
 
-// Add events to your timeline
-timeline.setData([
-  {
-    label: 'Project Launch',
-    startDate: '2025-03-15',
-    endDate: '2025-03-15',
-    color: '#FF6B6B'
-  },
-  {
-    label: 'Development Sprint',
-    startDate: '2025-04-01',
-    endDate: '2025-04-30',
-    color: '#4ECDC4'
-  }
-], 'Events');
+        timeline.setData([
+            { label: 'Project Launch', startDate: '2025-03-15', endDate: '2025-03-15' }
+        ], 'Events');
     </script>
 </body>
 </html>

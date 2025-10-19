@@ -164,7 +164,7 @@ Events must include date information:
 
 ## Examples
 
-See `examples/demo.html` for a working example that you can open directly in your browser.
+**Just double-click `examples/demo.html`** - it loads from CDN and runs immediately! No server needed.
 
 ## API
 

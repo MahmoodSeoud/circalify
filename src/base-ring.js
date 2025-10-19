@@ -165,6 +165,11 @@ class BaseRing {
   _drawSeparator(angle) {
     if (!this.config.separator) return;
 
+    // Skip drawing separator at the year boundary (top of circle)
+    const topAngle = this.GEOMETRY.ANGLE_OFFSET_TOP || -Math.PI / 2;
+    const angleDiff = Math.abs(angle - topAngle);
+    if (angleDiff < 0.01) return; // Skip if very close to top
+
     const innerPoint = this._polarToCartesian(this.inner, angle);
     const outerPoint = this._polarToCartesian(this.outer, angle);
 

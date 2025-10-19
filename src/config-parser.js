@@ -100,8 +100,8 @@ class ConfigParser {
       fontFamily: config.fontFamily || '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
 
       // Interactive features
-      showTimeline: config.showTimeline !== false,
-      enableZoom: config.enableZoom !== false,
+      showTimeline: config.showTimeline === true,
+      enableZoom: config.enableZoom === true,
       enableDetailPanel: config.enableDetailPanel !== false,
       interactive: config.interactive !== false,
 

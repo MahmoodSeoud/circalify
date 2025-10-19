@@ -3,7 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CircularTimeline.js Demo</title>
+    <title>Circalify Demo</title>
+    <!--
+    This demo loads Circalify from CDN and can be opened directly!
+    Just double-click this file to run it.
+    -->
     <style>
       /* Clean, simple styling */
       * {
@@ -15,13 +19,13 @@
       body {
         font-family:
           -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: #2c3e50;
         min-height: 100vh;
         padding: 20px;
       }
 
       .container {
-        max-width: 900px;
+        max-width: 1400px;
         margin: 0 auto;
       }
 
@@ -42,8 +46,8 @@
 
       #timeline {
         width: 100%;
-        max-width: 700px;
-        height: 700px;
+        max-width: 1200px;
+        height: 900px;
         margin: 0 auto;
         background: white;
         border-radius: 12px;
@@ -78,7 +82,7 @@
   </head>
   <body>
     <div class="container">
-      <h1>CircularTimeline.js</h1>
+      <h1>Circalify</h1>
       <p class="subtitle">
         Circular timeline visualization for annual planning
       </p>
@@ -86,75 +90,72 @@
       <div class="info">
         <p>Built with pure JavaScript • No dependencies • Fully customizable</p>
         <p style="margin-top: 10px">
-          <a href="https://github.com/MahmoodSeoud/circular-timeline">GitHub</a>
+          <a href="https://github.com/MahmoodSeoud/circalify">GitHub</a>
           <span class="info-divider">|</span>
-          <a href="https://npmjs.com/package/circular-timeline">npm</a>
+          <a href="https://npmjs.com/package/circalify">npm</a>
         </p>
       </div>
     </div>
 
     <script type="module">
-      // Import the main library from parent directory
-      import CircularTimeline from "../src/index.js";
+      // Import from CDN - this allows the demo to work by just double-clicking the file!
+      import CircularTimeline from "https://unpkg.com/circalify@latest/src/index.js";
 
-      // Sample events for demonstration
-      const sampleEvents = [
-        {
-          label: "Q1 Planning",
-          startDate: "2025-01-15",
-          endDate: "2025-01-15",
-          color: "#FF6B6B",
-          description: "Quarterly planning session",
-        },
-        {
-          label: "Product Launch",
-          startDate: "2025-03-01",
-          endDate: "2025-03-15",
-          color: "#4ECDC4",
-          description: "New product release",
-        },
-        {
-          label: "Team Retreat",
-          startDate: "2025-05-20",
-          endDate: "2025-05-22",
-          color: "#95E1D3",
-          description: "Annual team building",
-        },
-        {
-          label: "Mid-Year Review",
-          startDate: "2025-06-30",
-          endDate: "2025-06-30",
-          color: "#F38181",
-          description: "Half-year performance review",
-        },
-        {
-          label: "Feature Release",
-          startDate: "2025-08-01",
-          endDate: "2025-08-31",
-          color: "#AA96DA",
-          description: "Major feature development",
-        },
-        {
-          label: "Conference",
-          startDate: "2025-09-15",
-          endDate: "2025-09-17",
-          color: "#FCBAD3",
-          description: "Industry conference attendance",
-        },
-        {
-          label: "Q4 Planning",
-          startDate: "2025-10-01",
-          endDate: "2025-10-01",
-          color: "#FF6B6B",
-          description: "Final quarter planning",
-        },
-        {
-          label: "Year-End Review",
-          startDate: "2025-12-15",
-          endDate: "2025-12-20",
-          color: "#FFFFD2",
-          description: "Annual performance review",
-        },
+      // Sample data showcasing different time units
+
+      // Quarter-level projects
+      const quarterlyProjects = [
+        { label: "Infrastructure", startDate: "2025-01-01", endDate: "2025-03-31", color: "#667eea" },
+        { label: "Product V2", startDate: "2025-04-01", endDate: "2025-06-30", color: "#764ba2" },
+        { label: "Market Expansion", startDate: "2025-07-01", endDate: "2025-09-30", color: "#f093fb" },
+        { label: "Q4 Strategy", startDate: "2025-10-01", endDate: "2025-10-31", color: "#fa8231" },
+        { label: "Year-End Push", startDate: "2025-11-01", endDate: "2025-12-31", color: "#4facfe" },
+      ];
+
+      // Month-level phases
+      const monthlyPhases = [
+        { label: "Research", startDate: "2025-01-01", endDate: "2025-02-28", color: "#43e97b" },
+        { label: "Design", startDate: "2025-03-01", endDate: "2025-04-30", color: "#38f9d7" },
+        { label: "Development", startDate: "2025-05-01", endDate: "2025-07-31", color: "#fa709a" },
+        { label: "Testing", startDate: "2025-08-01", endDate: "2025-09-30", color: "#fee140" },
+        { label: "Beta Release", startDate: "2025-10-01", endDate: "2025-10-31", color: "#ff6348" },
+        { label: "Launch Prep", startDate: "2025-11-01", endDate: "2025-11-30", color: "#30cfd0" },
+        { label: "Launch", startDate: "2025-12-01", endDate: "2025-12-31", color: "#00d2d3" },
+      ];
+
+      // Week-level sprints
+      const weeklySprints = [
+        { label: "Sprint 1", startDate: "2025-01-06", endDate: "2025-01-17", color: "#ff6b6b" },
+        { label: "Sprint 2", startDate: "2025-02-03", endDate: "2025-02-14", color: "#4ecdc4" },
+        { label: "Sprint 3", startDate: "2025-03-03", endDate: "2025-03-14", color: "#45b7d1" },
+        { label: "Sprint 4", startDate: "2025-04-07", endDate: "2025-04-18", color: "#96ceb4" },
+        { label: "Sprint 5", startDate: "2025-05-05", endDate: "2025-05-16", color: "#ffeaa7" },
+        { label: "Sprint 6", startDate: "2025-06-02", endDate: "2025-06-13", color: "#dfe6e9" },
+        { label: "Sprint 7", startDate: "2025-07-07", endDate: "2025-07-18", color: "#a29bfe" },
+        { label: "Sprint 8", startDate: "2025-08-04", endDate: "2025-08-15", color: "#fd79a8" },
+        { label: "Sprint 9", startDate: "2025-09-01", endDate: "2025-09-12", color: "#fdcb6e" },
+        { label: "Sprint 10", startDate: "2025-10-06", endDate: "2025-10-10", color: "#ee5a6f" },
+        { label: "Sprint 11", startDate: "2025-10-13", endDate: "2025-10-24", color: "#c44569" },
+        { label: "Sprint 12", startDate: "2025-10-27", endDate: "2025-10-31", color: "#f8b500" },
+      ];
+
+      // Day-level events
+      const dailyEvents = [
+        { label: "Kickoff", startDate: "2025-01-02", endDate: "2025-01-02", color: "#e17055" },
+        { label: "Demo Day", startDate: "2025-02-14", endDate: "2025-02-14", color: "#00b894" },
+        { label: "Launch Event", startDate: "2025-03-15", endDate: "2025-03-15", color: "#0984e3" },
+        { label: "Workshop", startDate: "2025-04-22", endDate: "2025-04-23", color: "#6c5ce7" },
+        { label: "Conference", startDate: "2025-05-10", endDate: "2025-05-12", color: "#fd79a8" },
+        { label: "Retreat", startDate: "2025-06-20", endDate: "2025-06-21", color: "#fdcb6e" },
+        { label: "Hackathon", startDate: "2025-07-15", endDate: "2025-07-16", color: "#00cec9" },
+        { label: "Review", startDate: "2025-08-30", endDate: "2025-08-30", color: "#ff7675" },
+        { label: "Summit", startDate: "2025-09-25", endDate: "2025-09-26", color: "#a29bfe" },
+        { label: "Strategy", startDate: "2025-10-05", endDate: "2025-10-05", color: "#eb4d4b" },
+        { label: "Training", startDate: "2025-10-12", endDate: "2025-10-13", color: "#22a6b3" },
+        { label: "Review", startDate: "2025-10-20", endDate: "2025-10-20", color: "#f9ca24" },
+        { label: "Meeting", startDate: "2025-10-28", endDate: "2025-10-29", color: "#6ab04c" },
+        { label: "Planning", startDate: "2025-11-01", endDate: "2025-11-01", color: "#fab1a0" },
+        { label: "Celebration", startDate: "2025-12-20", endDate: "2025-12-20", color: "#55efc4" },
       ];
 
       // Create timeline with example configuration
@@ -170,61 +171,78 @@
           interactive: true,
 
           rings: [
-            // Outer ring - Month names
+            // Data ring - Quarterly projects (quarter unit)
             {
-              type: "calendar",
-              calendarType: "month-names",
+              type: "data",
+              name: "Projects",
               active: true,
-              showYear: true,
-              color: "#F0F8FF",
-              height: 18,
-              separator: {
-                show: true,
-                color: "#b0c4de",
-                width: 1.5,
-              },
-              fontSize: 11,
-              fontColor: "#1e3a5f",
+              color: "#d0e8f2",
+              unit: "quarter",
+              height: 20,
+              fontSize: 9,
+              fontColor: "#0c5460",
             },
-            // Week numbers ring
+
+            // Data ring - Monthly phases (month unit)
+            {
+              type: "data",
+              name: "Phases",
+              active: true,
+              color: "#d4edda",
+              unit: "month",
+              height: 20,
+              fontSize: 9,
+              fontColor: "#155724",
+            },
+
+            // Data ring - Weekly sprints (week unit)
+            {
+              type: "data",
+              name: "Sprints",
+              active: true,
+              color: "#fff3cd",
+              unit: "week",
+              height: 20,
+              fontSize: 8,
+              fontColor: "#856404",
+            },
+
+            // Data ring - Daily events (day unit)
+            {
+              type: "data",
+              name: "Events",
+              active: true,
+              color: "#f8d7da",
+              unit: "day",
+              height: 20,
+              fontSize: 8,
+              fontColor: "#721c24",
+            },
+
+            // Second to last - Weeks
             {
               type: "calendar",
               calendarType: "weeks",
               active: true,
               showYear: false,
-              color: "#B8E6E6",
+              color: "#cce5ff",
+              height: 14,
+              separator: { show: true, color: "#99caff", width: 0.5 },
+              fontSize: 7,
+              fontColor: "#004085",
+            },
+
+            // Last ring - Month names with year
+            {
+              type: "calendar",
+              calendarType: "month-names",
+              active: true,
+              showYear: true,
+              color: "#e7f3ff",
               height: 16,
-              separator: {
-                show: true,
-                color: "#90c9c9",
-                width: 1,
-              },
-              fontSize: 9,
-              fontColor: "#2c5f77",
-            },
-            // Header ring
-            {
-              type: "header",
-              headerText: "Annual Events",
-              active: true,
-              cells: 4,
-              color: "#ffffff",
-              height: 12,
-              fontSize: 9,
-              fontColor: "#666",
-              separator: true,
-            },
-            // Data ring for events
-            {
-              type: "data",
-              name: "Events",
-              active: true,
-              color: "#E8F4F8",
-              unit: "day",
-              height: 25,
+              separator: { show: true, color: "#b3d9ff", width: 1 },
               fontSize: 10,
-              fontColor: "#2c5f6f",
-              separator: false,
+              fontColor: "#004085",
             },
           ],
         },
@@ -239,10 +257,13 @@
         },
       );
 
-      // Add sample events to the timeline
-      timeline.setData(sampleEvents, "Events");
+      // Add data to each ring to showcase different time units
+      timeline.setData(quarterlyProjects, "Projects");  // Quarter unit
+      timeline.setData(monthlyPhases, "Phases");        // Month unit
+      timeline.setData(weeklySprints, "Sprints");       // Week unit
+      timeline.setData(dailyEvents, "Events");          // Day unit
 
-      console.log("CircularTimeline.js demo loaded successfully!");
+      console.log("Circalify demo loaded successfully!");
     </script>
   </body>
 </html>

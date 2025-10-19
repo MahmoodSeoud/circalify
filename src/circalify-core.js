@@ -129,7 +129,6 @@ class CircalifyCore {
       segments: this._createSVGElement('g', { 'class': 'circalify-segments' }),
       centerInfo: this._createSVGElement('g', { 'class': 'circalify-center-info' }),
       timeline: this._createSVGElement('g', { 'class': 'circalify-timeline' }),
-      controls: this._createSVGElement('g', { 'class': 'circalify-controls' }),
       overlay: this._createSVGElement('g', { 'class': 'circalify-overlay' })
     };
 

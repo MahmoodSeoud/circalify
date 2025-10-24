@@ -267,18 +267,7 @@ No build step required for development.
 
 ## License
 
-This software is dual-licensed:
-
-**For open source projects and non-commercial use:**
-- Free under AGPL v3.0 license
-- See [LICENSE](LICENSE) file for full terms
-
-**For commercial/closed-source use:**
-- Commercial license required
-- Open an [issue](https://github.com/MahmoodSeoud/circalify/issues) or email: [your-email@example.com]
-- We're happy to discuss licensing options!
-
-Not sure which applies? Feel free to ask!
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Contributing
 

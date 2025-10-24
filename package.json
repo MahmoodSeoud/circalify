@@ -1,6 +1,6 @@
 {
   "name": "circalify",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "JavaScript library for creating circular timeline visualizations for annual and cyclical data",
   "main": "src/index.js",
   "type": "module",
@@ -22,7 +22,7 @@
     "data-visualization"
   ],
   "author": "Mahmood Seoud",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/MahmoodSeoud/circalify/issues"
   },

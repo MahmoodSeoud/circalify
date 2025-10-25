@@ -1,6 +1,6 @@
 # Circalify
 
-![Circular Timeline Example](./images/example1.png)
+![Circular Timeline Example](./images/hero-devices-final.png)
 
 A flexible, zero-dependency JavaScript library for creating circular timeline visualizations.
 

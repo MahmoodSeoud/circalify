@@ -1,0 +1,2521 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Primary Meta Tags -->
+    <title>Circalify - Beautiful Circular Timeline Visualizations for Developers</title>
+    <meta name="title" content="Circalify - Beautiful Circular Timeline Visualizations for Developers" />
+    <meta name="description" content="Open-source JavaScript library for creating stunning circular timeline visualizations. Perfect for annual planning, cyclical data, and project roadmaps. Zero dependencies, pure JavaScript." />
+    <meta name="keywords" content="circular timeline, JavaScript library, data visualization, annual planning, cyclical data, developer tools, open source" />
+    <meta name="author" content="Mahmood Seoud" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://circalify.com/" />
+    <meta property="og:title" content="Circalify - Beautiful Circular Timeline Visualizations" />
+    <meta property="og:description" content="Open-source JavaScript library for creating stunning circular timeline visualizations. Zero dependencies, pure JavaScript." />
+    <meta property="og:image" content="https://circalify.com/images/hero-devices-final.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://circalify.com/" />
+    <meta property="twitter:title" content="Circalify - Beautiful Circular Timeline Visualizations" />
+    <meta property="twitter:description" content="Open-source JavaScript library for creating stunning circular timeline visualizations. Zero dependencies, pure JavaScript." />
+    <meta property="twitter:image" content="https://circalify.com/images/hero-devices-final.png" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Ace Editor -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.2/ace.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.2/mode-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.2/theme-tomorrow_night.min.js"></script>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        /* Spacing system - 8px base */
+        --space-1: 0.25rem;   /* 4px */
+        --space-2: 0.5rem;    /* 8px */
+        --space-3: 0.75rem;   /* 12px */
+        --space-4: 1rem;      /* 16px */
+        --space-5: 1.5rem;    /* 24px */
+        --space-6: 2rem;      /* 32px */
+        --space-7: 2.5rem;    /* 40px */
+        --space-8: 3rem;      /* 48px */
+        --space-10: 5rem;     /* 80px */
+        --space-12: 6rem;     /* 96px */
+
+        /* Colors */
+        --primary: #FF6B35;
+        --primary-dark: #E55A2B;
+        --primary-light: #FF8C5F;
+        --secondary: #004E89;
+        --secondary-dark: #003A66;
+        --accent: #1A936F;
+        --text: #2D3142;
+        --text-light: #6B7A8F;
+        --bg: #FFFFFF;
+        --bg-light: #F7F7F9;
+        --bg-lighter: #FAFAFA;
+        --border: #C8CBD0;
+        --border-light: #E5E7EB;
+        --success: #1A936F;
+        --error: #EF4444;
+
+        /* Typography */
+        --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        --line-height-tight: 1.2;
+        --line-height-normal: 1.5;
+        --line-height-relaxed: 1.75;
+
+        /* Shadows */
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+
+        /* Transitions */
+        --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* Dark mode colors */
+      [data-theme="dark"] {
+        --text: #E2E8F0;
+        --text-light: #94A3B8;
+        --bg: #0F172A;
+        --bg-light: #1E293B;
+        --bg-lighter: #334155;
+        --border: #475569;
+        --border-light: #334155;
+      }
+
+      body {
+        font-family: var(--font-body);
+        color: var(--text);
+        line-height: var(--line-height-normal);
+        background: var(--bg);
+        transition: background-color var(--transition-base), color var(--transition-base);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 var(--space-5);
+      }
+
+      /* Focus styles for accessibility */
+      *:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+        border-radius: 4px;
+      }
+
+      /* Skip to main content */
+      .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 0;
+        background: var(--primary);
+        color: white;
+        padding: var(--space-2) var(--space-4);
+        text-decoration: none;
+        z-index: 100;
+      }
+
+      .skip-link:focus {
+        top: 0;
+      }
+
+      /* Header */
+      header {
+        padding: var(--space-5) 0;
+        border-bottom: 1px solid var(--border-light);
+        position: sticky;
+        top: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        z-index: 100;
+        transition: background-color var(--transition-base);
+      }
+
+      [data-theme="dark"] header {
+        background: rgba(15, 23, 42, 0.95);
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--space-4);
+      }
+
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--primary);
+        text-decoration: none;
+        transition: color var(--transition-fast);
+      }
+
+      .logo:hover {
+        color: var(--primary-dark);
+      }
+
+      .header-links {
+        display: flex;
+        gap: var(--space-6);
+        align-items: center;
+      }
+
+      .header-links a {
+        color: var(--text-light);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color var(--transition-fast);
+        font-size: 0.9375rem;
+      }
+
+      .header-links a:hover {
+        color: var(--primary);
+      }
+
+      /* Dark mode toggle */
+      .dark-mode-toggle {
+        background: transparent;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        transition: all var(--transition-fast);
+      }
+
+      .dark-mode-toggle:hover {
+        border-color: var(--primary);
+        background: var(--bg-light);
+      }
+
+      /* Hero Section */
+      .hero {
+        padding: var(--space-8) 0 var(--space-10);
+        text-align: center;
+      }
+
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        background: var(--bg-light);
+        padding: var(--space-2) var(--space-4);
+        border-radius: 100px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: var(--space-5);
+        border: 1px solid var(--border-light);
+      }
+
+      .hero-badge svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      .hero h1 {
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 800;
+        margin-bottom: var(--space-5);
+        line-height: var(--line-height-tight);
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hero-subtitle {
+        font-size: clamp(1rem, 2.5vw, 1.25rem);
+        color: var(--text-light);
+        margin-bottom: var(--space-8);
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: var(--line-height-relaxed);
+      }
+
+      .email-signup {
+        display: flex;
+        gap: var(--space-3);
+        max-width: 500px;
+        margin: 0 auto var(--space-4);
+        flex-wrap: wrap;
+      }
+
+      .email-signup input {
+        flex: 1;
+        min-width: 250px;
+        padding: var(--space-4) var(--space-5);
+        font-size: 1rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-family: inherit;
+        transition: border-color var(--transition-fast);
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .email-signup input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+
+      .email-signup input::placeholder {
+        color: var(--text-light);
+      }
+
+      .btn {
+        padding: var(--space-4) var(--space-6);
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all var(--transition-fast);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+        white-space: nowrap;
+      }
+
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn-secondary {
+        background: var(--bg);
+        color: var(--text);
+        border: 2px solid var(--border);
+      }
+
+      .btn-secondary:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        transform: translateY(-1px);
+      }
+
+      .hero-note {
+        font-size: 0.875rem;
+        color: var(--text-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+      }
+
+      .hero-note svg {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+      }
+
+      .success-message {
+        color: var(--success);
+        font-weight: 600;
+        margin-top: var(--space-4);
+        display: none;
+        padding: var(--space-3) var(--space-4);
+        background: rgba(26, 147, 111, 0.1);
+        border-radius: 8px;
+        border: 1px solid var(--success);
+      }
+
+      /* Screenshot */
+      .hero-image {
+        margin: var(--space-8) 0;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: var(--shadow-xl);
+      }
+
+      .hero-image img {
+        width: 100%;
+        display: block;
+      }
+
+      /* Use Cases Section */
+      .use-cases {
+        padding: var(--space-10) 0;
+        background: var(--bg-light);
+      }
+
+      .section-header {
+        text-align: center;
+        margin-bottom: var(--space-8);
+      }
+
+      .section-header h2 {
+        font-size: clamp(2rem, 4vw, 2.5rem);
+        font-weight: 700;
+        margin-bottom: var(--space-4);
+        line-height: var(--line-height-tight);
+      }
+
+      .section-header p {
+        font-size: 1.125rem;
+        color: var(--text-light);
+        line-height: var(--line-height-relaxed);
+      }
+
+      .use-cases-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: var(--space-6);
+      }
+
+      .use-case-card {
+        padding: var(--space-6);
+        background: var(--bg);
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        transition: all var(--transition-base);
+      }
+
+      .use-case-card:hover {
+        border-color: var(--primary);
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-2px);
+      }
+
+      .use-case-card h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: var(--space-3);
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+      }
+
+      .use-case-card h3 svg {
+        flex-shrink: 0;
+      }
+
+      .use-case-card p {
+        color: var(--text-light);
+        line-height: var(--line-height-relaxed);
+        font-size: 0.9375rem;
+      }
+
+      /* Interactive Playground */
+      .playground {
+        background: var(--bg-light);
+        padding: var(--space-10) 0;
+      }
+
+      .view-controls {
+        display: flex;
+        justify-content: center;
+        gap: var(--space-3);
+        margin-bottom: var(--space-5);
+        position: sticky;
+        top: 80px;
+        z-index: 50;
+        background: var(--bg-light);
+        padding: var(--space-4) 0;
+      }
+
+      .view-btn {
+        padding: var(--space-2) var(--space-4);
+        font-size: 0.875rem;
+        background: var(--bg);
+        color: var(--text);
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all var(--transition-fast);
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .view-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .view-btn.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+      }
+
+      .playground-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-6);
+        background: var(--bg);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+        min-height: 600px;
+        max-height: 85vh;
+        transition: all var(--transition-slow);
+        position: relative;
+        z-index: 1;
+      }
+
+      .playground-container.code-only {
+        grid-template-columns: 1fr;
+      }
+
+      .playground-container.code-only .preview-panel {
+        display: none;
+      }
+
+      .playground-container.preview-only {
+        grid-template-columns: 1fr;
+      }
+
+      .playground-container.preview-only .code-editor {
+        display: none;
+      }
+
+      .code-editor {
+        background: #1E293B;
+        padding: var(--space-5) var(--space-5) 0 var(--space-5);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        position: relative;
+        min-height: 0;
+      }
+
+      .editor-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-4);
+        flex-shrink: 0;
+      }
+
+      .editor-title {
+        color: #94A3B8;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .editor-wrapper {
+        flex: 1;
+        min-height: 0;
+        border-radius: 8px 8px 0 0;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      #ace-editor {
+        width: 100%;
+        height: 100%;
+        flex: 1;
+        min-height: 0;
+        font-size: 14px;
+      }
+
+      .helper-panel {
+        background: #2D3748;
+        padding: var(--space-4);
+        border-top: 1px solid #1E293B;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-3);
+        position: fixed;
+        bottom: var(--space-5);
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 100;
+        border-radius: 8px;
+        box-shadow: var(--shadow-xl);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity var(--transition-slow), visibility var(--transition-slow);
+      }
+
+      .helper-panel.visible {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .helper-btn {
+        padding: var(--space-2) var(--space-3);
+        font-size: 0.75rem;
+        background: #334155;
+        color: #E2E8F0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all var(--transition-fast);
+        white-space: nowrap;
+        font-weight: 500;
+      }
+
+      .helper-btn:hover {
+        background: #475569;
+        color: white;
+      }
+
+      .error-display {
+        background: #991B1B;
+        color: #FEE2E2;
+        padding: var(--space-4);
+        border-radius: 8px;
+        font-family: 'Consolas', 'Monaco', monospace;
+        font-size: 0.875rem;
+        line-height: var(--line-height-normal);
+        display: none;
+        margin-bottom: var(--space-4);
+      }
+
+      .error-display.show {
+        display: block;
+      }
+
+      .preview-panel {
+        padding: var(--space-5);
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        position: relative;
+        z-index: auto;
+        overflow: hidden;
+      }
+
+      /* Floating gradient orbs for depth in preview */
+      .preview-panel::before,
+      .preview-panel::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(60px);
+        opacity: 0.2;
+        pointer-events: none;
+      }
+
+      .preview-panel::before {
+        width: 300px;
+        height: 300px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        top: -100px;
+        left: -100px;
+      }
+
+      .preview-panel::after {
+        width: 350px;
+        height: 350px;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        bottom: -100px;
+        right: -100px;
+      }
+
+      /* Additional floating orb */
+      .preview-orb {
+        position: absolute;
+        width: 250px;
+        height: 250px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        filter: blur(60px);
+        opacity: 0.15;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .preview-header {
+        margin-top: 0;
+        margin-bottom: 0;
+        position: relative;
+        z-index: 10;
+      }
+
+      .preview-title {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      #preview {
+        flex: 1;
+        background: transparent;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: auto;
+        padding: var(--space-4);
+        position: relative;
+        z-index: 10;
+      }
+
+      #preview > div {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      /* Timeline background styling */
+      #preview > div > div:not(:first-child) {
+        position: relative;
+        background: transparent !important;
+      }
+
+      #preview svg {
+        width: 600px !important;
+        height: 600px !important;
+        filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
+        shape-rendering: geometricPrecision;
+        text-rendering: geometricPrecision;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      #preview svg text {
+        shape-rendering: geometricPrecision;
+        text-rendering: geometricPrecision;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* Hide the title/header div */
+      #preview > div > div:first-child {
+        display: none !important;
+      }
+
+      /* Add gradient background behind the SVG timeline */
+      #preview svg::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+        pointer-events: none;
+      }
+
+      /* Info badge */
+      .info-badge {
+        position: absolute;
+        top: var(--space-8);
+        right: var(--space-5);
+        background: rgba(255, 107, 53, 0.95);
+        color: white;
+        padding: var(--space-2) var(--space-4);
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        z-index: 50;
+        transition: all var(--transition-base);
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+
+      .info-badge:hover {
+        background: var(--primary);
+        transform: scale(1.05);
+      }
+
+      /* Interaction tooltip */
+      .interaction-tooltip {
+        position: absolute;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        padding: var(--space-5) var(--space-6);
+        border-radius: 12px;
+        box-shadow: var(--shadow-xl);
+        z-index: 1000;
+        max-width: 320px;
+        font-size: 0.875rem;
+        line-height: var(--line-height-relaxed);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity var(--transition-slow), visibility var(--transition-slow);
+      }
+
+      .interaction-tooltip.visible {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .interaction-tooltip h4 {
+        margin: 0 0 var(--space-3) 0;
+        font-size: 1rem;
+        font-weight: 600;
+      }
+
+      .interaction-tooltip ul {
+        margin: var(--space-3) 0 0 0;
+        padding-left: var(--space-5);
+      }
+
+      .interaction-tooltip li {
+        margin: var(--space-2) 0;
+      }
+
+      .close-tooltip {
+        position: absolute;
+        top: var(--space-2);
+        right: var(--space-2);
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        transition: background var(--transition-fast);
+      }
+
+      .close-tooltip:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      /* Pulse animation */
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+      }
+
+      .preview-panel.hint-pulse {
+        animation: pulse 2s ease-in-out 3;
+      }
+
+      /* Edit Panel */
+      .edit-panel-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9998;
+        opacity: 0;
+        visibility: hidden;
+        transition: all var(--transition-slow);
+      }
+
+      .edit-panel-overlay.visible {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .edit-panel {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        background: var(--bg);
+        padding: var(--space-6);
+        border-radius: 16px;
+        box-shadow: var(--shadow-xl);
+        z-index: 9999;
+        max-width: 450px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        opacity: 0;
+        visibility: hidden;
+        transition: all var(--transition-slow);
+      }
+
+      .edit-panel.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      .edit-panel h3 {
+        margin: 0 0 var(--space-5) 0;
+        font-size: 1.5rem;
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      .edit-form-group {
+        margin-bottom: var(--space-5);
+      }
+
+      .edit-form-group label {
+        display: block;
+        margin-bottom: var(--space-2);
+        font-weight: 600;
+        color: var(--text);
+        font-size: 0.875rem;
+      }
+
+      .edit-form-group input {
+        width: 100%;
+        padding: var(--space-3);
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        font-family: inherit;
+        transition: border-color var(--transition-fast);
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .edit-form-group input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+
+      .edit-form-group input[type="color"] {
+        height: 50px;
+        cursor: pointer;
+      }
+
+      .edit-panel-buttons {
+        display: flex;
+        gap: var(--space-3);
+        margin-top: var(--space-6);
+      }
+
+      .edit-panel-buttons button {
+        flex: 1;
+        padding: var(--space-3);
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        font-family: inherit;
+      }
+
+      .btn-save {
+        background: var(--primary);
+        color: white;
+      }
+
+      .btn-save:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+      }
+
+      .btn-cancel {
+        background: var(--bg-light);
+        color: var(--text);
+      }
+
+      .btn-cancel:hover {
+        background: var(--border-light);
+      }
+
+      .btn-delete {
+        background: var(--error);
+        color: white;
+      }
+
+      .btn-delete:hover {
+        background: #DC2626;
+      }
+
+      /* Features */
+      .features {
+        padding: var(--space-10) 0;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: var(--space-6);
+        margin-top: var(--space-8);
+      }
+
+      .feature-card {
+        padding: var(--space-6);
+        background: var(--bg);
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        transition: all var(--transition-base);
+      }
+
+      .feature-card:hover {
+        border-color: var(--primary);
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-2px);
+      }
+
+      .feature-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: var(--space-4);
+      }
+
+      .feature-icon svg {
+        width: 24px;
+        height: 24px;
+        color: white;
+      }
+
+      .feature-card h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: var(--space-3);
+      }
+
+      .feature-card p {
+        color: var(--text-light);
+        line-height: var(--line-height-relaxed);
+        font-size: 0.9375rem;
+      }
+
+      /* FAQ Section */
+      .faq {
+        padding: var(--space-10) 0;
+        background: var(--bg-light);
+      }
+
+      .faq-list {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .faq-item {
+        background: var(--bg);
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        margin-bottom: var(--space-4);
+        overflow: hidden;
+        transition: all var(--transition-base);
+      }
+
+      .faq-item:hover {
+        border-color: var(--primary);
+      }
+
+      .faq-question {
+        width: 100%;
+        text-align: left;
+        padding: var(--space-5);
+        background: transparent;
+        border: none;
+        font-family: inherit;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--space-4);
+        transition: color var(--transition-fast);
+      }
+
+      .faq-question:hover {
+        color: var(--primary);
+      }
+
+      .faq-question::after {
+        content: '+';
+        font-size: 1.5rem;
+        font-weight: 400;
+        transition: transform var(--transition-base);
+      }
+
+      .faq-item.active .faq-question::after {
+        transform: rotate(45deg);
+      }
+
+      .faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height var(--transition-slow);
+      }
+
+      .faq-item.active .faq-answer {
+        max-height: 500px;
+      }
+
+      .faq-answer p {
+        padding: 0 var(--space-5) var(--space-5);
+        color: var(--text-light);
+        line-height: var(--line-height-relaxed);
+      }
+
+      /* Quick Start */
+      .quick-start {
+        padding: var(--space-10) 0;
+      }
+
+      .code-block {
+        background: #1E293B;
+        border-radius: 12px;
+        padding: var(--space-6);
+        margin-top: var(--space-6);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .code-block pre {
+        color: #E2E8F0;
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.9375rem;
+        line-height: var(--line-height-relaxed);
+        overflow-x: auto;
+      }
+
+      .copy-btn {
+        position: absolute;
+        top: var(--space-5);
+        right: var(--space-5);
+        padding: var(--space-2) var(--space-4);
+        background: #334155;
+        color: #94A3B8;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.875rem;
+        transition: all var(--transition-fast);
+        font-weight: 500;
+      }
+
+      .copy-btn:hover {
+        background: var(--primary);
+        color: white;
+      }
+
+      /* Syntax Highlighting */
+      .code-block code {
+        display: block;
+      }
+
+      .code-block .comment {
+        color: #64748B;
+        font-style: italic;
+      }
+
+      .code-block .keyword {
+        color: #C792EA;
+        font-weight: 500;
+      }
+
+      .code-block .string {
+        color: #C3E88D;
+      }
+
+      .code-block .number {
+        color: #F78C6C;
+      }
+
+      .code-block .function {
+        color: #82AAFF;
+      }
+
+      .code-block .shell-prompt {
+        color: #89DDFF;
+        user-select: none;
+      }
+
+      .code-blocks-container {
+        display: grid;
+        gap: var(--space-6);
+        margin-top: var(--space-6);
+      }
+
+      .code-block-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #94A3B8;
+        margin-bottom: var(--space-3);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      /* CTA Section */
+      .cta {
+        padding: var(--space-10) 0;
+        text-align: center;
+        background: var(--bg-light);
+      }
+
+      .cta h2 {
+        font-size: clamp(2rem, 4vw, 2.5rem);
+        font-weight: 700;
+        margin-bottom: var(--space-4);
+      }
+
+      .cta p {
+        font-size: 1.125rem;
+        color: var(--text-light);
+        margin-bottom: var(--space-8);
+        line-height: var(--line-height-relaxed);
+      }
+
+      .cta-buttons {
+        display: flex;
+        gap: var(--space-4);
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      /* Trust badges */
+      .trust-badges {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: var(--space-6);
+        margin-top: var(--space-8);
+        flex-wrap: wrap;
+      }
+
+      .trust-badge {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-3) var(--space-4);
+        background: var(--bg);
+        border: 1px solid var(--border-light);
+        border-radius: 8px;
+        font-size: 0.875rem;
+        color: var(--text-light);
+      }
+
+      .trust-badge svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      /* Footer */
+      footer {
+        padding: var(--space-8) 0;
+        border-top: 1px solid var(--border-light);
+        background: var(--bg);
+      }
+
+      .footer-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-5);
+        flex-wrap: wrap;
+        gap: var(--space-4);
+      }
+
+      .footer-links {
+        display: flex;
+        gap: var(--space-6);
+        flex-wrap: wrap;
+      }
+
+      .footer-links a {
+        color: var(--text-light);
+        text-decoration: none;
+        transition: color var(--transition-fast);
+        font-size: 0.9375rem;
+      }
+
+      .footer-links a:hover {
+        color: var(--primary);
+      }
+
+      .copyright {
+        color: var(--text-light);
+        font-size: 0.875rem;
+        text-align: center;
+      }
+
+      /* Responsive */
+      @media (max-width: 968px) {
+        .playground-container {
+          grid-template-columns: 1fr;
+          max-height: none;
+        }
+
+        .header-links {
+          gap: var(--space-4);
+        }
+
+        .helper-panel {
+          flex-wrap: wrap;
+          max-width: 90%;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .email-signup {
+          flex-direction: column;
+        }
+
+        .email-signup input {
+          min-width: 100%;
+        }
+
+        .header-links {
+          gap: var(--space-3);
+          font-size: 0.875rem;
+        }
+
+        .cta-buttons {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .view-controls {
+          flex-wrap: wrap;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Skip to main content -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Header -->
+    <header role="banner">
+      <div class="container">
+        <div class="header-content">
+          <a href="#" class="logo" aria-label="Circalify home">Circalify</a>
+          <nav class="header-links" role="navigation" aria-label="Main navigation">
+            <a href="#playground">Try it</a>
+            <a href="#features">Features</a>
+            <a href="#faq">FAQ</a>
+            <a href="https://github.com/MahmoodSeoud/circalify" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://npmjs.com/package/circalify" target="_blank" rel="noopener noreferrer">npm</a>
+            <button
+              id="dark-mode-toggle"
+              class="dark-mode-toggle"
+              aria-label="Toggle dark mode"
+              aria-pressed="false"
+            >
+              <span aria-hidden="true">🌙</span>
+            </button>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <main id="main-content">
+      <section class="hero">
+        <div class="container">
+          <div class="hero-badge">
+            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+            </svg>
+            <span>Open Source & MIT Licensed</span>
+          </div>
+
+          <h1>Beautiful Circular Timelines<br/>for Frontend Developers</h1>
+
+          <p class="hero-subtitle">
+            The easiest way to create stunning circular timeline visualizations.
+            Zero dependencies, pure JavaScript. Perfect for annual planning, project roadmaps, and cyclical data.
+          </p>
+
+          <form class="email-signup" id="signup-form" action="https://api.web3forms.com/submit" method="POST">
+            <input type="hidden" name="access_key" value="9973b241-2a5e-439a-b2bd-441e85933cb4">
+            <input
+              type="email"
+              name="email"
+              placeholder="your@email.com"
+              required
+              aria-label="Email address"
+              autocomplete="email"
+            />
+            <button type="submit" class="btn btn-primary">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/>
+              </svg>
+              Get Launch Updates
+            </button>
+          </form>
+
+          <p class="hero-note">
+            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+            </svg>
+            No spam, just updates when we launch v1.0. Unsubscribe anytime.
+          </p>
+
+          <div class="success-message" id="success-message" role="status">
+            Thanks! We'll notify you when we launch.
+          </div>
+
+          <div class="hero-image">
+            <img src="./images/hero-devices-final.png" alt="Circalify running on MacBook showing interactive circular timeline visualization with multiple rings displaying quarterly projects, monthly milestones, weekly calendar, and month names" loading="eager" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Interactive Playground -->
+      <section class="playground" id="playground">
+        <div class="container">
+          <div class="section-header">
+            <h2>Try It Live</h2>
+            <p>Edit the code and see your changes instantly - no setup required</p>
+          </div>
+
+          <div class="view-controls" role="group" aria-label="View options">
+            <button class="view-btn active" data-view="split" aria-pressed="true">
+              <span aria-hidden="true">⬌</span> Side by Side
+            </button>
+            <button class="view-btn" data-view="code" aria-pressed="false">
+              <span aria-hidden="true">{ }</span> Code Only
+            </button>
+            <button class="view-btn" data-view="preview" aria-pressed="false">
+              <span aria-hidden="true">▶</span> Preview Only
+            </button>
+          </div>
+
+          <div class="playground-container" id="playground-container">
+            <div class="code-editor">
+              <div class="editor-header">
+                <span class="editor-title">JavaScript</span>
+              </div>
+              <div class="editor-wrapper">
+                <div id="ace-editor" role="textbox" aria-label="Code editor"></div>
+              </div>
+              <div class="helper-panel" role="toolbar" aria-label="Code snippets">
+                <button class="helper-btn" data-snippet="ring" aria-label="Add ring snippet">+ Add Ring</button>
+                <button class="helper-btn" data-snippet="event" aria-label="Add event snippet">+ Add Event</button>
+                <button class="helper-btn" data-snippet="revert" aria-label="Revert to original code">↻ Revert</button>
+              </div>
+            </div>
+
+            <div class="preview-panel">
+              <div class="preview-orb"></div>
+              <div class="preview-header">
+                <span class="preview-title">Live Preview</span>
+              </div>
+
+              <button class="info-badge" onclick="showInteractionTooltip(); tooltipShown = false;" aria-label="Show interaction help">
+                ℹ️ Click to interact
+              </button>
+
+              <div class="error-display" id="error-display" role="alert" aria-live="assertive"></div>
+              <div id="preview" role="img" aria-label="Timeline preview"></div>
+
+              <div class="interaction-tooltip" id="interaction-tooltip" role="dialog" aria-labelledby="tooltip-title">
+                <button class="close-tooltip" onclick="hideInteractionTooltip()" aria-label="Close tooltip">×</button>
+                <h4 id="tooltip-title">Try Interacting!</h4>
+                <p>You can interact with the timeline:</p>
+                <ul>
+                  <li><strong>Click</strong> on events to edit them</li>
+                  <li><strong>Hover</strong> over segments to see details</li>
+                  <li><strong>Edit code</strong> to see changes instantly</li>
+                  <li>Use the buttons below to add more content</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Edit Panel -->
+          <div class="edit-panel-overlay" id="edit-panel-overlay" onclick="closeEditPanel()" role="presentation"></div>
+          <div class="edit-panel" id="edit-panel" role="dialog" aria-labelledby="edit-panel-title" aria-modal="true">
+            <h3 id="edit-panel-title">Edit Event</h3>
+            <form id="edit-form" onsubmit="return false;">
+              <div class="edit-form-group">
+                <label for="edit-label">Event Name</label>
+                <input type="text" id="edit-label" required aria-required="true" />
+              </div>
+              <div class="edit-form-group">
+                <label for="edit-start-date">Start Date</label>
+                <input type="date" id="edit-start-date" required aria-required="true" />
+              </div>
+              <div class="edit-form-group">
+                <label for="edit-end-date">End Date</label>
+                <input type="date" id="edit-end-date" required aria-required="true" />
+              </div>
+              <div class="edit-form-group">
+                <label for="edit-color">Color</label>
+                <input type="color" id="edit-color" required aria-required="true" />
+              </div>
+              <div class="edit-panel-buttons">
+                <button type="button" class="btn-delete" onclick="deleteEvent()">Delete</button>
+                <button type="button" class="btn-cancel" onclick="closeEditPanel()">Cancel</button>
+                <button type="button" class="btn-save" onclick="saveEvent()">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features -->
+      <section class="features" id="features">
+        <div class="container">
+          <div class="section-header">
+            <h2>Why Developers Choose Circalify</h2>
+            <p>Everything you need to create production-ready circular timelines</p>
+          </div>
+
+          <div class="features-grid">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+              </div>
+              <h3>Zero Dependencies</h3>
+              <p>Pure JavaScript and SVG. No external libraries needed. Just include and start building. Under 10KB gzipped.</p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+                  <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+                  <path d="M2 2l7.586 7.586"/>
+                  <circle cx="11" cy="11" r="2"/>
+                </svg>
+              </div>
+              <h3>Fully Customizable</h3>
+              <p>Complete control over colors, fonts, sizes, and layouts. Simple API that's easy to integrate and configure.</p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                  <line x1="8" y1="21" x2="16" y2="21"/>
+                  <line x1="12" y1="17" x2="12" y2="21"/>
+                </svg>
+              </div>
+              <h3>Responsive by Default</h3>
+              <p>Works beautifully on all devices and screen sizes. SVG-based rendering ensures crisp visuals at any resolution.</p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <polyline points="21 8 21 21 3 21 3 8"/>
+                  <rect x="1" y="3" width="22" height="5"/>
+                  <line x1="10" y1="12" x2="14" y2="12"/>
+                </svg>
+              </div>
+              <h3>Framework Agnostic</h3>
+              <p>Works with React, Vue, Angular, Svelte, or vanilla JS. Simple API that integrates with any framework or build tool.</p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                  <line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+              </div>
+              <h3>Flexible Time Units</h3>
+              <p>Support for days, weeks, months, quarters, and custom intervals. Visualize any cyclical data pattern.</p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+              <h3>Performance Focused</h3>
+              <p>Optimized rendering with virtual scrolling for large datasets. Smooth animations and transitions at 60fps.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="faq" id="faq">
+        <div class="container">
+          <div class="section-header">
+            <h2>Frequently Asked Questions</h2>
+            <p>Everything you need to know about Circalify</p>
+          </div>
+
+          <div class="faq-list">
+            <div class="faq-item">
+              <button class="faq-question" aria-expanded="false">
+                Is Circalify open source?
+              </button>
+              <div class="faq-answer">
+                <p>Yes! Circalify is open source under the MIT license. The core library will always be free to use in personal projects, commercial products, or anywhere else without restrictions.</p>
+              </div>
+            </div>
+
+
+            <div class="faq-item">
+              <button class="faq-question" aria-expanded="false">
+                How do I customize the appearance?
+              </button>
+              <div class="faq-answer">
+                <p>Every aspect is customizable through configuration options - colors, fonts, sizes, spacing, and more. You can also apply custom CSS classes for complete styling control.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question" aria-expanded="false">
+                Can I use it for commercial projects?
+              </button>
+              <div class="faq-answer">
+                <p>Yes! The MIT license allows unrestricted use in commercial projects. No attribution required (though always appreciated!).</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question" aria-expanded="false">
+                Why should I sign up for updates?
+              </button>
+              <div class="faq-answer">
+                <p>We're currently in beta and adding new features weekly. Sign up to get notified when v1.0 launches with enhanced features, templates, and comprehensive documentation. You'll also get early access to new features and tools as we build them.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question" aria-expanded="false">
+                How can I contribute or report bugs?
+              </button>
+              <div class="faq-answer">
+                <p>We welcome contributions! Check out our GitHub repository to report issues, submit pull requests, or discuss feature ideas. Star the repo to show your support!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Start -->
+      <section class="quick-start">
+        <div class="container">
+          <div class="section-header">
+            <h2>Get Started in 30 Seconds</h2>
+            <p>Install via npm or use the CDN - your choice</p>
+          </div>
+
+          <div class="code-blocks-container">
+            <!-- NPM Installation -->
+            <div>
+              <div class="code-block-label">NPM Installation</div>
+              <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code to clipboard">Copy</button>
+                <pre><code><span class="shell-prompt">$</span> npm install circalify</code></pre>
+              </div>
+            </div>
+
+            <!-- CDN Import -->
+            <div>
+              <div class="code-block-label">Or use CDN</div>
+              <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code to clipboard">Copy</button>
+                <pre><code><span class="keyword">import</span> CircularTimeline <span class="keyword">from</span> <span class="string">'https://unpkg.com/circalify@latest/src/index.js'</span>;</code></pre>
+              </div>
+            </div>
+
+            <!-- Usage Example -->
+            <div>
+              <div class="code-block-label">Basic Usage</div>
+              <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code to clipboard">Copy</button>
+                <pre><code><span class="comment">// Create your timeline</span>
+<span class="keyword">const</span> timeline = <span class="keyword">new</span> <span class="function">CircularTimeline</span>(<span class="string">'#timeline'</span>, {
+  startYear: <span class="number">2025</span>,
+  rings: [
+    { type: <span class="string">'calendar'</span> },
+    { type: <span class="string">'data'</span>, name: <span class="string">'Events'</span> }
+  ]
+});
+
+<span class="comment">// Add your data</span>
+timeline.<span class="function">setData</span>([
+  { label: <span class="string">'Launch'</span>, startDate: <span class="string">'2025-03-15'</span>, endDate: <span class="string">'2025-03-15'</span> }
+], <span class="string">'Events'</span>);</code></pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="trust-badges">
+            <div class="trust-badge">
+              <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+              </svg>
+              <span>MIT Licensed</span>
+            </div>
+            <div class="trust-badge">
+              <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+              </svg>
+              <span>Zero Dependencies</span>
+            </div>
+            <div class="trust-badge">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+              <span>Framework Agnostic</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="cta">
+        <div class="container">
+          <h2>Ready to Create Beautiful Timelines?</h2>
+          <p>Join developers building amazing circular visualizations with Circalify</p>
+          <div class="cta-buttons">
+            <a href="https://github.com/MahmoodSeoud/circalify" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+              </svg>
+              Star on GitHub
+            </a>
+            <a href="https://npmjs.com/package/circalify" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path d="M0 0v16h16V0H0zm13 13H8v-2h5v2zm0-3H8V8h5v2zm0-3H8V5h5v2z"/>
+              </svg>
+              Install from npm
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer role="contentinfo">
+      <div class="container">
+        <div class="footer-content">
+          <div class="logo">Circalify</div>
+          <nav class="footer-links" role="navigation" aria-label="Footer navigation">
+            <a href="https://github.com/MahmoodSeoud/circalify" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://npmjs.com/package/circalify" target="_blank" rel="noopener noreferrer">npm</a>
+            <a href="https://github.com/MahmoodSeoud/circalify#readme" target="_blank" rel="noopener noreferrer">Documentation</a>
+            <a href="https://github.com/MahmoodSeoud/circalify/issues" target="_blank" rel="noopener noreferrer">Support</a>
+          </nav>
+        </div>
+        <p class="copyright">MIT Licensed • Built by <a href="https://github.com/MahmoodSeoud" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none;">Mahmood Seoud</a></p>
+      </div>
+    </footer>
+
+    <script type="module">
+      import CircularTimeline from 'https://unpkg.com/circalify@latest/src/index.js';
+
+      // Code example
+      const exampleCode = `// Multiple rings with different time units
+const timeline = new CircularTimeline('#preview', {
+  startYear: 2025,
+  backgroundColor: 'transparent',
+  rings: [
+    // Quarterly projects (outer ring)
+    {
+      type: 'data',
+      name: 'Projects',
+      unit: 'quarter',
+      color: '#dbeafe',
+      height: 12,
+      fontSize: 20
+    },
+    // Monthly milestones
+    {
+      type: 'data',
+      name: 'Milestones',
+      unit: 'month',
+      color: '#fef3c7',
+      height: 10,
+      fontSize: 18
+    },
+    // Week numbers
+    {
+      type: 'calendar',
+      calendarType: 'weeks',
+      height: 10,
+      color: '#f3f4f6',
+      fontSize: 16
+    },
+    // Month names (innermost ring)
+    {
+      type: 'calendar',
+      calendarType: 'month-names',
+      height: 12,
+      fontSize: 20
+    }
+  ]
+});
+
+// Add data to 'Projects' ring
+timeline.setData([
+  { label: 'Q1 Foundation', startDate: '2025-01-01', endDate: '2025-03-31', color: '#004E89' },
+  { label: 'Q2 Growth', startDate: '2025-04-01', endDate: '2025-06-30', color: '#FF6B35' },
+  { label: 'Q3 Scale', startDate: '2025-07-01', endDate: '2025-09-30', color: '#C792EA' },
+  { label: 'Q4 Optimize', startDate: '2025-10-01', endDate: '2025-12-31', color: '#26A69A' }
+], 'Projects');
+
+// Add data to 'Milestones' ring
+timeline.setData([
+  { label: 'Alpha', startDate: '2025-01-20', endDate: '2025-02-10', color: '#7E57C2' },
+  { label: 'Beta', startDate: '2025-03-01', endDate: '2025-03-25', color: '#1A936F' },
+  { label: 'Launch', startDate: '2025-05-12', endDate: '2025-05-30', color: '#FF6B35' },
+  { label: 'V2.0', startDate: '2025-09-15', endDate: '2025-10-05', color: '#42A5F5' }
+], 'Milestones');`;
+
+      // Initialize Ace editor
+      let editor = null;
+      let currentTimeline = null;
+
+      function initEditor(initialCode) {
+        editor = ace.edit('ace-editor');
+        editor.setTheme('ace/theme/tomorrow_night');
+        editor.session.setMode('ace/mode/javascript');
+        editor.setValue(initialCode, -1);
+        editor.setOptions({
+          fontSize: '14px',
+          showPrintMargin: false
+        });
+
+        editor.renderer.setScrollMargin(0, 100, 0, 0);
+        window.editor = editor;
+
+        editor.session.on('change', () => {
+          clearTimeout(window.editorTimeout);
+          window.editorTimeout = setTimeout(updatePreview, 500);
+        });
+      }
+
+      function updatePreview() {
+        if (!editor) return;
+
+        const errorDisplay = document.getElementById('error-display');
+        try {
+          const preview = document.getElementById('preview');
+          preview.innerHTML = '';
+          errorDisplay.classList.remove('show');
+          errorDisplay.textContent = '';
+
+          if (currentTimeline && typeof currentTimeline.destroy === 'function') {
+            currentTimeline.destroy();
+          }
+
+          const code = editor.getValue();
+          eval(code);
+
+          setTimeout(() => {
+            addInteractionListeners();
+          }, 100);
+        } catch (error) {
+          console.error('Error rendering timeline:', error);
+          errorDisplay.textContent = `Error: ${error.message}\\n\\nTip: Check the helper buttons below for working code!`;
+          errorDisplay.classList.add('show');
+        }
+      }
+
+      // Tooltip management
+      let tooltipShown = false;
+
+      function showInteractionTooltip() {
+        const tooltip = document.getElementById('interaction-tooltip');
+        const previewPanel = document.querySelector('.preview-panel');
+
+        if (!tooltip || tooltipShown) return;
+
+        tooltip.style.top = '50%';
+        tooltip.style.left = '50%';
+        tooltip.style.transform = 'translate(-50%, -50%)';
+
+        setTimeout(() => {
+          tooltip.classList.add('visible');
+          previewPanel.classList.add('hint-pulse');
+
+          setTimeout(() => {
+            hideInteractionTooltip();
+          }, 15000);
+        }, 2000);
+
+        tooltipShown = true;
+      }
+
+      window.showInteractionTooltip = showInteractionTooltip;
+
+      window.hideInteractionTooltip = function() {
+        const tooltip = document.getElementById('interaction-tooltip');
+        const previewPanel = document.querySelector('.preview-panel');
+
+        if (tooltip) {
+          tooltip.classList.remove('visible');
+        }
+        if (previewPanel) {
+          previewPanel.classList.remove('hint-pulse');
+        }
+      };
+
+      // Track data for bidirectional sync
+      let currentData = {
+        Projects: [
+          { label: 'Q1 Foundation', startDate: '2025-01-01', endDate: '2025-03-31', color: '#004E89' },
+          { label: 'Q2 Growth', startDate: '2025-04-01', endDate: '2025-06-30', color: '#FF6B35' },
+          { label: 'Q3 Scale', startDate: '2025-07-01', endDate: '2025-09-30', color: '#C792EA' },
+          { label: 'Q4 Optimize', startDate: '2025-10-01', endDate: '2025-12-31', color: '#26A69A' }
+        ],
+        Milestones: [
+          { label: 'Alpha', startDate: '2025-01-20', endDate: '2025-02-10', color: '#7E57C2' },
+          { label: 'Beta', startDate: '2025-03-01', endDate: '2025-03-25', color: '#1A936F' },
+          { label: 'Launch', startDate: '2025-05-12', endDate: '2025-05-30', color: '#FF6B35' },
+          { label: 'V2.0', startDate: '2025-09-15', endDate: '2025-10-05', color: '#42A5F5' }
+        ]
+      };
+
+      let currentEditingEvent = null;
+      let currentEditingRing = null;
+
+      function addInteractionListeners() {
+        const preview = document.getElementById('preview');
+        if (!preview) return;
+
+        const svg = preview.querySelector('svg');
+        if (!svg) return;
+
+        const textElements = svg.querySelectorAll('text');
+
+        textElements.forEach(element => {
+          const label = element.textContent?.trim();
+          if (!label) return;
+
+          let eventData = null;
+          let ringName = null;
+
+          for (const [ring, events] of Object.entries(currentData)) {
+            const found = events.find(e => e.label === label);
+            if (found) {
+              eventData = found;
+              ringName = ring;
+              break;
+            }
+          }
+
+          if (!eventData) return;
+
+          element.style.cursor = 'pointer';
+          element.setAttribute('role', 'button');
+          element.setAttribute('aria-label', `Edit ${label}`);
+          element.setAttribute('tabindex', '0');
+
+          const clickHandler = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            openEditPanel(eventData, ringName);
+            highlightInEditor(label);
+            if (tooltipShown) {
+              hideInteractionTooltip();
+            }
+          };
+
+          element.addEventListener('click', clickHandler, true);
+
+          element.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              clickHandler(e);
+            }
+          });
+
+          element.addEventListener('mouseenter', () => {
+            element.style.opacity = '0.8';
+          });
+
+          element.addEventListener('mouseleave', () => {
+            element.style.opacity = '1';
+          });
+
+          element.addEventListener('focus', () => {
+            element.style.outline = '2px solid #FF6B35';
+            element.style.outlineOffset = '2px';
+          });
+
+          element.addEventListener('blur', () => {
+            element.style.outline = 'none';
+          });
+        });
+      }
+
+      window.openEditPanel = function(eventData, ringName) {
+        currentEditingEvent = eventData;
+        currentEditingRing = ringName;
+
+        document.getElementById('edit-label').value = eventData.label;
+        document.getElementById('edit-start-date').value = eventData.startDate;
+        document.getElementById('edit-end-date').value = eventData.endDate;
+        document.getElementById('edit-color').value = eventData.color;
+        document.getElementById('edit-panel-title').textContent = `Edit ${eventData.label}`;
+
+        document.getElementById('edit-panel').classList.add('visible');
+        document.getElementById('edit-panel-overlay').classList.add('visible');
+
+        setTimeout(() => {
+          document.getElementById('edit-label').focus();
+        }, 100);
+      };
+
+      window.closeEditPanel = function() {
+        document.getElementById('edit-panel').classList.remove('visible');
+        document.getElementById('edit-panel-overlay').classList.remove('visible');
+        currentEditingEvent = null;
+        currentEditingRing = null;
+      };
+
+      window.saveEvent = function() {
+        if (!currentEditingEvent || !currentEditingRing) return;
+
+        const newLabel = document.getElementById('edit-label').value;
+        const newStartDate = document.getElementById('edit-start-date').value;
+        const newEndDate = document.getElementById('edit-end-date').value;
+        const newColor = document.getElementById('edit-color').value;
+
+        const events = currentData[currentEditingRing];
+        const index = events.findIndex(e => e.label === currentEditingEvent.label);
+
+        if (index !== -1) {
+          events[index] = {
+            label: newLabel,
+            startDate: newStartDate,
+            endDate: newEndDate,
+            color: newColor
+          };
+
+          updateCodeEditor();
+          closeEditPanel();
+        }
+      };
+
+      window.deleteEvent = function() {
+        if (!currentEditingEvent || !currentEditingRing) return;
+
+        if (!confirm(`Delete "${currentEditingEvent.label}"?`)) return;
+
+        const events = currentData[currentEditingRing];
+        const index = events.findIndex(e => e.label === currentEditingEvent.label);
+
+        if (index !== -1) {
+          events.splice(index, 1);
+          updateCodeEditor();
+          closeEditPanel();
+        }
+      };
+
+      function updateCodeEditor() {
+        if (!editor) return;
+
+        let code = `// Multiple rings with different time units
+const timeline = new CircularTimeline('#preview', {
+  startYear: 2025,
+  backgroundColor: 'transparent',
+  rings: [
+    // Quarterly projects (outer ring)
+    {
+      type: 'data',
+      name: 'Projects',
+      unit: 'quarter',
+      color: '#dbeafe',
+      height: 12,
+      fontSize: 20
+    },
+    // Monthly milestones
+    {
+      type: 'data',
+      name: 'Milestones',
+      unit: 'month',
+      color: '#fef3c7',
+      height: 10,
+      fontSize: 18
+    },
+    // Week numbers
+    {
+      type: 'calendar',
+      calendarType: 'weeks',
+      height: 10,
+      color: '#f3f4f6',
+      fontSize: 16
+    },
+    // Month names (innermost ring)
+    {
+      type: 'calendar',
+      calendarType: 'month-names',
+      height: 12,
+      fontSize: 20
+    }
+  ]
+});
+
+// Add data to 'Projects' ring
+timeline.setData([
+`;
+
+        currentData.Projects.forEach((event, idx) => {
+          code += `  { label: '${event.label}', startDate: '${event.startDate}', endDate: '${event.endDate}', color: '${event.color}' }`;
+          if (idx < currentData.Projects.length - 1) code += ',';
+          code += '\n';
+        });
+
+        code += `], 'Projects');
+
+// Add data to 'Milestones' ring
+timeline.setData([
+`;
+
+        currentData.Milestones.forEach((event, idx) => {
+          code += `  { label: '${event.label}', startDate: '${event.startDate}', endDate: '${event.endDate}', color: '${event.color}' }`;
+          if (idx < currentData.Milestones.length - 1) code += ',';
+          code += '\n';
+        });
+
+        code += `], 'Milestones');`;
+
+        editor.setValue(code, -1);
+        updatePreview();
+      }
+
+      function highlightInEditor(searchText) {
+        if (!editor) return;
+
+        const code = editor.getValue();
+        const lines = code.split('\n');
+
+        for (let i = 0; i < lines.length; i++) {
+          if (lines[i].includes(searchText)) {
+            editor.gotoLine(i + 1, 0, true);
+
+            const startCol = lines[i].indexOf(searchText);
+            if (startCol >= 0) {
+              editor.selection.setRange({
+                start: { row: i, column: startCol },
+                end: { row: i, column: startCol + searchText.length }
+              });
+            }
+
+            editor.focus();
+            break;
+          }
+        }
+      }
+
+      window.addEventListener('load', () => {
+        initEditor(exampleCode);
+        updatePreview();
+        showInteractionTooltip();
+      });
+
+      function randomColor() {
+        const colors = [
+          '#FF6B35', '#004E89', '#1A936F', '#C792EA', '#82AAFF',
+          '#F78C6C', '#C3E88D', '#89DDFF', '#FF5370', '#FFCB6B',
+          '#F07178', '#BB80B3', '#7E57C2', '#26A69A', '#66BB6A',
+          '#EF5350', '#EC407A', '#AB47BC', '#5C6BC0', '#42A5F5',
+          '#29B6F6', '#26C6DA', '#00ACC1', '#00897B', '#43A047',
+          '#7CB342', '#C0CA33', '#FDD835', '#FFB300', '#FB8C00',
+          '#F4511E', '#6D4C41', '#78909C'
+        ];
+        return colors[Math.floor(Math.random() * colors.length)];
+      }
+
+      function randomHeight() {
+        return Math.floor(Math.random() * 9) + 4;
+      }
+
+      function randomDate() {
+        const year = 2025;
+        const month = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+        const day = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+
+      function randomCalendarUnit() {
+        const units = ['day', 'week', 'month', 'quarter', 'year'];
+        return units[Math.floor(Math.random() * units.length)];
+      }
+
+      function randomCalendarType() {
+        const types = ['month-names', 'weeks', 'days', 'quarters'];
+        return types[Math.floor(Math.random() * types.length)];
+      }
+
+      function randomFontSize() {
+        return Math.floor(Math.random() * 10) + 12;
+      }
+
+      function randomEndDate(startDate, unit) {
+        const start = new Date(startDate);
+        const daysToAdd = {
+          'day': Math.floor(Math.random() * 3) + 1,
+          'week': Math.floor(Math.random() * 14) + 7,
+          'month': Math.floor(Math.random() * 60) + 30,
+          'quarter': Math.floor(Math.random() * 90) + 90,
+          'year': Math.floor(Math.random() * 180) + 180
+        };
+
+        const days = daysToAdd[unit] || 1;
+        const end = new Date(start);
+        end.setDate(end.getDate() + days);
+
+        return end.toISOString().split('T')[0];
+      }
+
+      function insertRing() {
+        if (!editor) return;
+        const code = editor.getValue();
+        const ringsMatch = code.match(/rings:\s*\[/);
+
+        if (ringsMatch) {
+          const insertPos = ringsMatch.index + ringsMatch[0].length;
+          const row = code.substring(0, insertPos).split('\n').length - 1;
+          const col = code.substring(0, insertPos).split('\n').pop().length;
+
+          const isDataRing = Math.random() > 0.3;
+          const color = randomColor();
+          const height = randomHeight();
+          const fontSize = randomFontSize();
+          const ringNumber = (code.match(/name: ['"].*?Ring/g) || []).length + 1;
+
+          let snippet;
+          if (isDataRing) {
+            const unit = randomCalendarUnit();
+            snippet = `
+    {
+      type: 'data',
+      name: 'Ring${ringNumber}',
+      unit: '${unit}',
+      color: '${color}',
+      height: ${height},
+      fontSize: ${fontSize}
+    },`;
+          } else {
+            const calendarType = randomCalendarType();
+            snippet = `
+    {
+      type: 'calendar',
+      calendarType: '${calendarType}',
+      color: '${color}',
+      height: ${height},
+      fontSize: ${fontSize}
+    },`;
+          }
+
+          editor.session.insert({ row, column: col }, snippet);
+        }
+        editor.focus();
+      }
+
+      function insertEvent() {
+        if (!editor) return;
+        const code = editor.getValue();
+
+        const dataRings = [];
+        const ringRegex = /{\s*type:\s*['"]data['"],\s*name:\s*['"]([^'"]+)['"](?:,\s*unit:\s*['"]([^'"]+)['"])?[^}]*}/g;
+        let match;
+        while ((match = ringRegex.exec(code)) !== null) {
+          dataRings.push({
+            name: match[1],
+            unit: match[2] || 'month'
+          });
+        }
+
+        if (dataRings.length === 0) {
+          alert('Please add a data ring first before adding events!');
+          return;
+        }
+
+        const randomRing = dataRings[Math.floor(Math.random() * dataRings.length)];
+
+        const setDataRegex = new RegExp(`timeline\\.setData\\s*\\(\\s*\\[([^\\]]*?)\\]\\s*,\\s*['"]${randomRing.name}['"]\\s*\\)`, 's');
+        const setDataMatch = code.match(setDataRegex);
+
+        if (setDataMatch) {
+          const arrayContent = setDataMatch[1];
+          const arrayStart = code.indexOf(setDataMatch[0]) + setDataMatch[0].indexOf('[') + 1;
+
+          const row = code.substring(0, arrayStart).split('\n').length - 1;
+          const col = code.substring(0, arrayStart).split('\n').pop().length;
+
+          const color = randomColor();
+          const startDate = randomDate();
+          const endDate = randomEndDate(startDate, randomRing.unit);
+          const eventNumber = (code.match(/label: ['"].*?Event/g) || []).length + 1;
+
+          const snippet = `
+  { label: 'Event ${eventNumber}', startDate: '${startDate}', endDate: '${endDate}', color: '${color}' },`;
+
+          editor.session.insert({ row, column: col }, snippet);
+        } else {
+          const lastSetDataMatch = code.match(/timeline\.setData\([^)]+\);/g);
+          if (lastSetDataMatch) {
+            const lastSetData = lastSetDataMatch[lastSetDataMatch.length - 1];
+            const insertPos = code.indexOf(lastSetData) + lastSetData.length;
+            const row = code.substring(0, insertPos).split('\n').length;
+
+            const color = randomColor();
+            const startDate = randomDate();
+            const endDate = randomEndDate(startDate, randomRing.unit);
+            const eventNumber = (code.match(/label: ['"].*?Event/g) || []).length + 1;
+
+            const snippet = `
+
+// Add data to '${randomRing.name}' ring
+timeline.setData([
+  { label: 'Event ${eventNumber}', startDate: '${startDate}', endDate: '${endDate}', color: '${color}' }
+], '${randomRing.name}');`;
+
+            editor.session.insert({ row, column: 0 }, snippet);
+          }
+        }
+        editor.focus();
+      }
+
+      document.querySelectorAll('.helper-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const type = btn.dataset.snippet;
+
+          if (type === 'ring') {
+            insertRing();
+          } else if (type === 'event') {
+            insertEvent();
+          } else if (type === 'revert') {
+            if (editor) {
+              editor.setValue(exampleCode, -1);
+              updatePreview();
+            }
+          }
+        });
+      });
+
+      const playgroundContainer = document.getElementById('playground-container');
+      document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const view = btn.dataset.view;
+
+          playgroundContainer.classList.remove('code-only', 'preview-only');
+          if (view === 'code') {
+            playgroundContainer.classList.add('code-only');
+          } else if (view === 'preview') {
+            playgroundContainer.classList.add('preview-only');
+          }
+        });
+      });
+
+      const helperPanel = document.querySelector('.helper-panel');
+      const playgroundSection = document.getElementById('playground');
+
+      function updateHelperPanelVisibility() {
+        if (!playgroundSection || !helperPanel) return;
+
+        const playgroundRect = playgroundSection.getBoundingClientRect();
+        const isInPlayground = playgroundRect.top < window.innerHeight && playgroundRect.bottom > 0;
+
+        if (isInPlayground) {
+          helperPanel.classList.add('visible');
+        } else {
+          helperPanel.classList.remove('visible');
+        }
+      }
+
+      window.addEventListener('scroll', updateHelperPanelVisibility);
+      window.addEventListener('resize', updateHelperPanelVisibility);
+      updateHelperPanelVisibility();
+
+      const form = document.getElementById('signup-form');
+      const successMessage = document.getElementById('success-message');
+      const submitButton = form?.querySelector('button[type="submit"]');
+
+      if (form) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          const formData = new FormData(form);
+          const email = formData.get('email');
+
+          if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+            alert('Please enter a valid email address');
+            return;
+          }
+
+          const originalButtonText = submitButton.textContent;
+          submitButton.disabled = true;
+          submitButton.textContent = 'Signing up...';
+          submitButton.setAttribute('aria-busy', 'true');
+
+          try {
+            const response = await fetch(form.action, {
+              method: 'POST',
+              body: formData,
+              headers: { 'Accept': 'application/json' }
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+              successMessage.style.display = 'block';
+              successMessage.setAttribute('role', 'status');
+              successMessage.setAttribute('aria-live', 'polite');
+              form.reset();
+
+              setTimeout(() => {
+                successMessage.style.display = 'none';
+              }, 5000);
+            } else {
+              throw new Error('Form submission failed');
+            }
+          } catch (error) {
+            console.error('Error submitting form:', error);
+            alert('Oops! Something went wrong. Please try again.');
+          } finally {
+            submitButton.disabled = false;
+            submitButton.textContent = originalButtonText;
+            submitButton.removeAttribute('aria-busy');
+          }
+        });
+      }
+
+      window.copyCode = function(button) {
+        const codeBlock = button.parentElement;
+        const code = codeBlock.querySelector('pre').innerText;
+        navigator.clipboard.writeText(code).then(() => {
+          const originalText = button.textContent;
+          button.textContent = 'Copied!';
+          button.setAttribute('aria-label', 'Code copied to clipboard');
+          setTimeout(() => {
+            button.textContent = originalText;
+            button.setAttribute('aria-label', 'Copy code to clipboard');
+          }, 2000);
+        }).catch(err => {
+          console.error('Failed to copy:', err);
+          alert('Failed to copy code. Please try selecting and copying manually.');
+        });
+      };
+
+      const darkModeToggle = document.getElementById('dark-mode-toggle');
+      const htmlElement = document.documentElement;
+
+      const currentTheme = localStorage.getItem('theme') || 'light';
+      htmlElement.setAttribute('data-theme', currentTheme);
+
+      if (darkModeToggle) {
+        darkModeToggle.setAttribute('aria-pressed', currentTheme === 'dark');
+
+        darkModeToggle.addEventListener('click', () => {
+          const currentTheme = htmlElement.getAttribute('data-theme');
+          const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+          htmlElement.setAttribute('data-theme', newTheme);
+          localStorage.setItem('theme', newTheme);
+          darkModeToggle.setAttribute('aria-pressed', newTheme === 'dark');
+        });
+      }
+
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          const href = this.getAttribute('href');
+          if (href === '#') return;
+
+          e.preventDefault();
+          const target = document.querySelector(href);
+          if (target) {
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+
+            target.setAttribute('tabindex', '-1');
+            target.focus();
+          }
+        });
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          const editPanel = document.getElementById('edit-panel');
+          if (editPanel && editPanel.classList.contains('visible')) {
+            closeEditPanel();
+          }
+
+          const tooltip = document.getElementById('interaction-tooltip');
+          if (tooltip && tooltip.classList.contains('visible')) {
+            hideInteractionTooltip();
+          }
+        }
+      });
+
+      document.querySelectorAll('.faq-question').forEach(question => {
+        question.addEventListener('click', () => {
+          const faqItem = question.parentElement;
+          const isOpen = faqItem.classList.contains('active');
+
+          document.querySelectorAll('.faq-item').forEach(item => {
+            item.classList.remove('active');
+            item.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+          });
+
+          if (!isOpen) {
+            faqItem.classList.add('active');
+            question.setAttribute('aria-expanded', 'true');
+          }
+        });
+
+        question.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            question.click();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

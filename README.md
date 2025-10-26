@@ -6,7 +6,7 @@ A flexible, zero-dependency JavaScript library for creating circular timeline vi
 
 Perfect for annual planning, project timelines, and cyclical data. Built with pure JavaScript and SVG.
 
-📺 **[Live Demo](https://codepen.io/mahmoodseoud/pen/ByjJOVE)** | 📦 [npm](https://npmjs.com/package/circalify) | ⭐ [GitHub](https://github.com/MahmoodSeoud/circalify)
+🌐 **[Website](https://mahmoodseoud.github.io/circalify)** | 📺 **[Live Demo](https://codepen.io/mahmoodseoud/pen/ByjJOVE)** | 📦 [npm](https://npmjs.com/package/circalify) | ⭐ [GitHub](https://github.com/MahmoodSeoud/circalify)
 
 ## Why Circular Timelines?
 

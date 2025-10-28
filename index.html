@@ -1260,6 +1260,12 @@
               </svg>
               <span>Instant delivery via email</span>
             </div>
+            <div class="benefit-item">
+              <svg class="benefit-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+              </svg>
+              <span>Weekly design tips and examples</span>
+            </div>
           </div>
 
           <div class="hero-image">
@@ -1596,6 +1602,12 @@ timeline.<span class="function">setData</span>([
       </div>
     </footer>
 
+    <script type="module">
+      // Load CircularTimeline as global for playground
+      import CircularTimeline from 'https://unpkg.com/circalify@latest/src/index.js';
+      window.CircularTimeline = CircularTimeline;
+    </script>
+
     <script>
       // Dark mode toggle functionality
       const darkModeToggle = document.querySelector('.dark-mode-toggle');
@@ -1660,9 +1672,7 @@ timeline.<span class="function">setData</span>([
       editor.session.setTabSize(2);
       editor.session.setUseWrapMode(true);
 
-      const defaultCode = `import CircularTimeline from 'https://unpkg.com/circalify@latest/src/index.js';
-
-const timeline = new CircularTimeline('#preview', {
+      const defaultCode = `const timeline = new CircularTimeline('#preview', {
   startYear: 2025,
   numberOfMonths: 12,
   rings: [

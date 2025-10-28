@@ -403,6 +403,41 @@
         flex-shrink: 0;
       }
 
+      .benefits-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: var(--space-4);
+        margin: var(--space-8) auto;
+        max-width: 900px;
+      }
+
+      .benefit-item {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--space-3);
+      }
+
+      .benefit-icon {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        color: var(--primary);
+        margin-top: 2px;
+      }
+
+      .benefit-item span {
+        font-size: 0.95rem;
+        color: var(--text);
+        line-height: var(--line-height-relaxed);
+      }
+
+      @media (max-width: 768px) {
+        .benefits-list {
+          grid-template-columns: 1fr;
+          gap: var(--space-3);
+        }
+      }
+
       .success-message {
         color: var(--success);
         font-weight: 600;
@@ -1986,6 +2021,33 @@
             Zero dependencies, pure JavaScript. Perfect for annual planning, project roadmaps, and cyclical data.
           </p>
 
+          <div class="benefits-list">
+            <div class="benefit-item">
+              <svg class="benefit-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 11-1.06-1.06l7.25-7.25a.75.75 0 011.06 0Z"/><path d="M2.5 1a1.5 1.5 0 100 3 1.5 1.5 0 000-3ZM13.5 13a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0Z"/>
+              </svg>
+              <span>10 production-ready templates</span>
+            </div>
+            <div class="benefit-item">
+              <svg class="benefit-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 11-1.06-1.06l7.25-7.25a.75.75 0 011.06 0Z"/><path d="M2.5 1a1.5 1.5 0 100 3 1.5 1.5 0 000-3ZM13.5 13a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0Z"/>
+              </svg>
+              <span>Quarterly planning, product roadmaps, editorial calendars & more</span>
+            </div>
+            <div class="benefit-item">
+              <svg class="benefit-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 11-1.06-1.06l7.25-7.25a.75.75 0 011.06 0Z"/><path d="M2.5 1a1.5 1.5 0 100 3 1.5 1.5 0 000-3ZM13.5 13a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0Z"/>
+              </svg>
+              <span>Copy-paste code you can customize immediately</span>
+            </div>
+            <div class="benefit-item">
+              <svg class="benefit-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 11-1.06-1.06l7.25-7.25a.75.75 0 011.06 0Z"/><path d="M2.5 1a1.5 1.5 0 100 3 1.5 1.5 0 000-3ZM13.5 13a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0Z"/>
+              </svg>
+              <span>Weekly design inspiration & implementation tips</span>
+            </div>
+          </div>
+
           <form class="email-signup" id="signup-form" action="https://api.web3forms.com/submit" method="POST">
             <input type="hidden" name="access_key" value="9973b241-2a5e-439a-b2bd-441e85933cb4">
             <input
@@ -2000,7 +2062,7 @@
               <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                 <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/>
               </svg>
-              Get Launch Updates
+              Download Templates
             </button>
           </form>
 
@@ -2008,11 +2070,11 @@
             <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
             </svg>
-            No spam, just updates when we launch v1.0. Unsubscribe anytime.
+            Templates sent to your inbox. No spam, unsubscribe anytime.
           </p>
 
           <div class="success-message" id="success-message" role="status">
-            Thanks! We'll notify you when we launch.
+            Thanks! Check your inbox for your 10 templates.
           </div>
 
           <div class="hero-image">
@@ -2231,6 +2293,16 @@
               </button>
               <div class="faq-answer">
                 <p>Yes! The MIT license allows unrestricted use in commercial projects. No attribution required (though always appreciated!).</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question" aria-expanded="false">
+                What do I get when I sign up?
+              </button>
+              <div class="faq-answer">
+                <p><strong>Immediately:</strong> 10 professional timeline templates as HTML files ready to customize. Includes quarterly planning, product roadmaps, editorial calendars, event planning, HR cycles, academic planners, and more.</p>
+                <p><strong>Ongoing:</strong> Weekly showcases of creative timeline designs and implementation tips to help you build better visualizations. No spam, unsubscribe anytime.</p>
               </div>
             </div>
 

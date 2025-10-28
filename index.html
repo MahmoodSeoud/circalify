@@ -405,10 +405,10 @@
 
       .benefits-list {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: var(--space-4);
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-4) var(--space-6);
         margin: var(--space-8) auto;
-        max-width: 900px;
+        max-width: 800px;
       }
 
       .benefit-item {
@@ -836,6 +836,27 @@
         line-height: var(--line-height-relaxed);
       }
 
+      .faq-answer code {
+        background: var(--bg-dark);
+        color: var(--primary);
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-family: 'Monaco', 'Courier New', monospace;
+        font-size: 0.9em;
+        font-weight: 500;
+      }
+
+      .faq-answer ul {
+        padding: var(--space-5) var(--space-6);
+        padding-top: 0;
+        color: var(--text-light);
+        line-height: var(--line-height-relaxed);
+      }
+
+      .faq-answer ul li {
+        margin: var(--space-2) 0;
+      }
+
       /* Quick Start Section */
       .quick-start {
         padding: var(--space-10) 0;
@@ -843,9 +864,11 @@
       }
 
       .code-blocks-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        display: flex;
+        flex-direction: column;
         gap: var(--space-6);
+        max-width: 800px;
+        margin: 0 auto;
       }
 
       .code-block-label {
@@ -1181,27 +1204,27 @@
           <div class="benefits-list">
             <div class="benefit-item">
               <svg class="benefit-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                <path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 11-1.06-1.06l7.25-7.25a.75.75 0 011.06 0Z"/><path d="M2.5 1a1.5 1.5 0 100 3 1.5 1.5 0 000-3ZM13.5 13a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0Z"/>
+                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
               </svg>
-              <span>10 templates: OKR planning, product launches, content calendars, event timelines</span>
+              <span>10 production-ready templates</span>
             </div>
             <div class="benefit-item">
               <svg class="benefit-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                <path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 11-1.06-1.06l7.25-7.25a.75.75 0 011.06 0Z"/><path d="M2.5 1a1.5 1.5 0 100 3 1.5 1.5 0 000-3ZM13.5 13a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0Z"/>
+                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
               </svg>
-              <span>Instant delivery—HTML files you customize in your editor</span>
+              <span>Copy-paste ready code</span>
             </div>
             <div class="benefit-item">
               <svg class="benefit-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                <path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 11-1.06-1.06l7.25-7.25a.75.75 0 011.06 0Z"/><path d="M2.5 1a1.5 1.5 0 100 3 1.5 1.5 0 000-3ZM13.5 13a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0Z"/>
+                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
               </svg>
-              <span>Real-world examples with actual data (not "Lorem Ipsum" garbage)</span>
+              <span>Real-world examples with actual data</span>
             </div>
             <div class="benefit-item">
               <svg class="benefit-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                <path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 11-1.06-1.06l7.25-7.25a.75.75 0 011.06 0Z"/><path d="M2.5 1a1.5 1.5 0 100 3 1.5 1.5 0 000-3ZM13.5 13a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0Z"/>
+                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
               </svg>
-              <span>Plus: monthly showcase of creative timeline implementations</span>
+              <span>Monthly design showcase</span>
             </div>
           </div>
 

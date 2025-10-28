@@ -83,8 +83,7 @@ class CircalifyCore {
       background: ${this.generalConfig.backgroundColor};
     `;
 
-    // Add header
-    this._createHeader(wrapper);
+    // Header removed - no longer needed
 
     // Create content wrapper
     const contentWrapper = document.createElement('div');
@@ -170,52 +169,6 @@ class CircalifyCore {
 
     // Apply CSS animations
     this._injectStyles();
-  }
-
-  /**
-   * Create header bar
-   * @private
-   */
-  _createHeader(wrapper) {
-    const header = document.createElement('div');
-    header.style.cssText = `
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 15px 30px;
-      background: white;
-      border-bottom: 1px solid #e0e0e0;
-      font-family: ${this.generalConfig.fontFamily};
-      min-height: 60px;
-    `;
-
-    // Center: Title and date range
-    const centerSection = document.createElement('div');
-    centerSection.style.cssText = `
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      font-size: 16px;
-      font-weight: 600;
-      color: #333;
-    `;
-
-    const startYear = this.generalConfig.startYear;
-    const startMonth = this.generalConfig.startMonth;
-    const endMonth = (startMonth + this.generalConfig.numberOfMonths - 1) % 12;
-    const endYear = startYear + Math.floor((startMonth + this.generalConfig.numberOfMonths - 1) / 12);
-
-    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-    centerSection.innerHTML = `
-      <span style="padding: 0 15px;">${this.generalConfig.title}</span>
-      <span style="color: #666; font-size: 14px;">
-        ${monthNames[startMonth]} ${startYear} - ${monthNames[endMonth]} ${endYear}
-      </span>
-    `;
-
-    header.appendChild(centerSection);
-    wrapper.appendChild(header);
   }
 
   /**

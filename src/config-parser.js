@@ -67,7 +67,7 @@ class ConfigParser {
    */
   _parseGeneralSettings(config) {
     return {
-      title: config.title || 'Annual Wheel',
+      title: config.title !== undefined ? config.title : '',
       calendarSettings: this._validateEnum(
         config.calendarSettings,
         ['static', 'rolling'],

@@ -753,6 +753,12 @@
         z-index: 2;
       }
 
+      /* Hide the library's title header */
+      #preview .annual-wheel-header,
+      #preview text:first-of-type {
+        display: none;
+      }
+
       .info-badge {
         position: absolute;
         bottom: var(--space-4);
@@ -1680,16 +1686,30 @@ timeline.<span class="function">setData</span>([
   startYear: 2025,
   backgroundColor: 'transparent',
   rings: [
+    { type: 'data', name: 'Quarters', unit: 'quarter', color: '#ffccbc', height: 14 },
+    { type: 'header', headerText: 'Quarters', color: '#2c2c2c', height: 3, fontColor: '#ffffff' },
     { type: 'data', name: 'Projects', unit: 'month', color: '#ffe0b2', height: 12 },
+    { type: 'header', headerText: 'Milestones', color: '#2c2c2c', height: 3, fontColor: '#ffffff' },
+    { type: 'calendar', calendarType: 'weeks', color: '#e0e0e0', height: 8 },
+    { type: 'header', headerText: 'Calendar', color: '#2c2c2c', height: 3, fontColor: '#ffffff' },
     { type: 'calendar', calendarType: 'month-names', showYear: false, color: '#ffffff', height: 10 }
   ]
 });
 
 timeline.setData([
-  { label: 'Planning', startDate: '2025-01-01', endDate: '2025-02-28', color: '#f4511e' },
-  { label: 'Development', startDate: '2025-03-01', endDate: '2025-06-30', color: '#ff6f00' },
-  { label: 'Testing', startDate: '2025-07-01', endDate: '2025-08-31', color: '#ffa726' },
-  { label: 'Launch', startDate: '2025-09-01', endDate: '2025-12-31', color: '#ffb74d' }
+  { label: 'Q1 Planning', startDate: '2025-01-01', endDate: '2025-03-31', color: '#f4511e' },
+  { label: 'Q2 Development', startDate: '2025-04-01', endDate: '2025-06-30', color: '#ff6f00' },
+  { label: 'Q3 Launch', startDate: '2025-07-01', endDate: '2025-09-30', color: '#ffa726' },
+  { label: 'Q4 Growth', startDate: '2025-10-01', endDate: '2025-12-31', color: '#ffb74d' }
+], 'Quarters');
+
+timeline.setData([
+  { label: 'Research', startDate: '2025-01-01', endDate: '2025-02-15', color: '#d84315' },
+  { label: 'Design', startDate: '2025-02-16', endDate: '2025-03-31', color: '#e64a19' },
+  { label: 'Alpha', startDate: '2025-04-01', endDate: '2025-04-30', color: '#f4511e' },
+  { label: 'Beta', startDate: '2025-06-01', endDate: '2025-06-30', color: '#ff5722' },
+  { label: 'Launch', startDate: '2025-09-01', endDate: '2025-09-15', color: '#ff6f00' },
+  { label: 'Marketing', startDate: '2025-10-01', endDate: '2025-12-31', color: '#ffa726' }
 ], 'Projects');`;
 
       editor.setValue(defaultCode);

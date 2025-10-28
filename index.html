@@ -754,9 +754,8 @@
       }
 
       /* Hide the library's title header */
-      #preview .annual-wheel-header,
-      #preview text:first-of-type {
-        display: none;
+      #preview > div[style*="border-bottom"] {
+        display: none !important;
       }
 
       .info-badge {

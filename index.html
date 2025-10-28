@@ -273,6 +273,13 @@
         text-align: center;
       }
 
+      .hero-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-3);
+        margin-bottom: var(--space-5);
+      }
+
       .hero-badge {
         display: inline-flex;
         align-items: center;
@@ -283,7 +290,6 @@
         font-size: 0.875rem;
         font-weight: 600;
         color: var(--text);
-        margin-bottom: var(--space-5);
         border: 1px solid var(--border-light);
       }
 
@@ -301,6 +307,29 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
+      }
+
+      .hero-tagline {
+        display: block;
+        font-size: clamp(1rem, 2.5vw, 1.25rem);
+        font-weight: 500;
+        margin-top: var(--space-4);
+        background: var(--text);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        opacity: 0.9;
+      }
+
+      .hero-why {
+        font-size: 1.125rem;
+        color: var(--text-light);
+        margin-bottom: var(--space-6);
+        line-height: var(--line-height-relaxed);
+      }
+
+      .hero-why strong {
+        color: var(--primary);
       }
 
       .hero-subtitle {
@@ -1158,17 +1187,28 @@
       <!-- Hero Section -->
       <section class="hero">
         <div class="container">
-          <div class="hero-badge">
-            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
-            </svg>
-            <span>MIT Licensed & Open Source</span>
+          <div class="hero-badges">
+            <div class="hero-badge">
+              <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+              </svg>
+              <span>MIT Licensed</span>
+            </div>
+            <div class="hero-badge">
+              <span>⭐ 8 stars on GitHub</span>
+            </div>
+            <div class="hero-badge">
+              <span>📦 Available on npm</span>
+            </div>
           </div>
 
-          <h1>JavaScript Library for Circular Timeline Visualizations</h1>
+          <h1>
+            JavaScript Library for Circular Timeline Visualizations
+            <span class="hero-tagline">Build year-at-a-glance timelines in 5 minutes. Zero dependencies, works everywhere.</span>
+          </h1>
 
-          <p class="hero-subtitle">
-            For annual planning, product roadmaps, content calendars, and any cyclical data. Open source, MIT licensed, works with any framework.
+          <p class="hero-why">
+            <strong>Why circular?</strong> Year-long projects fit in half the space and patterns jump out visually. Linear timelines waste screen real estate and hide cyclical patterns.
           </p>
 
           <div class="email-signup">
@@ -1212,19 +1252,13 @@
               <svg class="benefit-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                 <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
               </svg>
-              <span>Copy-paste ready code</span>
-            </div>
-            <div class="benefit-item">
-              <svg class="benefit-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
-              </svg>
               <span>Real-world examples with actual data</span>
             </div>
             <div class="benefit-item">
               <svg class="benefit-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                 <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
               </svg>
-              <span>Monthly design showcase</span>
+              <span>Instant delivery via email</span>
             </div>
           </div>
 

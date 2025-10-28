@@ -1606,6 +1606,9 @@ timeline.<span class="function">setData</span>([
       // Load CircularTimeline as global for playground
       import CircularTimeline from 'https://unpkg.com/circalify@latest/src/index.js';
       window.CircularTimeline = CircularTimeline;
+
+      // Trigger initial preview once loaded
+      window.dispatchEvent(new Event('circalify-loaded'));
     </script>
 
     <script>
@@ -1674,19 +1677,19 @@ timeline.<span class="function">setData</span>([
 
       const defaultCode = `const timeline = new CircularTimeline('#preview', {
   startYear: 2025,
-  numberOfMonths: 12,
+  backgroundColor: 'transparent',
   rings: [
-    { type: 'calendar', calendarType: 'month-names' },
-    { type: 'data', name: 'Events' }
+    { type: 'data', name: 'Projects', unit: 'month', color: '#ffe0b2', height: 12 },
+    { type: 'calendar', calendarType: 'month-names', showYear: false, color: '#ffffff', height: 10 }
   ]
 });
 
 timeline.setData([
-  { label: 'Project Start', startDate: '2025-01-15', endDate: '2025-01-15', color: '#f4511e' },
-  { label: 'Development', startDate: '2025-02-01', endDate: '2025-05-31', color: '#10B981' },
-  { label: 'Testing', startDate: '2025-06-01', endDate: '2025-06-30', color: '#F59E0B' },
-  { label: 'Launch', startDate: '2025-07-15', endDate: '2025-07-15', color: '#f4511e' }
-], 'Events');`;
+  { label: 'Planning', startDate: '2025-01-01', endDate: '2025-02-28', color: '#f4511e' },
+  { label: 'Development', startDate: '2025-03-01', endDate: '2025-06-30', color: '#ff6f00' },
+  { label: 'Testing', startDate: '2025-07-01', endDate: '2025-08-31', color: '#ffa726' },
+  { label: 'Launch', startDate: '2025-09-01', endDate: '2025-12-31', color: '#ffb74d' }
+], 'Projects');`;
 
       editor.setValue(defaultCode);
       editor.clearSelection();
@@ -1697,6 +1700,13 @@ timeline.setData([
         const code = editor.getValue();
         const errorDisplay = document.getElementById('error-display');
         const preview = document.getElementById('preview');
+
+        // Check if CircularTimeline is loaded
+        if (!window.CircularTimeline) {
+          errorDisplay.textContent = 'Loading CircularTimeline...';
+          errorDisplay.classList.add('show');
+          return;
+        }
 
         // Clear previous timeline
         if (previewTimeline && previewTimeline.destroy) {
@@ -1717,6 +1727,11 @@ timeline.setData([
       }
 
       editor.session.on('change', updatePreview);
+
+      // Wait for CircularTimeline to load, then show initial preview
+      window.addEventListener('circalify-loaded', () => {
+        updatePreview();
+      });
 
       // Helper buttons
       document.querySelectorAll('.helper-btn').forEach(btn => {
@@ -1774,8 +1789,7 @@ timeline.setData([
         }
       });
 
-      // Initialize preview
-      setTimeout(updatePreview, 500);
+      // Preview will initialize when CircularTimeline loads (via circalify-loaded event)
     </script>
   </body>
 </html>

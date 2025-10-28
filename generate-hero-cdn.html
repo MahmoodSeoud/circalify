@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate Hero Image</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0d1117;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    #timeline-container {
+      width: 1200px;
+      height: 800px;
+      background: #0d1117;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #timeline {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="timeline-container">
+    <div id="timeline"></div>
+  </div>
+
+  <script type="module">
+    import CircularTimeline from 'https://unpkg.com/circalify@latest/src/index.js';
+
+    const timeline = new CircularTimeline('#timeline', {
+      startYear: 2025,
+      backgroundColor: 'transparent',
+      rings: [
+        // Quarterly data ring (outermost) - ORANGE
+        {
+          type: 'data',
+          name: 'Quarters',
+          unit: 'quarter',
+          color: '#ffccbc',
+          height: 14,
+          fontSize: 20
+        },
+        // Monthly data ring - AMBER
+        {
+          type: 'data',
+          name: 'Projects',
+          unit: 'month',
+          color: '#ffe0b2',
+          height: 12,
+          fontSize: 16
+        },
+        // Week numbers calendar
+        {
+          type: 'calendar',
+          calendarType: 'weeks',
+          color: '#e0e0e0',
+          height: 8,
+          fontSize: 11
+        },
+        // Month labels (innermost ring)
+        {
+          type: 'calendar',
+          calendarType: 'month-names',
+          color: '#ffffff',
+          height: 10,
+          fontSize: 22
+        }
+      ]
+    });
+
+    // Add quarterly data
+    timeline.setData([
+      { label: 'Q1 Planning', startDate: '2025-01-01', endDate: '2025-03-31', color: '#f4511e' },
+      { label: 'Q2 Development', startDate: '2025-04-01', endDate: '2025-06-30', color: '#ff6f00' },
+      { label: 'Q3 Launch', startDate: '2025-07-01', endDate: '2025-09-30', color: '#ffa726' },
+      { label: 'Q4 Growth', startDate: '2025-10-01', endDate: '2025-12-31', color: '#ffb74d' }
+    ], 'Quarters');
+
+    // Add monthly project milestones
+    timeline.setData([
+      { label: 'Research', startDate: '2025-01-01', endDate: '2025-02-15', color: '#d84315' },
+      { label: 'Design', startDate: '2025-02-16', endDate: '2025-03-31', color: '#e64a19' },
+      { label: 'Alpha', startDate: '2025-04-01', endDate: '2025-04-30', color: '#f4511e' },
+      { label: 'Beta', startDate: '2025-06-01', endDate: '2025-06-30', color: '#ff5722' },
+      { label: 'Launch', startDate: '2025-09-01', endDate: '2025-09-15', color: '#ff6f00' },
+      { label: 'Marketing', startDate: '2025-10-01', endDate: '2025-12-31', color: '#ffa726' }
+    ], 'Projects');
+  </script>
+</body>
+</html>

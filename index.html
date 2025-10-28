@@ -55,22 +55,22 @@
         --space-10: 5rem;     /* 80px */
         --space-12: 6rem;     /* 96px */
 
-        /* Colors - Modern Startup Palette */
-        --primary: #6366F1;
-        --primary-dark: #4F46E5;
-        --primary-light: #818CF8;
-        --secondary: #10B981;
-        --secondary-dark: #059669;
-        --accent: #F59E0B;
+        /* Colors - D3-Inspired Palette */
+        --primary: #f4511e;
+        --primary-dark: #d84315;
+        --primary-light: #ff7043;
+        --secondary: #616161;
+        --secondary-dark: #424242;
+        --accent: #ffa726;
         --text: #1F2937;
         --text-light: #6B7280;
         --bg: #FFFFFF;
-        --bg-light: #F9FAFB;
-        --bg-lighter: #F3F4F6;
-        --border: #E5E7EB;
-        --border-light: #F3F4F6;
-        --success: #10B981;
-        --error: #EF4444;
+        --bg-light: #fafafa;
+        --bg-lighter: #f5f5f5;
+        --border: #e0e0e0;
+        --border-light: #f5f5f5;
+        --success: #66bb6a;
+        --error: #ef5350;
 
         /* Typography */
         --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -92,13 +92,13 @@
 
       /* Dark mode colors */
       [data-theme="dark"] {
-        --text: #F3F4F6;
-        --text-light: #D1D5DB;
-        --bg: #0F172A;
-        --bg-light: #1E293B;
-        --bg-lighter: #334155;
-        --border: #475569;
-        --border-light: #334155;
+        --text: #e8eaed;
+        --text-light: #9aa0a6;
+        --bg: #0d1117;
+        --bg-light: #161b22;
+        --bg-lighter: #21262d;
+        --border: #30363d;
+        --border-light: #21262d;
       }
 
       body {
@@ -1638,10 +1638,10 @@ const timeline = new CircularTimeline('#preview', {
 });
 
 timeline.setData([
-  { label: 'Project Start', startDate: '2025-01-15', endDate: '2025-01-15', color: '#6366F1' },
+  { label: 'Project Start', startDate: '2025-01-15', endDate: '2025-01-15', color: '#f4511e' },
   { label: 'Development', startDate: '2025-02-01', endDate: '2025-05-31', color: '#10B981' },
   { label: 'Testing', startDate: '2025-06-01', endDate: '2025-06-30', color: '#F59E0B' },
-  { label: 'Launch', startDate: '2025-07-15', endDate: '2025-07-15', color: '#6366F1' }
+  { label: 'Launch', startDate: '2025-07-15', endDate: '2025-07-15', color: '#f4511e' }
 ], 'Events');`;
 
       editor.setValue(defaultCode);
@@ -1682,7 +1682,7 @@ timeline.setData([
             editor.setValue(defaultCode);
           } else if (snippet === 'ring') {
             editor.session.insert(editor.getCursorPosition(), `
-  { type: 'data', name: 'NewRing', color: '#6366F1', height: 20 },`);
+  { type: 'data', name: 'NewRing', color: '#f4511e', height: 20 },`);
           } else if (snippet === 'event') {
             editor.session.insert(editor.getCursorPosition(), `
   { label: 'Event Name', startDate: '2025-03-15', endDate: '2025-03-15' },`);

@@ -1753,18 +1753,247 @@ timeline.setData([
         updatePreview();
       });
 
+      // Random helper functions
+      function randomColor() {
+        const colors = [
+          '#FF6B35', '#004E89', '#1A936F', '#C792EA', '#82AAFF',
+          '#F78C6C', '#C3E88D', '#89DDFF', '#FF5370', '#FFCB6B',
+          '#F07178', '#BB80B3', '#7E57C2', '#26A69A', '#66BB6A',
+          '#EF5350', '#EC407A', '#AB47BC', '#5C6BC0', '#42A5F5',
+          '#29B6F6', '#26C6DA', '#00ACC1', '#00897B', '#43A047',
+          '#7CB342', '#C0CA33', '#FDD835', '#FFB300', '#FB8C00',
+          '#F4511E', '#6D4C41', '#78909C'
+        ];
+        return colors[Math.floor(Math.random() * colors.length)];
+      }
+
+      function randomHeight() {
+        return Math.floor(Math.random() * 9) + 4;
+      }
+
+      function randomDate() {
+        const year = 2025;
+        const month = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+        const day = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+
+      function randomCalendarUnit() {
+        const units = ['day', 'week', 'month', 'quarter', 'year'];
+        return units[Math.floor(Math.random() * units.length)];
+      }
+
+      function randomCalendarType() {
+        const types = ['month-names', 'weeks', 'days', 'quarters'];
+        return types[Math.floor(Math.random() * types.length)];
+      }
+
+      function randomFontSize() {
+        return Math.floor(Math.random() * 10) + 12;
+      }
+
+      function randomEndDate(startDate, unit) {
+        const start = new Date(startDate);
+        const daysToAdd = {
+          'day': Math.floor(Math.random() * 3) + 1,
+          'week': Math.floor(Math.random() * 14) + 7,
+          'month': Math.floor(Math.random() * 60) + 30,
+          'quarter': Math.floor(Math.random() * 90) + 90,
+          'year': Math.floor(Math.random() * 180) + 180
+        };
+
+        const days = daysToAdd[unit] || 1;
+        const end = new Date(start);
+        end.setDate(end.getDate() + days);
+
+        return end.toISOString().split('T')[0];
+      }
+
       // Helper buttons
       document.querySelectorAll('.helper-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const snippet = btn.dataset.snippet;
           if (snippet === 'revert') {
             editor.setValue(defaultCode);
+            editor.clearSelection();
           } else if (snippet === 'ring') {
-            editor.session.insert(editor.getCursorPosition(), `
-  { type: 'data', name: 'NewRing', color: '#f4511e', height: 20 },`);
+            const code = editor.getValue();
+            // Find the rings array and insert after opening bracket
+            const ringsStart = code.indexOf('rings: [');
+            if (ringsStart !== -1) {
+              // Find the matching closing bracket for the rings array
+              let bracketCount = 0;
+              let ringsArrayStart = code.indexOf('[', ringsStart);
+              let insertPos = -1;
+
+              for (let i = ringsArrayStart; i < code.length; i++) {
+                if (code[i] === '[') bracketCount++;
+                if (code[i] === ']') {
+                  bracketCount--;
+                  if (bracketCount === 0) {
+                    insertPos = i;
+                    break;
+                  }
+                }
+              }
+
+              if (insertPos !== -1) {
+                // Check if we need to add a comma before the new ring
+                let checkPos = insertPos - 1;
+                let needsComma = true;
+
+                // Skip whitespace backwards
+                while (checkPos >= 0 && /\s/.test(code[checkPos])) {
+                  checkPos--;
+                }
+
+                // If we find a comma, we don't need to add one
+                if (code[checkPos] === ',') {
+                  needsComma = false;
+                }
+
+                // Generate random ring properties
+                const isDataRing = Math.random() > 0.3;
+                const color = randomColor();
+                const height = randomHeight();
+                const fontSize = randomFontSize();
+                const ringNumber = (code.match(/name: ['"].*?Ring/g) || []).length + 1;
+
+                // Convert to row/column for Ace editor
+                const beforeInsert = code.substring(0, insertPos);
+                const row = beforeInsert.split('\n').length - 1;
+                const col = beforeInsert.split('\n').pop().length;
+
+                let newRing;
+                if (isDataRing) {
+                  const unit = randomCalendarUnit();
+                  newRing = needsComma
+                    ? `,
+    { type: 'data', name: 'Ring${ringNumber}', unit: '${unit}', color: '${color}', height: ${height}, fontSize: ${fontSize} }
+  `
+                    : `
+    { type: 'data', name: 'Ring${ringNumber}', unit: '${unit}', color: '${color}', height: ${height}, fontSize: ${fontSize} }
+  `;
+                } else {
+                  const calendarType = randomCalendarType();
+                  newRing = needsComma
+                    ? `,
+    { type: 'calendar', calendarType: '${calendarType}', color: '${color}', height: ${height}, fontSize: ${fontSize} }
+  `
+                    : `
+    { type: 'calendar', calendarType: '${calendarType}', color: '${color}', height: ${height}, fontSize: ${fontSize} }
+  `;
+                }
+
+                editor.session.insert({row, column: col}, newRing);
+              }
+            }
           } else if (snippet === 'event') {
-            editor.session.insert(editor.getCursorPosition(), `
-  { label: 'Event Name', startDate: '2025-03-15', endDate: '2025-03-15' },`);
+            const code = editor.getValue();
+
+            // Find all data rings
+            const dataRings = [];
+            const ringRegex = /{\s*type:\s*['"]data['"],\s*name:\s*['"]([^'"]+)['"](?:,\s*unit:\s*['"]([^'"]+)['"])?[^}]*}/g;
+            let match;
+            while ((match = ringRegex.exec(code)) !== null) {
+              dataRings.push({
+                name: match[1],
+                unit: match[2] || 'month'
+              });
+            }
+
+            if (dataRings.length === 0) {
+              alert('Please add a data ring first before adding events!');
+              return;
+            }
+
+            // Pick a random data ring
+            const randomRing = dataRings[Math.floor(Math.random() * dataRings.length)];
+
+            // Find the setData call for the randomly selected ring
+            const setDataForRingRegex = new RegExp(
+              `timeline\\.setData\\s*\\(\\s*\\[([^\\]]*?)\\]\\s*,\\s*['"]${randomRing.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}['"]\\s*\\)`,
+              's'
+            );
+            const ringSetDataMatch = code.match(setDataForRingRegex);
+
+            if (ringSetDataMatch) {
+              // Found existing setData for this ring - add to it
+              const arrayStart = code.indexOf(ringSetDataMatch[0]) + ringSetDataMatch[0].indexOf('[') + 1;
+
+              // Find the closing bracket
+              let bracketCount = 1;
+              let insertPos = -1;
+
+              for (let i = arrayStart; i < code.length; i++) {
+                if (code[i] === '[') bracketCount++;
+                if (code[i] === ']') {
+                  bracketCount--;
+                  if (bracketCount === 0) {
+                    insertPos = i;
+                    break;
+                  }
+                }
+              }
+
+              if (insertPos !== -1) {
+                // Check if we need to add a comma before the new event
+                let checkPos = insertPos - 1;
+                let needsComma = true;
+
+                // Skip whitespace backwards
+                while (checkPos >= 0 && /\s/.test(code[checkPos])) {
+                  checkPos--;
+                }
+
+                // If we find a comma or opening bracket, we don't need to add a comma
+                if (code[checkPos] === ',' || code[checkPos] === '[') {
+                  needsComma = false;
+                }
+
+                // Generate random event properties
+                const color = randomColor();
+                const startDate = randomDate();
+                const endDate = randomEndDate(startDate, randomRing.unit);
+                const eventNumber = (code.match(/label: ['"].*?Event/g) || []).length + 1;
+
+                // Convert to row/column for Ace editor
+                const beforeInsert = code.substring(0, insertPos);
+                const row = beforeInsert.split('\n').length - 1;
+                const col = beforeInsert.split('\n').pop().length;
+
+                const newEvent = needsComma
+                  ? `,
+  { label: 'Event ${eventNumber}', startDate: '${startDate}', endDate: '${endDate}', color: '${color}' }
+`
+                  : `
+  { label: 'Event ${eventNumber}', startDate: '${startDate}', endDate: '${endDate}', color: '${color}' }
+`;
+
+                editor.session.insert({row, column: col}, newEvent);
+              }
+            } else {
+              // No setData for this ring yet - create a new one
+              const lastSetDataMatch = code.match(/timeline\.setData\([^)]+\);/g);
+              if (lastSetDataMatch) {
+                const lastSetData = lastSetDataMatch[lastSetDataMatch.length - 1];
+                const insertPos = code.indexOf(lastSetData) + lastSetData.length;
+                const row = code.substring(0, insertPos).split('\n').length;
+
+                const color = randomColor();
+                const startDate = randomDate();
+                const endDate = randomEndDate(startDate, randomRing.unit);
+                const eventNumber = (code.match(/label: ['"].*?Event/g) || []).length + 1;
+
+                const snippet = `
+
+timeline.setData([
+  { label: 'Event ${eventNumber}', startDate: '${startDate}', endDate: '${endDate}', color: '${color}' }
+], '${randomRing.name}');`;
+
+                editor.session.insert({ row, column: 0 }, snippet);
+              }
+            }
           }
         });
       });

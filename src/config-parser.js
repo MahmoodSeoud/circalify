@@ -10,27 +10,32 @@ import CIRCALIFY_CONSTANTS from './constants.js';
 class ConfigParser {
   constructor() {
     // Destructure constants
-    const { DIMENSIONS, VALIDATION, TIMING, TIME } = CIRCALIFY_CONSTANTS;
+    const { DIMENSIONS, VALIDATION, TIMING, TIME, UI_STRINGS } = CIRCALIFY_CONSTANTS;
+    this.uiStringsByLocale = UI_STRINGS;
 
     // Store constants as instance properties for easy access
-    this.DEFAULT_INNER_RADIUS = DIMENSIONS?.DEFAULT_INNER_RADIUS || 150;
-    this.DEFAULT_OUTER_RADIUS = DIMENSIONS?.DEFAULT_OUTER_RADIUS || 420;
-    this.DEFAULT_VIEWBOX_PADDING = DIMENSIONS?.DEFAULT_VIEWBOX_PADDING || 80;
-    this.DEFAULT_RING_HEIGHT = DIMENSIONS?.DEFAULT_RING_HEIGHT || 10;
-    this.MIN_RING_HEIGHT = DIMENSIONS?.MIN_RING_HEIGHT || 1;
-    this.DEFAULT_FONT_SIZE = DIMENSIONS?.DEFAULT_FONT_SIZE || 15;
-    this.MIN_FONT_SIZE = DIMENSIONS?.MIN_FONT_SIZE || 6;
-    this.SMALL_FONT_SIZE = DIMENSIONS?.SMALL_FONT_SIZE || 7;
-    this.MIN_MONTH = VALIDATION?.MIN_MONTH || 0;
-    this.MAX_MONTH = VALIDATION?.MAX_MONTH || 11;
-    this.MIN_MONTHS_COUNT = VALIDATION?.MIN_MONTHS_COUNT || 1;
-    this.MAX_MONTHS_COUNT = VALIDATION?.MAX_MONTHS_COUNT || 60;
-    this.DEFAULT_ANIMATION_DURATION = TIMING?.DEFAULT_ANIMATION_DURATION || 300;
+    this.DEFAULT_INNER_RADIUS = DIMENSIONS.DEFAULT_INNER_RADIUS;
+    this.DEFAULT_OUTER_RADIUS = DIMENSIONS.DEFAULT_OUTER_RADIUS;
+    this.DEFAULT_VIEWBOX_PADDING = DIMENSIONS.DEFAULT_VIEWBOX_PADDING;
+    this.DEFAULT_RING_HEIGHT = DIMENSIONS.DEFAULT_RING_HEIGHT;
+    this.MIN_RING_HEIGHT = DIMENSIONS.MIN_RING_HEIGHT;
+    this.DEFAULT_FONT_SIZE = DIMENSIONS.DEFAULT_FONT_SIZE;
+    this.MIN_FONT_SIZE = DIMENSIONS.MIN_FONT_SIZE;
+    this.SMALL_FONT_SIZE = DIMENSIONS.SMALL_FONT_SIZE;
+    this.MIN_MONTH = VALIDATION.MIN_MONTH;
+    this.MAX_MONTH = VALIDATION.MAX_MONTH;
+    this.MIN_MONTHS_COUNT = VALIDATION.MIN_MONTHS_COUNT;
+    this.MAX_MONTHS_COUNT = VALIDATION.MAX_MONTHS_COUNT;
+    this.DEFAULT_ANIMATION_DURATION = TIMING.DEFAULT_ANIMATION_DURATION;
 
-    // Month label sets per locale
+    // Month label sets per locale: short (calendar ring) and full (sidebar, panels)
     this.monthLabelsByLocale = {
       en: TIME.MONTH_ABBR,
       da: TIME.MONTH_ABBR_DA
+    };
+    this.monthNamesByLocale = {
+      en: TIME.MONTH_NAMES_EN,
+      da: TIME.MONTH_NAMES_DA
     };
 
     // Validation arrays
@@ -101,6 +106,8 @@ class ConfigParser {
       // Calendar labels: explicit monthLabels wins over locale
       locale,
       monthLabels: this._resolveMonthLabels(config.monthLabels, locale),
+      monthNames: [...this.monthNamesByLocale[locale]],
+      strings: { ...this.uiStringsByLocale[locale], dayNamesShort: [...this.uiStringsByLocale[locale].dayNamesShort] },
 
       // Dimension settings - Standard values optimized for beautiful display
       // These values provide optimal spacing for event labels in the center
@@ -290,12 +297,14 @@ class ConfigParser {
     if (value === undefined || value === null) {
       return 'en';
     }
-    if (!Object.prototype.hasOwnProperty.call(this.monthLabelsByLocale, value)) {
-      throw new Error(
-        `ConfigParser: locale must be one of ${Object.keys(this.monthLabelsByLocale).join(', ')}, got '${value}'`
-      );
+    // Accept BCP-47 tags in any case: 'da-DK' and 'DA' mean 'da'
+    const primary = typeof value === 'string' ? value.split(/[-_]/)[0].toLowerCase() : value;
+    if (Object.prototype.hasOwnProperty.call(this.monthLabelsByLocale, primary)) {
+      return primary;
     }
-    return value;
+    throw new Error(
+      `ConfigParser: locale must be one of ${Object.keys(this.monthLabelsByLocale).join(', ')}, got '${value}'`
+    );
   }
 
   /**

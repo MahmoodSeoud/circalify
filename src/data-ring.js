@@ -752,7 +752,7 @@ class DataRing extends BaseRing {
       }
     }
 
-    // Narrow arc: first letter only, if it is readable
+    // Thin ring (too short for any truncated text): first letter only, if it is readable
     const letterSize = Math.min(maxFont, arcLength * 0.7, ringHeight * 0.6);
     if (letterSize >= minFont) {
       return { lines: [trimmed.charAt(0).toUpperCase()], fontSize: letterSize, fontWeight: '700' };
@@ -852,40 +852,6 @@ class DataRing extends BaseRing {
         eventGroup.appendChild(text);
       }
     }
-  }
-
-  /**
-   * Wrap text into multiple lines
-   * @private
-   */
-  _wrapTextToLines(text, maxCharsPerLine, maxLines) {
-    const words = text.split(' ');
-    const lines = [];
-    let currentLine = '';
-
-    for (let i = 0; i < words.length && lines.length < maxLines; i++) {
-      const word = words[i];
-      const testLine = currentLine ? `${currentLine} ${word}` : word;
-
-      if (testLine.length <= maxCharsPerLine) {
-        currentLine = testLine;
-      } else {
-        if (currentLine) {
-          lines.push(currentLine);
-          currentLine = word;
-        } else {
-          // Word itself is too long, truncate it
-          lines.push(word.substring(0, maxCharsPerLine));
-          currentLine = '';
-        }
-      }
-    }
-
-    if (currentLine && lines.length < maxLines) {
-      lines.push(currentLine);
-    }
-
-    return lines;
   }
 
   /**

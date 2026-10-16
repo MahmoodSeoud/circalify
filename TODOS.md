@@ -18,14 +18,6 @@ Deferred work with context. Added by /plan-eng-review 2026-08-07.
 - **Trigger:** A non-Danish demand signal (form submission, GitHub issue, search-traffic evidence). Norwegian and Swedish signups already exist (one company each, 2026); a Nordic reply to the Danish /aarshjul/ page or a Pro early-access signup from a .no/.se organisation is the specific trigger to add Norwegian and Swedish copy variants of the Danish page before an English one (deferred by CEO review 2026-10-16, CEO-0G-7).
 - **Depends on:** Validation gate passed.
 
-## Center label: hide it while hover info shows
-
-- **What:** `centerLabel` shipped in circalify 0.1.10 (static, drawn in the rings group). On an interactive wheel, hovering or clicking an event draws the event info over the same center on a 15 percent opaque circle, so the two overlap. Hide the label while `svgGroups.centerInfo` has content and show it again when it clears.
-- **Why:** Library users with the default `interactive: true` and a `centerLabel` see overlapping text. The two Circalify pages use `interactive: false` and are not affected.
-- **Context:** `_drawCenterLabel` and `_showCenterInfo` in `src/circalify-core.js`; flagged by the 2026-10-17 /review.
-- **Trigger:** Next engine release.
-- **Depends on:** Nothing.
-
 ## Validation gate instrument (fake door) — context for the maker
 
 - **What:** The gate the three items above depend on is now defined: a Danish landing page `aarshjul/index.html` on gh-pages with a priced "Circalify Pro" early-access door, GoatCounter counting and web3forms routing, 60-day window. Full plan: `docs/designs/circalify-pro-fake-door.md`.

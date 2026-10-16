@@ -80,6 +80,45 @@ const TIME = {
 };
 
 // ============================================================================
+// UI STRINGS (per locale; ConfigParser picks one set)
+// ============================================================================
+
+const UI_STRINGS = {
+    en: {
+        viewAgenda: 'VIEW AGENDA',
+        monthAgenda: '{month} AGENDA',
+        zoomMonth: 'Zoom in on month',
+        noEvents: 'No events this month',
+        addTitle: 'Add title',
+        startDate: 'Start date',
+        endDate: 'End date',
+        description: 'Description',
+        addDescription: 'Add description',
+        save: 'Save',
+        delete: 'Delete',
+        untitledEvent: 'Untitled event',
+        lowercaseDateMonths: false,
+        dayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    },
+    da: {
+        viewAgenda: 'SE AGENDA',
+        monthAgenda: 'AGENDA FOR {month}',
+        zoomMonth: 'Zoom ind på måneden',
+        noEvents: 'Ingen aktiviteter i denne måned',
+        addTitle: 'Tilføj titel',
+        startDate: 'Startdato',
+        endDate: 'Slutdato',
+        description: 'Beskrivelse',
+        addDescription: 'Tilføj beskrivelse',
+        save: 'Gem',
+        delete: 'Slet',
+        untitledEvent: 'Uden titel',
+        lowercaseDateMonths: true,
+        dayNamesShort: ['søn.', 'man.', 'tirs.', 'ons.', 'tors.', 'fre.', 'lør.'],
+    },
+};
+
+// ============================================================================
 // DIMENSION CONSTANTS (Sizes, Spacing, Padding)
 // ============================================================================
 
@@ -147,7 +186,6 @@ const DIMENSIONS = {
     // Text sizing
     CHAR_WIDTH_RATIO: 0.6,
     MIN_TRUNCATE_CHARS: 2,
-    ELLIPSIS_WIDTH_CHARS: 1.5,
 
     // Calendar day label spacing
     MIN_DAY_LABEL_INTERVAL: 5,
@@ -234,11 +272,12 @@ const CIRCALIFY_CONSTANTS = {
     TIMING,
     VALIDATION,
     ID_GENERATION,
+    UI_STRINGS,
 };
 
 // Export for ES6 modules
 export default CIRCALIFY_CONSTANTS;
-export { GEOMETRY, TIME, DIMENSIONS, STYLING, TIMING, VALIDATION, ID_GENERATION };
+export { GEOMETRY, TIME, DIMENSIONS, STYLING, TIMING, VALIDATION, ID_GENERATION, UI_STRINGS };
 
 // Also make available globally for browser compatibility
 if (typeof window !== 'undefined') {

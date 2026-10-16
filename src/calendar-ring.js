@@ -13,7 +13,7 @@ class CalendarRing extends BaseRing {
     // Month labels are resolved by ConfigParser from the locale and monthLabels options
     this.monthLabels = this.generalConfig.monthLabels;
 
-    this.quarterLabels = (this.TIME && this.TIME.QUARTER_LABELS) || ['Q1', 'Q2', 'Q3', 'Q4'];
+    this.quarterLabels = this.TIME.QUARTER_LABELS;
   }
 
   /**

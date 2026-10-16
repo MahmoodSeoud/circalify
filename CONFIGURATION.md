@@ -101,7 +101,7 @@ These settings apply to the entire wheel visualization:
 - **Type:** `enum`
 - **Options:** `"en"`, `"da"`
 - **Default:** `"en"`
-- **Description:** Language of the month labels on calendar rings. `"da"` gives Jan, Feb, Mar, Apr, Maj, Jun, Jul, Aug, Sep, Okt, Nov, Dec.
+- **Description:** Language of the month names: the short labels on calendar rings and the full names in the month sidebar. `"da"` gives Jan, Feb, Mar, Apr, Maj, Jun, Jul, Aug, Sep, Okt, Nov, Dec. Tags such as `"da-DK"` and any case are accepted. The locale also sets the language of the month buttons, the month sidebar and the detail panel.
 - **Example (Danish aarshjul):**
   ```javascript
   new AnnualWheel('#aarshjul', {
@@ -117,7 +117,7 @@ These settings apply to the entire wheel visualization:
 #### `monthLabels`
 - **Type:** `string[]` (exactly 12 strings, January first)
 - **Default:** none (labels come from `locale`)
-- **Description:** Custom month labels for any language. When set, it wins over `locale`.
+- **Description:** Custom short month labels for the calendar ring, in any language. When set, it wins over `locale` for the ring; full month names in the sidebar still follow `locale`.
 - **Example:** `monthLabels: ['jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'des']`
 
 #### `interactive`

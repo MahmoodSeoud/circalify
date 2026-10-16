@@ -71,7 +71,8 @@ timeline.setData([
     <div id="timeline"></div>
 
     <script type="module">
-        import CircularTimeline from 'https://unpkg.com/circalify@latest/src/index.js';
+        // Pin a version: @latest picks up rendering changes the moment a release is published
+        import CircularTimeline from 'https://unpkg.com/circalify@0.1.11/src/index.js';
 
         const timeline = new CircularTimeline('#timeline', {
             startYear: 2025,
@@ -112,7 +113,7 @@ Circalify creates SVG-based circular timelines with:
   sameRingHeight: false,     // Optional: Equal ring heights (default: false)
   backgroundColor: '#fff',   // Optional: Background color (default: '#ffffff')
   interactive: true,         // Optional: Enable hover/click (default: true)
-  locale: 'en',              // Optional: Month labels, 'en' or 'da' (default: 'en')
+  locale: 'en',              // Optional: Month names, 'en' or 'da'; 'da-DK' works too (default: 'en')
   monthLabels: null,         // Optional: 12 custom month labels, overrides locale
   centerLabel: ''            // Optional: title in the center, '\n' for a second line
 }
@@ -268,11 +269,11 @@ npx serve .
 
 ## Browser Support
 
-Works in all modern browsers that support ES6 modules and SVG:
-- Chrome/Edge 61+
-- Firefox 60+
-- Safari 11+
-- Opera 48+
+Works in modern browsers with ES modules, SVG and class static blocks:
+- Chrome/Edge 94+
+- Firefox 93+
+- Safari 16.4+
+- Opera 80+
 
 No build step required for development.
 

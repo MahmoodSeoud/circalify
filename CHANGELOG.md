@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.1.11
+
+### Fixed
+- `centerLabel` no longer overlaps the hover info: the title hides while an event's details use the center and returns when they clear.
+- A long `centerLabel` keeps a readable size (at least 18 SVG units) and is shortened with "..." instead of shrinking to a few pixels.
+- `locale` accepts BCP-47 tags in any case: `'da-DK'`, `'DA'` and `'en-US'` no longer stop the wheel from rendering.
+- The month sidebar, the month buttons and the detail panel follow `locale`: full month names, day names and every label ("VIEW AGENDA" / "SE AGENDA", "Save" / "Gem", "No events this month" / "Ingen aktiviteter i denne måned", "Untitled event" / "Uden titel"). Sidebar event dates use the ring's month labels, so a custom `monthLabels` applies there too. Before, the sidebar was always Danish and the buttons and detail panel always English, whatever the locale.
+
+### Docs
+- The README CDN example pins a version instead of `@latest`, with a note that `@latest` picks up rendering changes as soon as they are published.
+- README browser support now states the real minimum (Chrome/Edge 94, Firefox 93, Safari 16.4): the engine has used class static blocks since 0.1.10, so the old Chrome 61 / Safari 11 floor was already wrong.
+
+### Changed
+- Removed dead code: the unused `_wrapTextToLines` helper, the unused `ELLIPSIS_WIDTH_CHARS` constant and fallback defaults that repeated constants.js.
+
+### Tests
+- New tests for the month-button gate, the parser-to-ring month labels, the center title (lines, floor, hide on hover), radial label fallbacks and more validation errors.
+
 ## 0.1.10
 
 ### Added

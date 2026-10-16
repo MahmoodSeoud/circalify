@@ -6,6 +6,14 @@
 import LayoutCalculator from './layout-calculator.js';
 import ConfigParser from './config-parser.js';
 import RingFactory from './ring-factory.js';
+import CIRCALIFY_CONSTANTS from './constants.js';
+
+// Center title sizing, in SVG units relative to the inner radius
+const CENTER_LABEL_WIDTH = 1.5;      // usable width as a multiple of the inner radius
+const CENTER_LABEL_MAX = 0.24;       // largest first-line size as a share of the inner radius
+const CENTER_LABEL_MIN = 18;         // smallest first-line size; longer text is shortened instead
+const CENTER_LABEL_SUB_RATIO = 0.72; // second line relative to the first
+const CENTER_LABEL_SUB_MIN = 14;
 
 class CircalifyCore {
   constructor(container, config = {}) {
@@ -312,45 +320,82 @@ class CircalifyCore {
     if (lines.length === 0) return;
 
     const radius = this.generalConfig.innerRadius;
-    const usableWidth = radius * 1.5;
-    const charWidth = 0.6;
-    const mainSize = Math.min(radius * 0.24, usableWidth / (lines[0].length * charWidth));
-    const subSize = lines[1] ? Math.min(mainSize * 0.72, usableWidth / (lines[1].length * charWidth)) : 0;
-    const gap = mainSize * 0.25;
-    const blockHeight = mainSize + (lines[1] ? gap + subSize : 0);
+    const usableWidth = radius * CENTER_LABEL_WIDTH;
+    const charWidth = CIRCALIFY_CONSTANTS.DIMENSIONS.CHAR_WIDTH_RATIO;
+    // Largest size up to max that fits the width, never below min: text that cannot fit at min is shortened
+    const fit = (text, max, min) => {
+      const chars = Array.from(text); // characters, so a cut never splits a surrogate pair
+      const size = Math.max(min, Math.min(max, usableWidth / (chars.length * charWidth)));
+      const room = Math.floor(usableWidth / (size * charWidth) + 1e-9); // an exact fit must not round down
+      if (chars.length <= room) return { size, text };
+      return { size, text: room > 3 ? chars.slice(0, room - 3).join('').replace(/\s+$/, '') + '...' : chars.slice(0, Math.max(1, room)).join('') };
+    };
+    const main = fit(lines[0], radius * CENTER_LABEL_MAX, CENTER_LABEL_MIN);
+    const sub = lines[1] ? fit(lines[1], main.size * CENTER_LABEL_SUB_RATIO, Math.min(CENTER_LABEL_SUB_MIN, main.size)) : null;
+    const gap = main.size * 0.25;
+    const blockHeight = main.size + (sub ? gap + sub.size : 0);
     const top = this.cy - blockHeight / 2;
 
     const group = this._createSVGElement('g', { 'class': 'circalify-center-label', 'pointer-events': 'none' });
-    const main = this._createSVGElement('text', {
-      'x': this.cx,
-      'y': top + mainSize / 2,
-      'text-anchor': 'middle',
-      'dominant-baseline': 'central',
-      'font-family': this.generalConfig.fontFamily,
-      'font-size': mainSize,
-      'font-weight': '700',
-      'fill': this.generalConfig.centerLabelColor
-    });
-    main.textContent = lines[0];
-    group.appendChild(main);
-
-    if (lines[1]) {
-      const sub = this._createSVGElement('text', {
+    const line = (text, y, size, weight, extra = {}) => {
+      const el = this._createSVGElement('text', {
         'x': this.cx,
-        'y': top + mainSize + gap + subSize / 2,
+        'y': y,
         'text-anchor': 'middle',
         'dominant-baseline': 'central',
         'font-family': this.generalConfig.fontFamily,
-        'font-size': subSize,
-        'font-weight': '500',
+        'font-size': size,
+        'font-weight': weight,
         'fill': this.generalConfig.centerLabelColor,
-        'opacity': '0.65'
+        ...extra
       });
-      sub.textContent = lines[1];
-      group.appendChild(sub);
-    }
+      el.textContent = text;
+      group.appendChild(el);
+    };
+    line(main.text, top + main.size / 2, main.size, '700');
+    if (sub) line(sub.text, top + main.size + gap + sub.size / 2, sub.size, '500', { 'opacity': '0.65' });
 
+    this.centerLabelGroup = group;
     this.svgGroups.rings.appendChild(group);
+  }
+
+  /**
+   * Show or hide the center title (hidden while hover info uses the center)
+   * @private
+   */
+  _setCenterLabelVisible(visible) {
+    if (this.centerLabelGroup) {
+      this.centerLabelGroup.setAttribute('visibility', visible ? 'visible' : 'hidden');
+    }
+  }
+
+  /**
+   * Full month name in the configured locale
+   * @private
+   */
+  _monthName(month) {
+    return this.generalConfig.monthNames[month];
+  }
+
+  /**
+   * Day and short month for the sidebar ('12 May', '12 maj'), from the ring's month labels
+   * @private
+   */
+  _formatShortDate(dateStr) {
+    const d = new Date(dateStr);
+    const label = this.generalConfig.monthLabels[d.getMonth()];
+    const month = this._t('lowercaseDateMonths') ? label.toLowerCase() : label;
+    return `${String(d.getDate()).padStart(2, '0')} ${month}`;
+  }
+
+  /**
+   * UI string in the configured locale; {name} placeholders filled from vars
+   * @private
+   */
+  _t(key, vars = {}) {
+    const value = this.generalConfig.strings[key];
+    if (typeof value !== 'string') return value;
+    return value.replace(/\{(\w+)\}/g, (match, name) => (name in vars ? vars[name] : match));
   }
 
   /**
@@ -598,7 +643,7 @@ class CircalifyCore {
       'text-anchor': 'middle',
       'dominant-baseline': 'middle'
     });
-    textPathElement.textContent = 'VIEW AGENDA';
+    textPathElement.textContent = this._t('viewAgenda');
     textElement.appendChild(textPathElement);
     buttonGroup.appendChild(textElement);
 
@@ -621,19 +666,16 @@ class CircalifyCore {
         this.activeMonthButton.classList.remove('active-month');
         // Reset previous button text
         if (this.activeMonthButton._textPathElement) {
-          this.activeMonthButton._textPathElement.textContent = 'VIEW AGENDA';
+          this.activeMonthButton._textPathElement.textContent = this._t('viewAgenda');
         }
         // Reset previous button size
         this._resetButtonSize(this.activeMonthButton);
       }
 
-      // Get month name
-      const monthNames = ['Januar', 'Februar', 'Marts', 'April', 'Maj', 'Juni',
-        'Juli', 'August', 'September', 'Oktober', 'November', 'December'];
-      const monthName = monthNames[month];
+      const monthName = this._monthName(month);
 
       // Update button text to show month
-      textPathElement.textContent = `${monthName.toUpperCase()} AGENDA`;
+      textPathElement.textContent = this._t('monthAgenda', { month: monthName.toUpperCase() });
 
       // Expand the button
       this._expandButton(buttonGroup);
@@ -794,7 +836,7 @@ class CircalifyCore {
       this.activeMonthButton.classList.remove('active-month');
       // Reset previous button text
       if (this.activeMonthButton._textPathElement) {
-        this.activeMonthButton._textPathElement.textContent = 'VIEW AGENDA';
+        this.activeMonthButton._textPathElement.textContent = this._t('viewAgenda');
       }
       // Reset previous button size
       this._resetButtonSize(this.activeMonthButton);
@@ -806,14 +848,11 @@ class CircalifyCore {
     const startDay = targetButton._startDay;
     const endDay = targetButton._endDay;
 
-    // Get month name
-    const monthNames = ['Januar', 'Februar', 'Marts', 'April', 'Maj', 'Juni',
-      'Juli', 'August', 'September', 'Oktober', 'November', 'December'];
-    const monthName = monthNames[month];
+    const monthName = this._monthName(month);
 
     // Update button text to show month
     if (targetButton._textPathElement) {
-      targetButton._textPathElement.textContent = `${monthName.toUpperCase()} AGENDA`;
+      targetButton._textPathElement.textContent = this._t('monthAgenda', { month: monthName.toUpperCase() });
     }
 
     // Expand the button
@@ -1060,7 +1099,7 @@ class CircalifyCore {
     const titleInput = document.createElement('input');
     titleInput.type = 'text';
     titleInput.value = segmentData.label || '';
-    titleInput.placeholder = 'Add title';
+    titleInput.placeholder = this._t('addTitle');
     titleInput.style.cssText = `
       width: 100%;
       border: none;
@@ -1084,7 +1123,7 @@ class CircalifyCore {
     `;
 
     const startDateLabel = document.createElement('label');
-    startDateLabel.textContent = 'Start date';
+    startDateLabel.textContent = this._t('startDate');
     startDateLabel.style.cssText = `
       display: block;
       font-size: 12px;
@@ -1111,7 +1150,7 @@ class CircalifyCore {
     startDateInput.addEventListener('blur', () => startDateInput.style.borderColor = '#e5e7eb');
 
     const endDateLabel = document.createElement('label');
-    endDateLabel.textContent = 'End date';
+    endDateLabel.textContent = this._t('endDate');
     endDateLabel.style.cssText = `
       display: block;
       font-size: 12px;
@@ -1144,7 +1183,7 @@ class CircalifyCore {
 
     // Description textarea
     const descLabel = document.createElement('label');
-    descLabel.textContent = 'Description';
+    descLabel.textContent = this._t('description');
     descLabel.style.cssText = `
       display: block;
       font-size: 12px;
@@ -1155,7 +1194,7 @@ class CircalifyCore {
 
     const descTextarea = document.createElement('textarea');
     descTextarea.value = segmentData.description || '';
-    descTextarea.placeholder = 'Add description';
+    descTextarea.placeholder = this._t('addDescription');
     descTextarea.rows = 4;
     descTextarea.style.cssText = `
       width: 100%;
@@ -1187,7 +1226,7 @@ class CircalifyCore {
 
     // Save button
     const saveBtn = document.createElement('button');
-    saveBtn.textContent = 'Save';
+    saveBtn.textContent = this._t('save');
     saveBtn.style.cssText = `
       flex: 1;
       padding: 12px 20px;
@@ -1260,7 +1299,7 @@ class CircalifyCore {
 
     // Delete button
     const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'Delete';
+    deleteBtn.textContent = this._t('delete');
     deleteBtn.style.cssText = `
       padding: 12px 20px;
       background: transparent;
@@ -1385,7 +1424,6 @@ class CircalifyCore {
       border-bottom: 1px solid #e5e7eb;
     `;
 
-    const monthNames = ['Januar', 'Februar', 'Marts', 'April', 'Maj', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'December'];
 
     // Left arrow
     const leftArrow = document.createElement('button');
@@ -1421,7 +1459,7 @@ class CircalifyCore {
 
     // Title
     const title = document.createElement('h2');
-    title.textContent = `${monthNames[month]} ${year}`;
+    title.textContent = `${this._monthName(month)} ${year}`;
     title.style.cssText = `
       margin: 0;
       font-size: 16px;
@@ -1503,7 +1541,7 @@ class CircalifyCore {
     `;
 
     const toggleLabel = document.createElement('span');
-    toggleLabel.textContent = 'Zoom Ind Måned';
+    toggleLabel.textContent = this._t('zoomMonth');
     toggleLabel.style.cssText = `
       font-size: 13px;
       color: #374151;
@@ -1570,7 +1608,7 @@ class CircalifyCore {
 
     if (monthEvents.length === 0) {
       const emptyState = document.createElement('div');
-      emptyState.textContent = 'Ingen begivenheder i denne måned';
+      emptyState.textContent = this._t('noEvents');
       emptyState.style.cssText = `
         padding: 24px;
         text-align: center;
@@ -1609,7 +1647,7 @@ class CircalifyCore {
       this.activeMonthButton.classList.remove('active-month');
       // Reset text to default
       if (this.activeMonthButton._textPathElement) {
-        this.activeMonthButton._textPathElement.textContent = 'VIEW AGENDA';
+        this.activeMonthButton._textPathElement.textContent = this._t('viewAgenda');
       }
       // Reset button size
       this._resetButtonSize(this.activeMonthButton);
@@ -1680,7 +1718,7 @@ class CircalifyCore {
 
     // Day header
     const date = new Date(year, 0, dayNum);
-    const dayNames = ['søn.', 'man.', 'tirs.', 'ons.', 'tors.', 'fre.', 'lør.'];
+    const dayNames = this._t('dayNamesShort');
     const dayName = dayNames[date.getDay()];
 
     const dayHeader = document.createElement('div');
@@ -1783,7 +1821,7 @@ class CircalifyCore {
 
     // Event title
     const title = document.createElement('div');
-    title.textContent = event.label || 'Untitled Event';
+    title.textContent = event.label || this._t('untitledEvent');
     title.style.cssText = `
       font-size: 14px;
       font-weight: 400;
@@ -1795,10 +1833,7 @@ class CircalifyCore {
 
     // Event dates
     const dates = document.createElement('div');
-    const formatDate = (dateStr) => {
-      const d = new Date(dateStr);
-      return `${String(d.getDate()).padStart(2, '0')} ${['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'][d.getMonth()]}`;
-    };
+    const formatDate = (dateStr) => this._formatShortDate(dateStr);
 
     let dateText = '';
     if (event.startDate && event.endDate && event.startDate !== event.endDate) {
@@ -1836,7 +1871,11 @@ class CircalifyCore {
   _showCenterInfo(eventData) {
     this.svgGroups.centerInfo.innerHTML = '';
 
-    if (!eventData) return;
+    if (!eventData) {
+      this._setCenterLabelVisible(true);
+      return;
+    }
+    this._setCenterLabelVisible(false);
 
     // Background circle with event color
     const bgCircle = this._createSVGElement('circle', {
@@ -1935,6 +1974,7 @@ class CircalifyCore {
    */
   _clearCenterInfo() {
     this.svgGroups.centerInfo.innerHTML = '';
+    this._setCenterLabelVisible(true);
   }
 
   /**

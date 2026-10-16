@@ -1,0 +1,58 @@
+<!doctype html>
+<!-- Negative fixture for node tools/check-pages.mjs --self-test.
+     Exactly one violation per page rule; the violation is named in the comment above it. -->
+<html lang="da">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- share-tags-absolute: og:url is relative -->
+    <meta property="og:url" content="aarshjul/" />
+    <meta property="og:image" content="https://mahmoodseoud.github.io/circalify/images/aarshjul-eksempel.png" />
+    <meta name="twitter:image" content="https://mahmoodseoud.github.io/circalify/images/aarshjul-eksempel.png" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.9/src/index.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.9/src/constants.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.9/src/layout-calculator.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.9/src/config-parser.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.9/src/base-ring.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.9/src/calendar-ring.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.9/src/header-ring.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.9/src/data-ring.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.9/src/ring-factory.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.9/src/circalify-core.js" />
+    <!-- modulepreload-pinned: one preload on another version -->
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.8/src/circalify.js" />
+  </head>
+  <body>
+    <!-- relative-targets-exist: the file does not exist -->
+    <a href="../templates/missing.zip">zip</a>
+    <!-- no-root-absolute: leaves the /circalify/ project path -->
+    <a href="/aarshjul/">dansk</a>
+    <button data-answer="powerpoint"></button><button data-answer="excel"></button><button data-answer="plandisc"></button>
+    <button data-answer="canva"></button><button data-answer="ai"></button><button data-answer="andet"></button>
+    <script>
+      // subjects-exact: the templates subject is missing
+      const SUBJECT_DOOR_CLICK = 'Pro: klik paa early access';
+      const SUBJECT_SIGNUP = 'Pro: early access tilmelding';
+      const IMPORT_URL = 'https://unpkg.com/circalify@0.1.9/src/index.js';
+      const body = new FormData(); body.append('botcheck', '');
+      fetch('https://api.web3forms.com/submit', { method: 'POST', body });
+      // event-paths: 'wheel-fallback' is missing
+      const paths = ['pro-door-seen', 'pro-door-click', 'pro-signup', 'pro-door-seen-inbox', 'pro-door-click-inbox', 'pro-signup-inbox', 'templates-download'];
+      const key = 'ai'; gcEvent('poll-' + key);
+      function flushGc() {
+        if (!(window.goatcounter && window.goatcounter.count)) return;
+      }
+      // wheel-config: enableDetailPanel: false is missing
+      function renderWheel(CircularTimeline) {
+        const y = 2026;
+        const config = { startYear: y, locale: 'da', interactive: false,
+          rings: [{ type: 'data', name: 'x', interactive: false }] };
+      }
+    </script>
+    <script>
+      // web3forms-botcheck: this post has no honeypot field
+      fetch('https://api.web3forms.com/submit', { method: 'POST', body: new FormData() });
+    </script>
+    <!-- goatcounter-tag: not async. gc-queue: no onload flush -->
+    <script data-goatcounter="https://circalify-fixture.goatcounter.com/count" src="//gc.zgo.at/count.js"></script>
+  </body>
+</html>

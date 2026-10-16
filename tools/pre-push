@@ -1,0 +1,31 @@
+#!/bin/sh
+# Pushing gh-pages deploys the site, so check the exact commit being pushed:
+# the self-test proves every rule still catches its mistake, then the checks run.
+# Install (once per clone): cp tools/pre-push "$(git rev-parse --git-common-dir)/hooks/pre-push"
+# Bypass only on purpose: git push --no-verify
+zero=0000000000000000000000000000000000000000
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [ "$remote_ref" = "refs/heads/gh-pages" ] || continue
+  [ "$local_sha" = "$zero" ] && continue  # deleting the remote branch
+  tmp=$(mktemp -d) || exit 1
+  if ! git archive "$local_sha" | tar -x -C "$tmp"; then
+    echo "pre-push: could not extract $local_sha" >&2; rm -r "$tmp"; exit 1
+  fi
+  if [ ! -f "$tmp/tools/check-pages.mjs" ]; then
+    echo "pre-push: tools/check-pages.mjs is missing in $local_sha; gh-pages push blocked" >&2; rm -r "$tmp"; exit 1
+  fi
+  if ! (cd "$tmp" && node tools/check-pages.mjs --self-test > self-test.log 2>&1); then
+    # Failed checks print FAIL lines; a crash prints a stack trace instead
+    grep -E '^FAIL' "$tmp/self-test.log" >&2 || tail -n 15 "$tmp/self-test.log" >&2
+    echo "pre-push: check-pages self-test failed for $local_sha; gh-pages push blocked" >&2
+    rm -r "$tmp"; exit 1
+  fi
+  (cd "$tmp" && node tools/check-pages.mjs)
+  status=$?
+  rm -r "$tmp"
+  if [ "$status" -ne 0 ]; then
+    echo "pre-push: page checks failed for $local_sha; gh-pages push blocked" >&2
+    exit 1
+  fi
+done
+exit 0

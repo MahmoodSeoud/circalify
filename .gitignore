@@ -33,3 +33,4 @@ npm-debug.log*
 # Screenshots
 screenshots/
 .gstack/
+.gbrain-source

@@ -14,14 +14,33 @@ Deferred work with context. Added by /plan-eng-review 2026-08-07.
 
 - **What:** English UI option — maker strings, panel labels config, 1-2 English templates.
 - **Why:** Danish-only v1 is a deliberate constraint; English unlocks the non-Nordic long tail if the wedge works.
-- **Context:** The engine's labels config (eng-review decision 9A) is the i18n hook — no framework needed. Maker strings should live in one strings object from day one so this stays a strings-file task.
-- **Trigger:** A non-Danish demand signal (form submission, GitHub issue, search-traffic evidence).
+- **Context:** The engine's `locale` and `monthLabels` options (circalify 0.1.9, eng review 2026-10-16; this supersedes the 2026-08-07 labels-config shape from eng-review decision 9A, which was never built) are the i18n hook, no framework needed. Maker strings should live in one strings object from day one so this stays a strings-file task.
+- **Trigger:** A non-Danish demand signal (form submission, GitHub issue, search-traffic evidence). Norwegian and Swedish signups already exist (one company each, 2026); a Nordic reply to the Danish /aarshjul/ page or a Pro early-access signup from a .no/.se organisation is the specific trigger to add Norwegian and Swedish copy variants of the Danish page before an English one (deferred by CEO review 2026-10-16, CEO-0G-7).
 - **Depends on:** Validation gate passed.
 
-## Center-hub idle label (year + org name)
+## Center label: hide it while hover info shows
 
-- **What:** Render year + org name in the wheel center when idle, hidden while hover info shows.
-- **Why:** Cut from v1 (eng-review decision 11A — hover-collision surgery, no validation value), but it makes exported/printed wheels self-describing, which matters for wheels hung on a wall.
-- **Context:** `title` config is deleted from `config-parser.js` in v1; this returns as a new deliberate feature (e.g. `centerLabel`), not a resurrection. Touches `_showCenterInfo`'s hover path (`circalify-core.js:1775`) — needs idle/hover state management.
-- **Trigger:** Validation passed and a user comment that exports lack identification.
-- **Depends on:** Validation gate passed.
+- **What:** `centerLabel` shipped in circalify 0.1.10 (static, drawn in the rings group). On an interactive wheel, hovering or clicking an event draws the event info over the same center on a 15 percent opaque circle, so the two overlap. Hide the label while `svgGroups.centerInfo` has content and show it again when it clears.
+- **Why:** Library users with the default `interactive: true` and a `centerLabel` see overlapping text. The two Circalify pages use `interactive: false` and are not affected.
+- **Context:** `_drawCenterLabel` and `_showCenterInfo` in `src/circalify-core.js`; flagged by the 2026-10-17 /review.
+- **Trigger:** Next engine release.
+- **Depends on:** Nothing.
+
+## Validation gate instrument (fake door) — context for the maker
+
+- **What:** The gate the three items above depend on is now defined: a Danish landing page `aarshjul/index.html` on gh-pages with a priced "Circalify Pro" early-access door, GoatCounter counting and web3forms routing, 60-day window. Full plan: `docs/designs/circalify-pro-fake-door.md`.
+- **Why:** The TODOS above said "validation gate passed" without a number; the design doc sets the bar (300 unique visitors, 5 percent door clicks, 5 emails, 2 conversations).
+- **Context:** If the gate passes, the maker (Approach C in the design doc, a client-side Danish editor whose share button is the Pro upsell) is the free tier and reuses the page's subject lines, event names and counter. Deferred by CEO review 2026-10-16 (CEO-0G-8) because the editor was ruled out before validation.
+- **Trigger:** Gate result recorded in the design doc's Review record.
+- **Depends on:** The fake door shipping and the window closing.
+
+## Hero composition variants for the Danish page
+
+- **What:** Two or three visual variants of the /aarshjul/ hero (wheel left or right, price block placement, eyebrow weight) compared side by side with /design-shotgun.
+- **Why:** The Phase 2 design review of the fake-door plan (2026-10-16) specified one hero composition from reasoning alone; mockups were skipped because the comparison loop is interactive and /autoplan cannot run it. A door that converts badly for layout reasons would read as "no demand".
+- **Pros:** Cheap (CC: ~30 min); directly targets the measured block.
+- **Cons:** Variants need traffic to compare, and the gate's 300 visitors cannot support an A/B; this is a pre-launch taste pass, not an experiment.
+- **Context:** Design tokens and page order are fixed in docs/designs/circalify-pro-fake-door.md (Recommended Approach, page structure item 1). Start from the shipped aarshjul/index.html on gh-pages.
+- **Trigger:** Before the first link post if the founder wants a second look at the hero, or after the gate if the click rate lands within two clicks of the 5 percent bar.
+- **Depends on / blocked by:** The Danish page shipped on gh-pages.
+

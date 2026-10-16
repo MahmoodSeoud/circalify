@@ -1,0 +1,916 @@
+<!doctype html>
+<!--
+  Danish landing page with the Circalify Pro fake door. Design: docs/designs/circalify-pro-fake-door.md (master).
+  web3forms subjects (verbatim, used in the monthly inbox count):
+    "Pro: klik paa early access"          door click, no email
+    "Pro: early access tilmelding"        signup with email
+    "Skabeloner: download fra /aarshjul/" Danish template download
+  GoatCounter event paths: pro-door-seen, pro-door-click, pro-signup (each with an -inbox variant when ?src=inbox),
+    templates-download, wheel-fallback, poll-powerpoint, poll-excel, poll-plandisc, poll-canva, poll-ai, poll-andet.
+  The poll is counted in GoatCounter only (gate decision d9a); it never posts to web3forms.
+  Test flag (founder's own browsers only): localStorage.setItem('circalify-test', '1') skips every web3forms POST.
+  Run node tools/check-pages.mjs before push. A push to gh-pages deploys.
+-->
+<html lang="da">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Lav årshjulet online | Circalify</title>
+    <meta name="description" content="Lav foreningens årshjul online uden kode. Skriv aktiviteterne ind, så tegner Circalify hjulet, og del det med et link." />
+    <meta name="keywords" content="årshjul, aarshjul, årshjul skabelon, årshjul forening, årshjul bestyrelse, årsplan, Circalify" />
+    <meta name="author" content="Mahmood Seoud" />
+    <link rel="canonical" href="https://mahmoodseoud.github.io/circalify/aarshjul/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="da_DK" />
+    <meta property="og:url" content="https://mahmoodseoud.github.io/circalify/aarshjul/" />
+    <meta property="og:title" content="Lav årshjulet online, og del det med et link" />
+    <meta property="og:description" content="Skriv årets aktiviteter ind, så tegner Circalify hjulet. Del det med et link, så hele bestyrelsen ser det samme. Det kræver ingen kode eller installation." />
+    <meta property="og:image" content="https://mahmoodseoud.github.io/circalify/images/aarshjul-eksempel.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Lav årshjulet online, og del det med et link" />
+    <meta name="twitter:description" content="Skriv årets aktiviteter ind, så tegner Circalify hjulet. Del det med et link, så hele bestyrelsen ser det samme. Det kræver ingen kode eller installation." />
+    <meta name="twitter:image" content="https://mahmoodseoud.github.io/circalify/images/aarshjul-eksempel.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600&family=Hanken+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+
+    <!-- The pinned engine graph, preloaded so the dynamic import below is one round trip -->
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/index.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/constants.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/layout-calculator.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/config-parser.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/base-ring.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/calendar-ring.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/header-ring.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/data-ring.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/ring-factory.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/circalify-core.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/circalify.js" />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        /* Spacing system - 8px base (copied from the English page) */
+        --space-1: 0.25rem;
+        --space-2: 0.5rem;
+        --space-3: 0.75rem;
+        --space-4: 1rem;
+        --space-5: 1.5rem;
+        --space-6: 2rem;
+        --space-7: 2.5rem;
+        --space-8: 3rem;
+        --space-10: 5rem;
+        --space-12: 6rem;
+
+        /* Colors and type: DESIGN.md (Gråvejrsalmanak). --bg is the fog ground, --bg-light the surface */
+        --primary: #2D5A4A;
+        --primary-dark: #24493C;
+        --primary-deep: #2D5A4A;
+        --text: #1F2A2E;
+        --text-light: #5B6668;
+        --bg: #E4E7E1;
+        --bg-light: #F2F3EE;
+        --surface-sunk: #DCE0D9;
+        --border: #CBD1C8;
+        --border-strong: #B9C1B6;
+        --success: #2D5A4A;
+        --error: #A3362A;
+
+        --font-body: 'Hanken Grotesk', 'Segoe UI', sans-serif;
+        --font-display: 'Familjen Grotesk', 'Hanken Grotesk', sans-serif;
+        --line-height-tight: 1.2;
+        --line-height-normal: 1.6;
+        --line-height-relaxed: 1.75;
+        --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* The hidden attribute must win over component display rules (.btn is inline-flex) */
+      [hidden] {
+        display: none !important;
+      }
+
+      ::selection {
+        background: var(--primary-dark);
+        color: #fff;
+      }
+
+      body {
+        font-family: var(--font-body);
+        font-size: 1rem;
+        color: var(--text);
+        line-height: var(--line-height-normal);
+        background: var(--bg);
+        overflow-x: hidden;
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 var(--space-4);
+      }
+
+      *:focus-visible {
+        outline: 2px solid var(--primary-dark);
+        outline-offset: 2px;
+        border-radius: 4px;
+      }
+
+      a {
+        color: var(--primary-dark);
+      }
+
+      .muted {
+        color: var(--text-light);
+        font-size: 1rem;
+      }
+
+      /* Hero */
+      .hero {
+        padding: var(--space-8) 0 var(--space-8);
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--space-6);
+        align-items: center;
+      }
+
+      @media (min-width: 768px) {
+        .hero-grid {
+          grid-template-columns: 1fr 1fr;
+          gap: var(--space-8);
+        }
+      }
+
+      .eyebrow {
+        color: var(--text-light);
+        font-size: 0.875rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-bottom: var(--space-3);
+      }
+
+      .hero h1 {
+        font-family: var(--font-display);
+        font-size: clamp(1.75rem, 4vw, 2.5rem);
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        line-height: var(--line-height-tight);
+        margin-bottom: var(--space-4);
+      }
+
+      .hero-support {
+        font-size: 1.125rem;
+        color: var(--text-light);
+        line-height: var(--line-height-relaxed);
+        margin-bottom: var(--space-5);
+      }
+
+      .price-block {
+        margin-bottom: var(--space-5);
+      }
+
+      .price-main {
+        font-family: var(--font-display);
+        font-size: 2rem;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        line-height: var(--line-height-tight);
+      }
+
+      .price-line {
+        color: var(--text-light);
+        font-size: 1rem;
+      }
+
+      .price-scope {
+        margin-top: var(--space-2);
+      }
+
+      /* Offer card: price and the door button read as one offer */
+      .offer-card {
+        background: var(--bg-light);
+        border: 1.5px solid var(--border-strong);
+        border-radius: 6px;
+        padding: var(--space-5);
+        max-width: 440px;
+      }
+
+      .offer-card .price-block {
+        margin-bottom: var(--space-4);
+      }
+
+      .offer-card .btn-primary {
+        width: 100%;
+      }
+
+      .offer-card .panel {
+        border: none;
+        background: transparent;
+        padding: 0;
+      }
+
+      .board-note {
+        margin-top: var(--space-4);
+        padding-top: var(--space-3);
+        border-top: 1px solid var(--border);
+        font-size: 1rem;
+        color: var(--text-light);
+      }
+
+      .board-note strong {
+        color: var(--text);
+        font-weight: 700;
+      }
+
+      /* Buttons */
+      .btn {
+        font-family: inherit;
+        font-weight: 600;
+        border-radius: 6px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+      }
+
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .btn-primary {
+        background: var(--primary-deep);
+        color: #fff;
+        border: none;
+        font-size: 18px;
+        min-height: 48px;
+        padding: 0 var(--space-6);
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        background: var(--primary-dark);
+      }
+
+      .btn-secondary {
+        background: var(--bg-light);
+        color: var(--text);
+        border: 2px solid var(--border);
+        font-size: 1rem;
+        min-height: 48px;
+        padding: 0 var(--space-5);
+      }
+
+      .btn-secondary:hover:not(:disabled) {
+        border-color: var(--primary-dark);
+        color: var(--primary-dark);
+      }
+
+      /* Door panel and forms */
+      .panel {
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: var(--bg-light);
+        padding: var(--space-5);
+      }
+
+      .panel[hidden] {
+        display: none;
+      }
+
+      .panel-intro {
+        margin-bottom: var(--space-4);
+        line-height: var(--line-height-relaxed);
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-1);
+        margin-bottom: var(--space-3);
+      }
+
+      .field label {
+        font-weight: 600;
+        font-size: 0.9375rem;
+      }
+
+      .field input {
+        font-family: inherit;
+        font-size: 1rem;
+        min-height: 48px;
+        padding: 0 var(--space-4);
+        border: 2px solid var(--border);
+        border-radius: 6px;
+        background: var(--bg-light);
+        color: var(--text);
+        width: 100%;
+      }
+
+      .field input:focus {
+        outline: none;
+        border-color: var(--primary-dark);
+      }
+
+      .form-actions {
+        margin: var(--space-4) 0 var(--space-3);
+      }
+
+      .purpose {
+        margin-bottom: var(--space-3);
+      }
+
+      .status-line {
+        margin-top: var(--space-3);
+        font-weight: 600;
+      }
+
+      .status-line:empty {
+        margin: 0; /* stays in the accessibility tree, so later text is announced */
+      }
+
+      .status-line.error {
+        color: var(--error);
+        font-weight: 500;
+      }
+
+      .botcheck {
+        display: none;
+      }
+
+      /* Example wheel */
+      .hero-visual {
+        margin: 0 auto;
+        width: 100%;
+        max-width: 520px;
+      }
+
+      .wheel-box {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+      }
+
+      .wheel-box[data-wheel="loading"]::before {
+        content: "";
+        position: absolute;
+        inset: 6%;
+        border-radius: 50%;
+        border: 28px solid var(--bg-light);
+        box-shadow: inset 0 0 0 1px var(--border), 0 0 0 1px var(--border);
+      }
+
+      .wheel-mount {
+        position: absolute;
+        inset: 0;
+        cursor: default;
+      }
+
+      .wheel-fallback {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* the 1200x630 share image has the wheel centred; crop to the square */
+        border-radius: 50%;
+      }
+
+      .wheel-fallback[hidden] {
+        display: none;
+      }
+
+      .hero-visual figcaption {
+        text-align: center;
+        margin-top: var(--space-2);
+        font-size: 0.875rem;
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        [data-wheel="live"] svg {
+          animation: wheel-draw-in 600ms ease-out both;
+        }
+
+        @keyframes wheel-draw-in {
+          from {
+            opacity: 0;
+            transform: rotate(-12deg) scale(0.94);
+          }
+          to {
+            opacity: 1;
+            transform: none;
+          }
+        }
+      }
+
+      /* Sections */
+      section + section {
+        border-top: 1px solid var(--border);
+      }
+
+      .section {
+        padding: var(--space-8) 0;
+      }
+
+      .section h2 {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        line-height: var(--line-height-tight);
+        margin-bottom: var(--space-4);
+      }
+
+      .narrow > * {
+        max-width: 640px;
+      }
+
+      /* Poll */
+      .poll-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--space-3);
+      }
+
+      @media (min-width: 640px) {
+        .poll-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+
+      .poll-btn {
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 500;
+        min-height: 44px;
+        padding: var(--space-2) var(--space-3);
+        border: 2px solid var(--border);
+        border-radius: 6px;
+        background: var(--bg-light);
+        color: var(--text);
+        cursor: pointer;
+        transition: border-color var(--transition-fast), color var(--transition-fast);
+      }
+
+      .poll-btn:hover {
+        border-color: var(--primary-dark);
+        color: var(--primary-dark);
+      }
+
+      .poll-thanks {
+        font-weight: 600;
+      }
+
+      /* Templates */
+      .templates-lead {
+        margin-bottom: var(--space-4);
+        line-height: var(--line-height-relaxed);
+      }
+
+      /* Use cases */
+      .use-cases {
+        list-style: none;
+        display: grid;
+        gap: var(--space-3);
+      }
+
+      .use-cases strong {
+        font-weight: 600;
+      }
+
+      /* Footer */
+      footer {
+        background: var(--surface-sunk);
+        border-top: 1px solid var(--border);
+        padding: var(--space-6) 0;
+      }
+
+      footer p + p {
+        margin-top: var(--space-2);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <div class="container hero-grid">
+          <div class="hero-text">
+            <p class="eyebrow">Circalify Pro</p>
+            <h1>Lav årshjulet online, og del det med et link</h1>
+            <p class="hero-support">Skriv årets aktiviteter ind, så tegner Circalify hjulet. Del det med et link, så hele bestyrelsen ser det samme. Det kræver ingen kode eller installation.</p>
+
+            <div class="offer-card">
+              <div class="price-block" id="price-block">
+                <p class="price-main"><span data-price="monthly">349</span> kr./md.</p>
+                <p class="price-line">ekskl. moms (<span data-price="monthly-vat">436</span> kr. med moms)</p>
+                <p class="price-line">Eller <span data-price="yearly">3.490</span> kr. om året, svarende til 10 måneder.</p>
+                <p class="price-scope">Samme pris, uanset hvor mange der redigerer. Det er gratis at se hjulet.</p>
+              </div>
+
+              <div id="door">
+                <button type="button" class="btn btn-primary" id="door-btn">Få tidlig adgang</button>
+
+                <div class="panel" id="door-panel" hidden>
+                  <p class="panel-intro">Det her er ikke bygget endnu. Jeg bygger det kun, hvis nok foreninger vil bruge det. Skriv dig op, så hører du fra mig, når der er noget at prøve. Der er ingen betaling, før du har prøvet det.</p>
+                  <form id="signup-form" novalidate>
+                    <div id="signup-fields">
+                      <div class="field">
+                        <label for="signup-email">E-mail</label>
+                        <input type="email" id="signup-email" name="email" required autocomplete="email" />
+                      </div>
+                      <div class="field">
+                        <label for="signup-org">Forening eller organisation (valgfrit)</label>
+                        <input type="text" id="signup-org" name="organisation" maxlength="120" autocomplete="organization" />
+                      </div>
+                      <input type="checkbox" name="botcheck" class="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" />
+                      <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="signup-btn">Skriv mig op</button>
+                      </div>
+                      <p class="purpose muted">Jeg bruger kun din e-mail til at svare dig og sige til, når du kan prøve det. Skriv, hvis du vil have den slettet.</p>
+                    </div>
+                    <p class="status-line" id="signup-status" aria-live="polite" tabindex="-1"></p>
+                  </form>
+                  <p class="muted">Mahmood Seoud. Jeg har lavet Circalify, og den gratis version bruges allerede af foreninger i Danmark og resten af Norden. <a href="mailto:hello@circalify.com">hello@circalify.com</a></p>
+                </div>
+
+                <noscript>
+                  <p class="panel">Slå JavaScript til, eller skriv til <a href="mailto:hello@circalify.com?subject=Circalify%20Pro%20early%20access">hello@circalify.com</a> for at få tidlig adgang.</p>
+                </noscript>
+              </div>
+              <p class="board-note"><strong>Til bestyrelsen:</strong> Et online årshjul for hele foreningen til 349 kr. om måneden (3.490 kr. om året). Alle kan se det gratis via et link.</p>
+              </div>
+            </div>
+
+            <figure class="hero-visual">
+              <div class="wheel-box" id="wheel-box" data-wheel="loading" role="img" aria-label="Eksempel på et årshjul for en forening">
+                <div class="wheel-mount" id="wheel"></div>
+                <img class="wheel-fallback" id="wheel-fallback" alt="Eksempel på et årshjul for en forening" width="1200" height="630" hidden />
+                <noscript>
+                  <img class="wheel-fallback" src="../images/aarshjul-eksempel.png" alt="Eksempel på et årshjul for en forening" width="1200" height="630" />
+                </noscript>
+            </div>
+            <figcaption class="muted">Eksempel: en forenings år</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container narrow">
+          <h2>Hvordan bliver årshjulet lavet i dag?</h2>
+          <div class="poll-grid" id="poll">
+            <button type="button" class="poll-btn" data-answer="powerpoint">PowerPoint</button>
+            <button type="button" class="poll-btn" data-answer="excel">Excel</button>
+            <button type="button" class="poll-btn" data-answer="plandisc">Plandisc</button>
+            <button type="button" class="poll-btn" data-answer="canva">Canva</button>
+            <button type="button" class="poll-btn" data-answer="ai">AI (ChatGPT m.fl.)</button>
+            <button type="button" class="poll-btn" data-answer="andet">Andet</button>
+          </div>
+          <p class="poll-thanks" id="poll-thanks" aria-live="polite" tabindex="-1"></p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container narrow">
+          <h2>Hellere en gratis skabelon?</h2>
+          <p class="templates-lead">Der er 10 skabeloner som HTML-filer. De åbnes i browseren, og teksten rettes i en teksteditor, så det kræver lidt teknisk snilde.</p>
+          <form id="templates-form" novalidate>
+            <div class="field">
+              <label for="templates-email">E-mail</label>
+              <input type="email" id="templates-email" name="email" required autocomplete="email" />
+            </div>
+            <input type="checkbox" name="botcheck" class="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" />
+            <div class="form-actions">
+              <button type="submit" class="btn btn-secondary" id="templates-btn">Hent skabelonerne</button>
+            </div>
+            <p class="purpose muted">Jeg bruger kun din e-mail til at sende nyt om Circalify en gang imellem. Skriv, hvis du vil have den slettet.</p>
+            <p class="status-line" id="templates-status" aria-live="polite" tabindex="-1"></p>
+          </form>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container narrow">
+          <h2>Hvem bruger et årshjul?</h2>
+          <ul class="use-cases">
+            <li><strong>Foreninger og bestyrelser:</strong> generalforsamling, kontingent, sommerfest, julefrokost.</li>
+            <li><strong>Skoler og institutioner:</strong> skolestart, forældremøder, ferier, eksamen.</li>
+            <li><strong>Kommuner og teams:</strong> budget, høringer, rådsmøder, årsregnskab.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        <p><a href="../">English: Circalify for developers</a></p>
+        <p class="muted">Siden tæller besøg anonymt med GoatCounter og bruger ingen cookies.</p>
+        <p class="muted">Mahmood Seoud. Jeg har lavet Circalify, og den gratis version bruges allerede af foreninger i Danmark og resten af Norden. <a href="mailto:hello@circalify.com">hello@circalify.com</a></p>
+      </div>
+    </footer>
+
+    <script>
+      // ---------------------------------------------------------------------
+      // Constants: one place for every number, string and URL the test reads
+      // ---------------------------------------------------------------------
+      const WEB3FORMS_URL = 'https://api.web3forms.com/submit';
+      const ACCESS_KEY = '9973b241-2a5e-439a-b2bd-441e85933cb4';
+      const PAGE = '/aarshjul/';
+      const PRICE = { monthly: 349, yearly: 3490, vat: 0.25 };
+      const PRICE_SHOWN = PRICE.monthly + 'md-' + PRICE.yearly + 'aar';
+      const SUBJECT_DOOR_CLICK = 'Pro: klik paa early access';
+      const SUBJECT_SIGNUP = 'Pro: early access tilmelding';
+      const SUBJECT_TEMPLATES = 'Skabeloner: download fra /aarshjul/';
+      const TEMPLATES_ZIP = '../templates/circalify-templates.zip';
+      const FALLBACK_IMAGE = '../images/aarshjul-eksempel.png';
+      const IMPORT_URL = 'https://unpkg.com/circalify@0.1.10/src/index.js';
+      const WHEEL_TIMEOUT_MS = 2500;
+      const SIGNUP_TIMEOUT_MS = 10000;
+      const POLL_ANSWERS = {
+        powerpoint: 'PowerPoint',
+        excel: 'Excel',
+        plandisc: 'Plandisc',
+        canva: 'Canva',
+        ai: 'AI (ChatGPT m.fl.)',
+        andet: 'Andet'
+      };
+
+      // Inbox cohort: only the exact value 'inbox' is accepted
+      const src = new URLSearchParams(location.search).get('src') === 'inbox' ? 'inbox' : '';
+      const EVENT_DOOR_SEEN = src ? 'pro-door-seen-inbox' : 'pro-door-seen';
+      const EVENT_DOOR_CLICK = src ? 'pro-door-click-inbox' : 'pro-door-click';
+      const EVENT_SIGNUP = src ? 'pro-signup-inbox' : 'pro-signup';
+
+      // ---------------------------------------------------------------------
+      // Tracking helpers
+      // ---------------------------------------------------------------------
+      // GoatCounter loads async; events fired before it is ready wait here
+      // and are flushed by the script tag's onload.
+      const pending = [];
+      function gcEvent(path) {
+        if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path, title: path, event: true });
+        else pending.push(path);
+      }
+      function flushGc() {
+        // count.js may load without defining count (blocker stub, proxy block page): keep the queue, never spin
+        if (!(window.goatcounter && window.goatcounter.count)) return;
+        while (pending.length) gcEvent(pending.shift());
+      }
+
+      function isTestBrowser() {
+        try {
+          return localStorage.getItem('circalify-test') === '1';
+        } catch (e) {
+          console.error('circalify: test flag unreadable', e);
+          return false;
+        }
+      }
+
+      function buildForm(subject, fields) {
+        const body = new FormData();
+        body.append('access_key', ACCESS_KEY);
+        body.append('subject', subject);
+        body.append('page', PAGE);
+        if (src) body.append('src', src);
+        body.append('botcheck', '');
+        for (const [k, v] of Object.entries(fields)) body.append(k, v);
+        return body;
+      }
+
+      // Fire and forget: failures are silent to the visitor by design
+      function postForm(subject, fields) {
+        if (isTestBrowser()) {
+          console.info('circalify test browser: skipped POST', subject);
+          return;
+        }
+        fetch(WEB3FORMS_URL, { method: 'POST', body: buildForm(subject, fields), keepalive: true })
+          .then(res => { if (!res.ok) console.error('circalify post failed', subject, res.status); })
+          .catch(e => console.error('circalify post failed', subject, e));
+      }
+
+      function formatKr(n) {
+        return n.toLocaleString('da-DK');
+      }
+
+      // ---------------------------------------------------------------------
+      // Door, signup, poll and templates: bound before any optional feature
+      // ---------------------------------------------------------------------
+      const doorBtn = document.getElementById('door-btn');
+      const doorPanel = document.getElementById('door-panel');
+      const signupForm = document.getElementById('signup-form');
+      const signupFields = document.getElementById('signup-fields');
+      const signupEmail = document.getElementById('signup-email');
+      const signupOrg = document.getElementById('signup-org');
+      const signupBtn = document.getElementById('signup-btn');
+      const signupStatus = document.getElementById('signup-status');
+
+      doorBtn.addEventListener('click', () => {
+        postForm(SUBJECT_DOOR_CLICK, { price_shown: PRICE_SHOWN });
+        gcEvent(EVENT_DOOR_CLICK);
+        doorBtn.hidden = true;
+        doorPanel.hidden = false;
+        doorPanel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        signupEmail.focus({ preventScroll: true });
+      });
+
+      function showSignupError(status) {
+        console.error('circalify signup failed', status);
+        signupStatus.classList.add('error');
+        signupStatus.textContent = 'Det gik ikke igennem. Prøv igen, eller skriv direkte til ';
+        const mail = document.createElement('a');
+        mail.href = 'mailto:hello@circalify.com?subject=' + encodeURIComponent('Circalify Pro early access');
+        mail.textContent = 'hello@circalify.com';
+        signupStatus.append(mail, '.');
+        signupBtn.disabled = false;
+        signupBtn.textContent = 'Skriv mig op';
+      }
+
+      function showSignupSuccess() {
+        signupFields.remove();
+        signupStatus.classList.remove('error');
+        signupStatus.textContent = 'Tak! Jeg skriver til dig personligt inden for et par dage.';
+        signupStatus.focus();
+      }
+
+      signupForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!signupEmail.value || !signupEmail.checkValidity()) {
+          signupEmail.reportValidity();
+          return;
+        }
+        if (signupForm.elements.botcheck.checked) return;
+
+        signupBtn.disabled = true;
+        signupBtn.textContent = 'Sender...';
+        signupStatus.textContent = '';
+
+        if (isTestBrowser()) {
+          console.info('circalify test browser: skipped POST', SUBJECT_SIGNUP);
+          gcEvent(EVENT_SIGNUP);
+          showSignupSuccess();
+          return;
+        }
+
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), SIGNUP_TIMEOUT_MS);
+        try {
+          const res = await fetch(WEB3FORMS_URL, {
+            method: 'POST',
+            body: buildForm(SUBJECT_SIGNUP, {
+              email: signupEmail.value,
+              organisation: signupOrg.value,
+              price_shown: PRICE_SHOWN
+            }),
+            signal: controller.signal
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok || data.success === false) {
+            showSignupError(res.status);
+            return;
+          }
+          gcEvent(EVENT_SIGNUP);
+          showSignupSuccess();
+        } catch (err) {
+          showSignupError(err && err.name === 'AbortError' ? 'timeout' : String(err));
+        } finally {
+          clearTimeout(timer);
+        }
+      });
+
+      const poll = document.getElementById('poll');
+      const pollThanks = document.getElementById('poll-thanks');
+      poll.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-answer]');
+        if (!btn || !Object.prototype.hasOwnProperty.call(POLL_ANSWERS, btn.dataset.answer)) return;
+        const key = btn.dataset.answer;
+        gcEvent('poll-' + key);
+        poll.remove();
+        pollThanks.textContent = 'Tak for svaret: ' + POLL_ANSWERS[key] + '.';
+        pollThanks.focus();
+      });
+
+      const templatesForm = document.getElementById('templates-form');
+      const templatesEmail = document.getElementById('templates-email');
+      const templatesStatus = document.getElementById('templates-status');
+      templatesForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!templatesEmail.value || !templatesEmail.checkValidity()) {
+          templatesEmail.reportValidity();
+          return;
+        }
+        if (templatesForm.elements.botcheck.checked) return;
+
+        // Download inside the click gesture so a slow or blocked POST never stops it
+        const link = document.createElement('a');
+        link.href = TEMPLATES_ZIP;
+        link.download = 'circalify-templates.zip';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        postForm(SUBJECT_TEMPLATES, { email: templatesEmail.value });
+        gcEvent('templates-download');
+        const again = document.createElement('a');
+        again.href = TEMPLATES_ZIP;
+        again.download = 'circalify-templates.zip';
+        again.textContent = 'klik her';
+        templatesStatus.replaceChildren('Downloaden er i gang. Kom den ikke, så ', again, '.');
+        templatesStatus.focus();
+        templatesEmail.value = '';
+      });
+
+      // ---------------------------------------------------------------------
+      // Optional features: each one may fail without touching the door
+      // ---------------------------------------------------------------------
+      document.querySelectorAll('[data-price]').forEach(el => {
+        const values = {
+          'monthly': PRICE.monthly,
+          'monthly-vat': Math.round(PRICE.monthly * (1 + PRICE.vat)),
+          'yearly': PRICE.yearly
+        };
+        el.textContent = formatKr(values[el.dataset.price]);
+      });
+
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(([entry], observer) => {
+          if (entry.isIntersecting) {
+            gcEvent(EVENT_DOOR_SEEN);
+            observer.disconnect();
+          }
+        }, { threshold: 0.5 }).observe(document.getElementById('door'));
+      }
+
+      // Example wheel: live Danish render, static image on failure or timeout
+      const wheelBox = document.getElementById('wheel-box');
+      const wheelMount = document.getElementById('wheel');
+      const wheelFallback = document.getElementById('wheel-fallback');
+      let wheelSettled = false;
+
+      function showWheelFallback(err) {
+        if (wheelSettled) return;
+        wheelSettled = true;
+        console.warn('circalify: example wheel fallback', err);
+        wheelMount.innerHTML = '';
+        wheelFallback.src = FALLBACK_IMAGE;
+        wheelFallback.hidden = false;
+        wheelBox.dataset.wheel = 'fallback';
+        gcEvent('wheel-fallback');
+      }
+
+      function renderWheel(CircularTimeline) {
+        const y = new Date().getFullYear();
+        const wheel = new CircularTimeline(wheelMount, {
+          title: '',
+          startYear: y,
+          locale: 'da',
+          interactive: false,
+          enableDetailPanel: false,
+          backgroundColor: 'transparent',
+          fontFamily: "'Hanken Grotesk', sans-serif",
+          centerLabelColor: '#1F2A2E',
+          centerLabel: 'Foreningsår\n' + y,
+          sameRingHeight: false,
+          rings: [
+            { type: 'data', name: 'Foreningsår', unit: 'month', color: '#F2F3EE', height: 30, fontSize: 36, fontColor: '#1F2A2E', interactive: false },
+            { type: 'calendar', calendarType: 'month-names', showYear: false, color: '#E4E7E1', height: 8, fontSize: 30, fontColor: '#1F2A2E' }
+          ]
+        });
+        // SVG units: the viewBox is 1000 wide; on a 343px phone wheel 36 units is about 12px, on a 510px desktop wheel about 18px
+        wheel.setData([
+          { label: 'Kontingent', startDate: y + '-01-01', endDate: y + '-01-31', color: '#E9D27A' },
+          { label: 'Årsregnskab', startDate: y + '-02-01', endDate: y + '-02-28', color: '#B9D29A' },
+          { label: 'General\u00ADforsamling', startDate: y + '-03-01', endDate: y + '-03-31', color: '#A9CBD6' },
+          { label: 'Sommerfest', startDate: y + '-06-01', endDate: y + '-06-30', color: '#C9B3D6' },
+          { label: 'Budget', startDate: y + '-09-01', endDate: y + '-10-31', color: '#EDB49A' },
+          { label: 'Julefrokost', startDate: y + '-12-01', endDate: y + '-12-31', color: '#D9C7A8' }
+        ], 'Foreningsår');
+      }
+
+      setTimeout(() => showWheelFallback(new Error('timeout after ' + WHEEL_TIMEOUT_MS + ' ms')), WHEEL_TIMEOUT_MS);
+      import(IMPORT_URL)
+        .then(mod => {
+          if (wheelSettled) return; // late resolution after the timeout: keep the fallback
+          renderWheel(mod.default);
+          wheelSettled = true;
+          wheelBox.dataset.wheel = 'live';
+        })
+        .catch(showWheelFallback);
+    </script>
+
+    <!-- GoatCounter: cookieless visitor and event counts. -->
+    <script data-goatcounter="https://matooize.goatcounter.com/count" async src="//gc.zgo.at/count.js" onload="flushGc()"></script>
+  </body>
+</html>

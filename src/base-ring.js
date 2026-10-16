@@ -4,6 +4,8 @@
  * @license MIT
  */
 
+import CIRCALIFY_CONSTANTS from './constants.js';
+
 class BaseRing {
   /**
    * @param {Object} config - Ring configuration
@@ -36,33 +38,11 @@ class BaseRing {
     this.elements = [];
 
     // Store constants as instance properties for easy access
-    // Fallback to defaults if constants.js not loaded
-    const constants = (typeof window !== 'undefined' && window.CIRCALIFY_CONSTANTS) || {};
-    this.GEOMETRY = constants.GEOMETRY || {
-      FULL_CIRCLE: 2 * Math.PI,
-      HALF_CIRCLE: Math.PI,
-      QUARTER_CIRCLE: Math.PI / 2,
-      THREE_QUARTER_CIRCLE: 3 * Math.PI / 2,
-      ANGLE_OFFSET_TOP: -Math.PI / 2
-    };
-    this.TIME = constants.TIME || {
-      MONTH_ABBR: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-      QUARTER_LABELS: ['Q1', 'Q2', 'Q3', 'Q4']
-    };
-    this.STYLING = constants.STYLING || {
-      RING_BACKGROUND_OPACITY: 0.6,
-      RING_SEPARATOR_OPACITY: 0.4,
-      EVENT_STROKE_WIDTH: 1,
-      EVENT_STROKE_OPACITY: 0.85
-    };
-    this.DIMENSIONS = constants.DIMENSIONS || {
-      MIN_TRUNCATE_CHARS: 2
-    };
-    this.ID_GENERATION = constants.ID_GENERATION || {
-      RADIX: 36,
-      START_INDEX: 2,
-      LENGTH: 9
-    };
+    this.GEOMETRY = CIRCALIFY_CONSTANTS.GEOMETRY;
+    this.TIME = CIRCALIFY_CONSTANTS.TIME;
+    this.STYLING = CIRCALIFY_CONSTANTS.STYLING;
+    this.DIMENSIONS = CIRCALIFY_CONSTANTS.DIMENSIONS;
+    this.ID_GENERATION = CIRCALIFY_CONSTANTS.ID_GENERATION;
   }
 
   /**

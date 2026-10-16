@@ -30,6 +30,11 @@ These settings apply to the entire wheel visualization:
   numberOfMonths: number,           // How many months to display (typically 12)
   colorPalette: string[],           // Array of color hex codes
   sameRingHeight: boolean,          // true = all rings equal height
+  locale: enum,                     // Month label language: "en" or "da"
+  monthLabels: string[],            // 12 custom month labels (overrides locale)
+  interactive: boolean,             // Hover and click on the wheel
+  centerLabel: string,              // Title in the center circle; "\n" adds a second line
+  centerLabelColor: string,         // Color of the center title
   rings: RingConfig[]               // Array of ring configurations
 }
 ```
@@ -91,6 +96,44 @@ These settings apply to the entire wheel visualization:
 - **Options:**
   - `true` - All rings have equal height (ignore individual `height` values)
   - `false` - Rings use their individual `height` values proportionally
+
+#### `locale`
+- **Type:** `enum`
+- **Options:** `"en"`, `"da"`
+- **Default:** `"en"`
+- **Description:** Language of the month labels on calendar rings. `"da"` gives Jan, Feb, Mar, Apr, Maj, Jun, Jul, Aug, Sep, Okt, Nov, Dec.
+- **Example (Danish aarshjul):**
+  ```javascript
+  new AnnualWheel('#aarshjul', {
+    startYear: 2026,
+    locale: 'da',
+    rings: [
+      { type: 'calendar', calendarType: 'month-names' },
+      { type: 'data', name: 'Forening', unit: 'month' }
+    ]
+  });
+  ```
+
+#### `monthLabels`
+- **Type:** `string[]` (exactly 12 strings, January first)
+- **Default:** none (labels come from `locale`)
+- **Description:** Custom month labels for any language. When set, it wins over `locale`.
+- **Example:** `monthLabels: ['jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'des']`
+
+#### `interactive`
+- **Type:** `boolean`
+- **Default:** `true`
+- **Description:** `false` turns off hover and click on the whole wheel: events, the "+" indicator on empty segments and the "VIEW AGENDA" month buttons. A ring's own `interactive: false` turns it off for that ring only.
+
+#### `centerLabel`
+- **Type:** `string`
+- **Default:** `""` (empty center)
+- **Description:** Title drawn in the center circle, sized to fit. Text after a `\n` becomes a smaller second line.
+- **Example:** `centerLabel: 'Foreningsår\n2026'`
+
+#### `centerLabelColor`
+- **Type:** `string`
+- **Default:** `"#1F2937"`
 
 ---
 
@@ -240,6 +283,18 @@ Displays actual data/events positioned according to dates.
 | `height` | `number` | `15` | Ring height (used if `sameRingHeight = false`) |
 | `fontSize` | `number` | `10` | Font size for data labels |
 | `fontColor` | `string` | `"#000000"` | Font color (hex code) |
+| `interactive` | `boolean` | `true` | Hover and click for this ring; the general `interactive: false` turns it off for all rings |
+| `showLabels` | `boolean` | `true` | Show event labels |
+
+#### Event labels
+
+A label runs outward from the center (radial) when its segment is narrower than the ring is thick, and along the arc (curved) otherwise. Radial labels are sized to fit their segment, up to the ring's `fontSize`, and wrap onto two lines when that gives a larger font. Curved labels keep one line and are shortened if they do not fit. `fontSize` is in SVG units: the wheel's viewBox is about 1000 units wide, so on a wheel shown 430px wide, `fontSize: 30` is about 13px on screen.
+
+In a radial label, a long compound word can break onto two lines at a soft hyphen (`\u00AD`), shown as a hyphen only when the break is used. Curved labels drop the soft hyphen. A one-month event on a thick ring (for example `height: 30` next to a calendar ring with `height: 8`) renders radially:
+
+```javascript
+{ label: 'General\u00ADforsamling', startDate: '2026-03-01', endDate: '2026-03-31' }
+```
 
 #### Time Units
 

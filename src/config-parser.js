@@ -111,6 +111,8 @@ class ConfigParser {
 
       // Visual settings
       backgroundColor: config.backgroundColor || '#f5f7fa',
+      centerLabel: this._validateString(config.centerLabel, '', 'centerLabel'),
+      centerLabelColor: this._validateString(config.centerLabelColor, '#1F2937', 'centerLabelColor'),
       fontFamily: config.fontFamily || '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
 
       // Interactive features
@@ -309,6 +311,20 @@ class ConfigParser {
       throw new Error(`ConfigParser: monthLabels must be an array of 12 strings, got ${got}`);
     }
     return [...monthLabels];
+  }
+
+  /**
+   * Validate optional string
+   * @private
+   */
+  _validateString(value, defaultValue, fieldName) {
+    if (value === undefined || value === null) {
+      return defaultValue;
+    }
+    if (typeof value !== 'string') {
+      throw new Error(`ConfigParser: ${fieldName} must be a string, got ${typeof value}`);
+    }
+    return value;
   }
 
   /**

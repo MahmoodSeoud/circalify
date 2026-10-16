@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.10
+
+### Added
+- `centerLabel` option: a title in the center circle, with an optional smaller second line after `\n`, sized to fit. `centerLabelColor` sets its color.
+- Radial event labels can break a long compound word onto two lines at a soft hyphen (`\u00AD`), e.g. `'General\u00ADforsamling'`. Curved labels drop the soft hyphen.
+
+### Changed
+- Radial event labels are sized on the right axes: their length fits the ring's thickness and their height fits the arc's width. Labels keep their full text at the largest font that fits, wrap onto two lines when that is larger, and truncate only when nothing else fits. Before, a long label on a thick ring was cut short while the ring had room for it.
+- Event labels no longer have a drop shadow.
+
+### Fixed
+- `BaseRing` imports its constants instead of reading `window.CIRCALIFY_CONSTANTS`, so rings built outside a browser get the real dimensions instead of incomplete fallbacks.
+
 ## 0.1.9
 
 ### Added

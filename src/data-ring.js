@@ -6,6 +6,13 @@
 
 import BaseRing from './base-ring.js';
 
+// Event labels: no drop shadow, never selectable
+const LABEL_STYLE = 'user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;';
+// Share of the ring thickness a radial label may use, and of the arc width
+const RADIAL_LENGTH_FILL = 0.85;
+const RADIAL_WIDTH_FILL = 0.7;
+const RADIAL_LINE_HEIGHT = 1.1;
+
 class DataRing extends BaseRing {
   constructor(config, boundaries, context) {
     super(config, boundaries, context);
@@ -642,6 +649,9 @@ class DataRing extends BaseRing {
 
   /**
    * Add radial event label
+   *
+   * Radial text runs outward from the center, so its length is bounded by the
+   * ring's thickness and its height (one or two lines) by the arc's width.
    * @private
    */
   _addRadialEventLabel(label, midAngle, textRadius, ringHeight, arcLength, eventGroup) {
@@ -653,111 +663,101 @@ class DataRing extends BaseRing {
       rotationAngle += 180;
     }
 
-    // Font size based on ring height
-    let fontSize = Math.min(this.config.fontSize, Math.max(this.DIMENSIONS.MIN_FONT_SIZE, ringHeight * this.DIMENSIONS.PLUS_INDICATOR_SIZE_RATIO));
+    const layout = this._layoutRadialLabel(label, ringHeight, arcLength);
+    if (!layout) return;
 
-    // Calculate max chars per line
-    const charWidth = fontSize * this.DIMENSIONS.CHAR_WIDTH_RATIO;
-    const maxCharsPerLine = Math.floor(arcLength / charWidth);
-    const canFitMultipleLines = ringHeight >= fontSize * 2.5; // Need space for at least 2 lines
+    const text = this._createSVGElement('text', {
+      'x': point.x,
+      'y': point.y,
+      'text-anchor': 'middle',
+      'dominant-baseline': 'middle',
+      'font-family': this.generalConfig.fontFamily,
+      'font-size': layout.fontSize,
+      'font-weight': layout.fontWeight || this.config.fontWeight,
+      'fill': this.config.fontColor,
+      'pointer-events': 'none',
+      'transform': `rotate(${rotationAngle}, ${point.x}, ${point.y})`,
+      'style': LABEL_STYLE
+    });
 
-    // Check if there's enough space for text
-    if (arcLength > fontSize * this.DIMENSIONS.ELLIPSIS_WIDTH_CHARS && maxCharsPerLine >= this.DIMENSIONS.MIN_TRUNCATE_CHARS) {
-      // Try to wrap text into multiple lines first (if tall enough)
-      if (canFitMultipleLines) {
-        const lines = this._wrapTextToLines(label, maxCharsPerLine, 2); // Max 2 lines
-
-        if (lines.length > 1) {
-          // Multi-line text
-          const text = this._createSVGElement('text', {
-            'x': point.x,
-            'y': point.y,
-            'text-anchor': 'middle',
-            'dominant-baseline': 'middle',
-            'font-family': this.generalConfig.fontFamily,
-            'font-size': fontSize * 0.9, // Slightly smaller for multi-line
-            'font-weight': this.config.fontWeight,
-            'fill': this.config.fontColor,
-            'pointer-events': 'none',
-            'transform': `rotate(${rotationAngle}, ${point.x}, ${point.y})`,
-            'style': 'text-shadow: 0 1px 2px rgba(0,0,0,0.3); user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
-          });
-
-          const lineHeight = fontSize * 1.1;
-          const totalHeight = (lines.length - 1) * lineHeight;
-
-          lines.forEach((line, i) => {
-            const tspan = this._createSVGElement('tspan', {
-              'x': point.x,
-              'dy': i === 0 ? -totalHeight / 2 : lineHeight
-            });
-            tspan.textContent = line;
-            text.appendChild(tspan);
-          });
-
-          eventGroup.appendChild(text);
-        } else {
-          // Single line (wrapped into one line or short text)
-          const text = this._createSVGElement('text', {
-            'x': point.x,
-            'y': point.y,
-            'text-anchor': 'middle',
-            'dominant-baseline': 'middle',
-            'font-family': this.generalConfig.fontFamily,
-            'font-size': fontSize,
-            'font-weight': this.config.fontWeight,
-            'fill': this.config.fontColor,
-            'pointer-events': 'none',
-            'transform': `rotate(${rotationAngle}, ${point.x}, ${point.y})`,
-            'style': 'text-shadow: 0 1px 2px rgba(0,0,0,0.3); user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
-          });
-          text.textContent = lines[0];
-          eventGroup.appendChild(text);
-        }
-      } else {
-        // Not tall enough for multiple lines - use single line with truncation
-        const displayLabel = this._truncateText(label, maxCharsPerLine);
-        const text = this._createSVGElement('text', {
+    if (layout.lines.length === 1) {
+      text.textContent = layout.lines[0];
+    } else {
+      const lineHeight = layout.fontSize * RADIAL_LINE_HEIGHT;
+      const totalHeight = (layout.lines.length - 1) * lineHeight;
+      layout.lines.forEach((line, i) => {
+        const tspan = this._createSVGElement('tspan', {
           'x': point.x,
-          'y': point.y,
-          'text-anchor': 'middle',
-          'dominant-baseline': 'middle',
-          'font-family': this.generalConfig.fontFamily,
-          'font-size': fontSize,
-          'font-weight': this.config.fontWeight,
-          'fill': this.config.fontColor,
-          'pointer-events': 'none',
-          'transform': `rotate(${rotationAngle}, ${point.x}, ${point.y})`,
-          'style': 'text-shadow: 0 1px 2px rgba(0,0,0,0.3); user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
+          'dy': i === 0 ? -totalHeight / 2 : lineHeight
         });
-        text.textContent = displayLabel;
-        eventGroup.appendChild(text);
-      }
-    } else if (arcLength >= fontSize * 1.2 && ringHeight >= fontSize * 1.2) {
-      // Small arc - show just first character with enough space
-      const smallFontSize = Math.min(fontSize * 0.85, Math.min(arcLength * 0.7, ringHeight * 0.6));
+        tspan.textContent = line;
+        text.appendChild(tspan);
+      });
+    }
 
-      // Only show if the character will actually fit
-      if (smallFontSize >= 6) {  // Minimum readable size
-        // Extract first character or number from label
-        const firstChar = label.trim().charAt(0).toUpperCase();
+    eventGroup.appendChild(text);
+  }
 
-        const text = this._createSVGElement('text', {
-          'x': point.x,
-          'y': point.y,
-          'text-anchor': 'middle',
-          'dominant-baseline': 'middle',
-          'font-family': this.generalConfig.fontFamily,
-          'font-size': smallFontSize,
-          'font-weight': '700',
-          'fill': this.config.fontColor,
-          'pointer-events': 'none',
-          'style': 'text-shadow: 0 1px 2px rgba(0,0,0,0.3); user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
-        });
-        text.textContent = firstChar;
-        eventGroup.appendChild(text);
+  /**
+   * Choose lines and font size for a radial label: the largest font, up to
+   * config.fontSize, at which the label fits the ring thickness and arc width.
+   * Prefers the full label on one or two lines; truncates only when even the
+   * minimum font size cannot fit it; falls back to the first letter.
+   * @returns {{lines: string[], fontSize: number, fontWeight?: string} | null}
+   * @private
+   */
+  _layoutRadialLabel(label, ringHeight, arcLength) {
+    const maxFont = this.config.fontSize;
+    const minFont = this.DIMENSIONS.MIN_FONT_SIZE;
+    const charWidth = this.DIMENSIONS.CHAR_WIDTH_RATIO;
+    const length = ringHeight * RADIAL_LENGTH_FILL;   // room along the radius
+    const width = arcLength * RADIAL_WIDTH_FILL;      // room across the arc
+    const fit = (lines) => Math.min(
+      maxFont,
+      length / (Math.max(...lines.map(l => l.length)) * charWidth),
+      width / (1 + (lines.length - 1) * RADIAL_LINE_HEIGHT)
+    );
+
+    // A soft hyphen (U+00AD) marks where a long compound word may break,
+    // e.g. 'General\u00ADforsamling'; it is invisible unless the break is used
+    const raw = label.trim();
+    const trimmed = raw.replace(/\u00AD/g, '');
+    if (!trimmed) return null;
+
+    // One line, or two lines split at the break nearest the middle:
+    // a space (dropped) or a soft hyphen (shown as '-')
+    const candidates = [[trimmed]];
+    const breaks = [...raw.matchAll(/[ \u00AD]/g)].map(m => m.index);
+    if (breaks.length) {
+      const mid = raw.length / 2;
+      const at = breaks.reduce((a, b) => (Math.abs(b - mid) < Math.abs(a - mid) ? b : a));
+      const first = raw.slice(0, at).replace(/\u00AD/g, '');
+      const second = raw.slice(at + 1).replace(/\u00AD/g, '');
+      candidates.push([raw[at] === ' ' ? first : first + '-', second]);
+    }
+
+    let best = null;
+    for (const lines of candidates) {
+      const fontSize = fit(lines);
+      if (fontSize >= minFont && (!best || fontSize > best.fontSize)) best = { lines, fontSize };
+    }
+    if (best) return best;
+
+    // Truncate on one line at the largest font the arc allows
+    const fontSize = Math.min(maxFont, width);
+    if (fontSize >= minFont) {
+      const maxChars = Math.floor(length / (fontSize * charWidth));
+      if (maxChars >= this.DIMENSIONS.MIN_TRUNCATE_CHARS) {
+        return { lines: [this._truncateText(trimmed, maxChars)], fontSize };
       }
     }
+
+    // Narrow arc: first letter only, if it is readable
+    const letterSize = Math.min(maxFont, arcLength * 0.7, ringHeight * 0.6);
+    if (letterSize >= minFont) {
+      return { lines: [trimmed.charAt(0).toUpperCase()], fontSize: letterSize, fontWeight: '700' };
+    }
+    return null;
   }
 
   /**
@@ -765,6 +765,9 @@ class DataRing extends BaseRing {
    * @private
    */
   _addCurvedEventLabel(label, midAngle, startAngle, endAngle, textRadius, arcLength, eventGroup) {
+    // Curved labels never break, so soft hyphens are dropped
+    label = label.replace(/\u00AD/g, '');
+
     // Normalize angle for flip detection
     let normalizedAngle = midAngle;
     while (normalizedAngle > Math.PI) normalizedAngle -= this.GEOMETRY.FULL_CIRCLE;
@@ -808,7 +811,7 @@ class DataRing extends BaseRing {
         'font-weight': this.config.fontWeight,
         'fill': this.config.fontColor,
         'pointer-events': 'none',
-        'style': 'text-shadow: 0 1px 2px rgba(0,0,0,0.3); user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
+        'style': LABEL_STYLE
       });
 
       const textPath = this._createSVGElement('textPath', {
@@ -835,7 +838,7 @@ class DataRing extends BaseRing {
           'font-weight': '700',
           'fill': this.config.fontColor,
           'pointer-events': 'none',
-          'style': 'text-shadow: 0 1px 2px rgba(0,0,0,0.3); user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
+          'style': LABEL_STYLE
         });
 
         const textPath = this._createSVGElement('textPath', {

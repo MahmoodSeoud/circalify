@@ -111,7 +111,8 @@ Circalify creates SVG-based circular timelines with:
   backgroundColor: '#fff',   // Optional: Background color (default: '#ffffff')
   interactive: true,         // Optional: Enable hover/click (default: true)
   locale: 'en',              // Optional: Month labels, 'en' or 'da' (default: 'en')
-  monthLabels: null          // Optional: 12 custom month labels, overrides locale
+  monthLabels: null,         // Optional: 12 custom month labels, overrides locale
+  centerLabel: ''            // Optional: title in the center, '\n' for a second line
 }
 ```
 

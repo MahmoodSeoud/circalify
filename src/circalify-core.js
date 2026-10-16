@@ -296,6 +296,61 @@ class CircalifyCore {
       'stroke-width': '1'
     });
     this.svgGroups.rings.appendChild(outerCircle);
+
+    if (this.generalConfig.centerLabel) {
+      this._drawCenterLabel();
+    }
+  }
+
+  /**
+   * Draw the centerLabel option in the center circle: a bold first line and an
+   * optional lighter second line after a newline, sized to fit the circle
+   * @private
+   */
+  _drawCenterLabel() {
+    const lines = this.generalConfig.centerLabel.split('\n').map(l => l.trim()).filter(Boolean).slice(0, 2);
+    if (lines.length === 0) return;
+
+    const radius = this.generalConfig.innerRadius;
+    const usableWidth = radius * 1.5;
+    const charWidth = 0.6;
+    const mainSize = Math.min(radius * 0.24, usableWidth / (lines[0].length * charWidth));
+    const subSize = lines[1] ? Math.min(mainSize * 0.72, usableWidth / (lines[1].length * charWidth)) : 0;
+    const gap = mainSize * 0.25;
+    const blockHeight = mainSize + (lines[1] ? gap + subSize : 0);
+    const top = this.cy - blockHeight / 2;
+
+    const group = this._createSVGElement('g', { 'class': 'circalify-center-label', 'pointer-events': 'none' });
+    const main = this._createSVGElement('text', {
+      'x': this.cx,
+      'y': top + mainSize / 2,
+      'text-anchor': 'middle',
+      'dominant-baseline': 'central',
+      'font-family': this.generalConfig.fontFamily,
+      'font-size': mainSize,
+      'font-weight': '700',
+      'fill': this.generalConfig.centerLabelColor
+    });
+    main.textContent = lines[0];
+    group.appendChild(main);
+
+    if (lines[1]) {
+      const sub = this._createSVGElement('text', {
+        'x': this.cx,
+        'y': top + mainSize + gap + subSize / 2,
+        'text-anchor': 'middle',
+        'dominant-baseline': 'central',
+        'font-family': this.generalConfig.fontFamily,
+        'font-size': subSize,
+        'font-weight': '500',
+        'fill': this.generalConfig.centerLabelColor,
+        'opacity': '0.65'
+      });
+      sub.textContent = lines[1];
+      group.appendChild(sub);
+    }
+
+    this.svgGroups.rings.appendChild(group);
   }
 
   /**

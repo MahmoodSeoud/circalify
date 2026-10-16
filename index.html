@@ -1,34 +1,47 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Primary Meta Tags -->
-    <title>Circalify - Beautiful Circular Timeline Visualizations for Developers</title>
-    <meta name="title" content="Circalify - Beautiful Circular Timeline Visualizations for Developers" />
-    <meta name="description" content="Build beautiful circular timeline visualizations in minutes. Zero dependencies, pure JavaScript. Perfect for planning, roadmaps, and annual cycles." />
-    <meta name="keywords" content="circular timeline, JavaScript library, data visualization, annual planning, cyclical data, developer tools, open source" />
+    <title>Make your year wheel online and share it with a link | Circalify</title>
+    <meta name="title" content="Make your year wheel online and share it with a link | Circalify" />
+    <meta name="description" content="Type in the year's activities and Circalify draws the wheel. Share it with a link so the whole board sees the same plan. Circalify Pro is in early access; developers can use the free, open source JavaScript library." />
+    <meta name="keywords" content="year wheel, annual wheel, annual planner, association planning, board calendar, circular timeline, JavaScript library, open source" />
     <meta name="author" content="Mahmood Seoud" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://circalify.com/" />
-    <meta property="og:title" content="Circalify - Beautiful Circular Timeline Visualizations" />
-    <meta property="og:description" content="Build beautiful circular timeline visualizations in minutes. Zero dependencies, pure JavaScript." />
-    <meta property="og:image" content="https://circalify.com/images/hero-devices-final.png" />
+    <meta property="og:url" content="https://mahmoodseoud.github.io/circalify/" />
+    <meta property="og:title" content="Make your year wheel online and share it with a link" />
+    <meta property="og:description" content="Type in the year's activities and Circalify draws the wheel. Share it with a link so the whole board sees the same plan. No code, nothing to install." />
+    <meta property="og:image" content="https://mahmoodseoud.github.io/circalify/images/hero-devices-final.png" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://circalify.com/" />
-    <meta property="twitter:title" content="Circalify - Beautiful Circular Timeline Visualizations" />
-    <meta property="twitter:description" content="Build beautiful circular timeline visualizations in minutes. Zero dependencies, pure JavaScript." />
-    <meta property="twitter:image" content="https://circalify.com/images/hero-devices-final.png" />
+    <meta property="twitter:url" content="https://mahmoodseoud.github.io/circalify/" />
+    <meta property="twitter:title" content="Make your year wheel online and share it with a link" />
+    <meta property="twitter:description" content="Type in the year's activities and Circalify draws the wheel. Share it with a link so the whole board sees the same plan. No code, nothing to install." />
+    <meta property="twitter:image" content="https://mahmoodseoud.github.io/circalify/images/hero-devices-final.png" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- The pinned engine graph for the Pro hero wheel -->
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/index.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/constants.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/layout-calculator.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/config-parser.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/base-ring.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/calendar-ring.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/header-ring.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/data-ring.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/ring-factory.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/circalify-core.js" />
+    <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/circalify.js" />
 
     <!-- Ace Editor -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.2/ace.js"></script>
@@ -55,50 +68,40 @@
         --space-10: 5rem;     /* 80px */
         --space-12: 6rem;     /* 96px */
 
-        /* Colors - D3-Inspired Palette */
-        --primary: #f4511e;
-        --primary-dark: #d84315;
-        --primary-light: #ff7043;
-        --secondary: #616161;
-        --secondary-dark: #424242;
-        --accent: #ffa726;
-        --text: #1F2937;
-        --text-light: #6B7280;
-        --bg: #FFFFFF;
-        --bg-light: #fafafa;
-        --bg-lighter: #f5f5f5;
-        --border: #e0e0e0;
-        --border-light: #f5f5f5;
-        --success: #66bb6a;
-        --error: #ef5350;
+        /* Colors and type: DESIGN.md (Gråvejrsalmanak) */
+        --primary: #2D5A4A;
+        --primary-dark: #24493C;
+        --secondary: #5B6668;
+        --accent: #E9D27A;
+        --text: #1F2A2E;
+        --text-light: #5B6668;
+        --bg: #E4E7E1;
+        --bg-light: #F2F3EE;
+        --border: #CBD1C8;
+        --border-light: #DCE0D9;
+        --success: #2D5A4A;
+        --error: #A3362A;
+        --code-bg: #1F2A2E;
+        --code-surface: #2B373B;
+        --code-text: #DCE0D9;
 
         /* Typography */
-        --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        --font-body: 'Hanken Grotesk', 'Segoe UI', sans-serif;
+        --font-display: 'Familjen Grotesk', 'Hanken Grotesk', sans-serif;
         --line-height-tight: 1.2;
         --line-height-normal: 1.5;
         --line-height-relaxed: 1.75;
 
         /* Shadows */
         --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+        --shadow-md: 0 2px 4px -1px rgb(31 42 46 / 0.08);
+        --shadow-lg: 0 4px 8px -2px rgb(31 42 46 / 0.08);
+        --shadow-xl: 0 8px 16px -4px rgb(31 42 46 / 0.1);
 
         /* Transitions */
         --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
         --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
         --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
-      }
-
-      /* Dark mode colors */
-      [data-theme="dark"] {
-        --text: #e8eaed;
-        --text-light: #9aa0a6;
-        --bg: #0d1117;
-        --bg-light: #161b22;
-        --bg-lighter: #21262d;
-        --border: #30363d;
-        --border-light: #21262d;
       }
 
       body {
@@ -145,15 +148,12 @@
         border-bottom: 1px solid var(--border-light);
         position: sticky;
         top: 0;
-        background: rgba(255, 255, 255, 0.95);
+        background: rgba(228, 231, 225, 0.94);
         backdrop-filter: blur(10px);
         z-index: 100;
         transition: background-color var(--transition-base);
       }
 
-      [data-theme="dark"] header {
-        background: rgba(15, 23, 42, 0.95);
-      }
 
       .header-content {
         display: flex;
@@ -164,7 +164,8 @@
 
       .logo {
         font-size: 1.5rem;
-        font-weight: 800;
+        font-family: var(--font-display);
+        font-weight: 700;
         color: var(--primary);
         text-decoration: none;
         transition: color var(--transition-fast);
@@ -197,13 +198,13 @@
         display: none;
         background: transparent;
         border: 2px solid var(--border);
-        border-radius: 8px;
+        border-radius: 6px;
         width: 40px;
         height: 40px;
         cursor: pointer;
         align-items: center;
         justify-content: center;
-        transition: all var(--transition-fast);
+        transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
         padding: 0;
       }
 
@@ -219,52 +220,284 @@
         background: var(--bg-light);
       }
 
-      /* Dark mode toggle */
-      .dark-mode-toggle {
-        background: transparent;
-        border: 2px solid var(--border);
-        border-radius: 8px;
-        width: 40px;
-        height: 40px;
-        cursor: pointer;
-        display: flex;
+
+      /* The hidden attribute must win over component display rules (.btn is inline-flex) */
+      [hidden] {
+        display: none !important;
+      }
+
+      /* Circalify Pro hero: same components as aarshjul/index.html (DESIGN.md) */
+      .pro-hero {
+        padding: var(--space-6) 0 var(--space-8);
+      }
+
+      .hero-da-link {
+        font-size: 0.875rem;
+        color: var(--text-light);
+        margin-bottom: var(--space-5);
+      }
+
+      .hero-da-link a {
+        color: var(--text-light);
+        text-decoration: underline;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--space-6);
         align-items: center;
-        justify-content: center;
-        padding: 0;
-        transition: all var(--transition-fast);
       }
 
-      .dark-mode-toggle:hover {
-        border-color: var(--primary);
+      @media (min-width: 768px) {
+        .hero-grid {
+          grid-template-columns: 1fr 1fr;
+          gap: var(--space-8);
+        }
+      }
+
+      .eyebrow {
+        color: var(--text-light);
+        font-size: 0.875rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-bottom: var(--space-3);
+      }
+
+      .pro-hero h1 {
+        font-family: var(--font-display);
+        font-size: clamp(1.75rem, 4vw, 2.5rem);
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        line-height: var(--line-height-tight);
+        margin-bottom: var(--space-4);
+      }
+
+      .hero-support {
+        font-size: 1.125rem;
+        color: var(--text-light);
+        line-height: var(--line-height-relaxed);
+        margin-bottom: var(--space-5);
+      }
+
+      .offer-card {
         background: var(--bg-light);
+        border: 1.5px solid #B9C1B6;
+        border-radius: 6px;
+        padding: var(--space-5);
+        max-width: 440px;
       }
 
-      .theme-icon {
-        position: absolute;
-        width: 20px;
-        height: 20px;
+      .price-block {
+        margin-bottom: var(--space-4);
+      }
+
+      .price-main {
+        font-family: var(--font-display);
+        font-size: 2rem;
+        font-weight: 600;
+        line-height: var(--line-height-tight);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .price-line {
+        color: var(--text-light);
+        font-size: 1rem;
+      }
+
+      .price-scope {
+        margin-top: var(--space-2);
+      }
+
+      .pro-door-btn {
+        width: 100%;
+        font-size: 18px;
+        min-height: 48px;
+        padding: 0 var(--space-6);
+      }
+
+      .panel {
+        border-radius: 6px;
+        background: transparent;
+      }
+
+      .panel-intro {
+        margin-bottom: var(--space-4);
+        line-height: var(--line-height-relaxed);
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-1);
+        margin-bottom: var(--space-3);
+      }
+
+      .field label {
+        font-weight: 600;
+        font-size: 0.9375rem;
+      }
+
+      .field input {
+        font-family: inherit;
+        font-size: 1rem;
+        min-height: 48px;
+        padding: 0 var(--space-4);
+        border: 2px solid var(--border);
+        border-radius: 6px;
+        background: var(--bg-light);
         color: var(--text);
-        stroke: currentColor;
-        fill: none;
-        transition: opacity var(--transition-fast), transform var(--transition-fast);
-        opacity: 1;
+        width: 100%;
       }
 
-      .theme-icon.moon-icon {
-        stroke: none;
-        fill: currentColor;
-        opacity: 0;
-        transform: rotate(-180deg);
+      .field input:focus {
+        outline: none;
+        border-color: var(--primary-dark);
       }
 
-      [data-theme="dark"] .theme-icon.sun-icon {
-        opacity: 0;
-        transform: rotate(180deg);
+      .form-actions {
+        margin: var(--space-4) 0 var(--space-3);
       }
 
-      [data-theme="dark"] .theme-icon.moon-icon {
-        opacity: 1;
-        transform: rotate(0deg);
+      .muted {
+        color: var(--text-light);
+        font-size: 1rem;
+      }
+
+      .purpose {
+        margin-bottom: var(--space-3);
+      }
+
+      .status-line {
+        margin-top: var(--space-3);
+        font-weight: 600;
+      }
+
+      .status-line:empty {
+        margin: 0; /* stays in the accessibility tree, so later text is announced */
+      }
+
+      .status-line.error {
+        color: var(--error);
+        font-weight: 500;
+      }
+
+      .botcheck {
+        display: none;
+      }
+
+      .board-note {
+        margin-top: var(--space-4);
+        padding-top: var(--space-3);
+        border-top: 1px solid var(--border);
+        font-size: 1rem;
+        color: var(--text-light);
+      }
+
+      .board-note strong {
+        color: var(--text);
+        font-weight: 700;
+      }
+
+      .hero-visual {
+        margin: 0 auto;
+        width: 100%;
+        max-width: 520px;
+      }
+
+      .wheel-box {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+      }
+
+      .wheel-box[data-wheel="loading"]::before {
+        content: "";
+        position: absolute;
+        inset: 6%;
+        border-radius: 50%;
+        border: 28px solid var(--bg-light);
+        box-shadow: inset 0 0 0 1px var(--border), 0 0 0 1px var(--border);
+      }
+
+      .wheel-mount {
+        position: absolute;
+        inset: 0;
+        cursor: default;
+      }
+
+      .wheel-fallback {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+      }
+
+      .hero-visual figcaption {
+        text-align: center;
+        margin-top: var(--space-2);
+        font-size: 0.875rem;
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        [data-wheel="live"] svg {
+          animation: wheel-draw-in 600ms ease-out both;
+        }
+
+        @keyframes wheel-draw-in {
+          from {
+            opacity: 0;
+            transform: rotate(-12deg) scale(0.94);
+          }
+          to {
+            opacity: 1;
+            transform: none;
+          }
+        }
+      }
+
+      /* Developer section under the Pro hero */
+      .hero.dev-hero {
+        border-top: 1px solid var(--border);
+        padding-top: var(--space-8);
+        text-align: left;
+      }
+
+      .dev-hero .container > * {
+        max-width: 640px;
+      }
+
+      .dev-hero .hero-badges,
+      .dev-hero .hero-note {
+        justify-content: flex-start;
+      }
+
+      .dev-hero .email-signup {
+        margin: 0 0 var(--space-4);
+      }
+
+      .dev-hero .benefits-list {
+        margin: var(--space-6) 0;
+      }
+
+      .dev-label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        margin-bottom: var(--space-1);
+      }
+
+      .dev-title {
+        font-family: var(--font-display);
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        line-height: var(--line-height-tight);
+        margin-bottom: var(--space-4);
       }
 
       /* Hero Section */
@@ -286,7 +519,7 @@
         gap: var(--space-2);
         background: var(--bg-light);
         padding: var(--space-2) var(--space-4);
-        border-radius: 100px;
+        border-radius: 4px;
         font-size: 0.875rem;
         font-weight: 600;
         color: var(--text);
@@ -296,29 +529,6 @@
       .hero-badge svg {
         width: 16px;
         height: 16px;
-      }
-
-      .hero h1 {
-        font-size: clamp(2rem, 5vw, 3.5rem);
-        font-weight: 800;
-        margin-bottom: var(--space-5);
-        line-height: var(--line-height-tight);
-        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .hero-tagline {
-        display: block;
-        font-size: clamp(1rem, 2.5vw, 1.25rem);
-        font-weight: 500;
-        margin-top: var(--space-4);
-        background: var(--text);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        opacity: 0.9;
       }
 
       .hero-why {
@@ -356,10 +566,10 @@
         padding: var(--space-4) var(--space-5);
         font-size: 1rem;
         border: 2px solid var(--border);
-        border-radius: 8px;
+        border-radius: 6px;
         font-family: inherit;
         transition: border-color var(--transition-fast);
-        background: var(--bg);
+        background: var(--bg-light);
         color: var(--text);
       }
 
@@ -377,10 +587,10 @@
         font-size: 1rem;
         font-weight: 600;
         border: none;
-        border-radius: 8px;
+        border-radius: 6px;
         cursor: pointer;
         font-family: inherit;
-        transition: all var(--transition-fast);
+        transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
         text-decoration: none;
         display: inline-flex;
         align-items: center;
@@ -401,12 +611,10 @@
 
       .btn-primary:hover:not(:disabled) {
         background: var(--primary-dark);
-        transform: translateY(-1px);
-        box-shadow: var(--shadow-md);
       }
 
       .btn-secondary {
-        background: var(--bg);
+        background: var(--bg-light);
         color: var(--text);
         border: 2px solid var(--border);
       }
@@ -414,7 +622,6 @@
       .btn-secondary:hover {
         border-color: var(--primary);
         color: var(--primary);
-        transform: translateY(-1px);
       }
 
       .hero-note {
@@ -473,17 +680,17 @@
         margin-top: var(--space-4);
         display: none;
         padding: var(--space-3) var(--space-4);
-        background: rgba(16, 185, 129, 0.1);
-        border-radius: 8px;
+        background: rgba(45, 90, 74, 0.08);
+        border-radius: 6px;
         border: 1px solid var(--success);
       }
 
       /* Screenshot */
       .hero-image {
         margin: var(--space-8) auto;
-        border-radius: 16px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
         overflow: hidden;
-        box-shadow: var(--shadow-xl);
         max-width: 100%;
         width: 100%;
         position: relative;
@@ -501,7 +708,7 @@
       @media (max-width: 640px) {
         .hero-image {
           margin: var(--space-6) 0;
-          border-radius: 12px;
+          border-radius: 6px;
         }
       }
 
@@ -517,8 +724,10 @@
       }
 
       .section-header h2 {
+        font-family: var(--font-display);
         font-size: clamp(2rem, 4vw, 2.5rem);
-        font-weight: 700;
+        font-weight: 600;
+        letter-spacing: -0.01em;
         margin-bottom: var(--space-4);
         line-height: var(--line-height-tight);
       }
@@ -539,8 +748,8 @@
         padding: var(--space-6);
         background: var(--bg);
         border: 1px solid var(--border-light);
-        border-radius: 12px;
-        transition: all var(--transition-base);
+        border-radius: 6px;
+        transition: background-color var(--transition-base), border-color var(--transition-base), color var(--transition-base);
       }
 
       .use-case-card:hover {
@@ -550,6 +759,7 @@
       }
 
       .use-case-card h3 {
+        font-family: var(--font-display);
         font-size: 1.125rem;
         font-weight: 600;
         margin-bottom: var(--space-3);
@@ -591,10 +801,10 @@
         background: var(--bg);
         color: var(--text);
         border: 2px solid var(--border);
-        border-radius: 8px;
+        border-radius: 6px;
         cursor: pointer;
         font-family: inherit;
-        transition: all var(--transition-fast);
+        transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
         font-weight: 500;
         display: inline-flex;
         align-items: center;
@@ -617,12 +827,12 @@
         grid-template-columns: 1fr 1fr;
         gap: var(--space-6);
         background: var(--bg);
-        border-radius: 16px;
+        border-radius: 6px;
         overflow: hidden;
         box-shadow: var(--shadow-lg);
         min-height: 600px;
         max-height: 85vh;
-        transition: all var(--transition-slow);
+        transition: background-color var(--transition-slow), border-color var(--transition-slow), color var(--transition-slow);
         position: relative;
         z-index: 1;
       }
@@ -644,7 +854,7 @@
       }
 
       .code-editor {
-        background: #1E293B;
+        background: var(--code-bg);
         padding: var(--space-5) var(--space-5) 0 var(--space-5);
         display: flex;
         flex-direction: column;
@@ -662,7 +872,7 @@
       }
 
       .editor-title {
-        color: #cbd5e1;
+        color: var(--code-text);
         font-weight: 600;
         font-size: 0.875rem;
       }
@@ -679,7 +889,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        border-radius: 8px;
+        border-radius: 6px;
       }
 
       .helper-panel {
@@ -692,13 +902,13 @@
       .helper-btn {
         padding: var(--space-2) var(--space-3);
         font-size: 0.75rem;
-        background: #334155;
-        color: #e2e8f0;
+        background: var(--code-surface);
+        color: var(--code-text);
         border: none;
         border-radius: 6px;
         cursor: pointer;
         font-weight: 500;
-        transition: all var(--transition-fast);
+        transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
         font-family: inherit;
       }
 
@@ -718,17 +928,6 @@
         overflow: hidden;
       }
 
-      .preview-orb {
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 500px;
-        height: 500px;
-        background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
-        opacity: 0.1;
-        pointer-events: none;
-        border-radius: 50%;
-      }
 
       .preview-header {
         position: absolute;
@@ -771,7 +970,7 @@
         cursor: pointer;
         z-index: 10;
         font-weight: 500;
-        transition: all var(--transition-fast);
+        transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
       }
 
       .info-badge:hover {
@@ -786,7 +985,7 @@
         background: var(--error);
         color: white;
         padding: var(--space-3) var(--space-4);
-        border-radius: 8px;
+        border-radius: 6px;
         display: none;
         max-width: 300px;
         z-index: 20;
@@ -811,9 +1010,9 @@
       .faq-item {
         margin-bottom: var(--space-4);
         border: 1px solid var(--border-light);
-        border-radius: 12px;
+        border-radius: 6px;
         overflow: hidden;
-        transition: all var(--transition-base);
+        transition: background-color var(--transition-base), border-color var(--transition-base), color var(--transition-base);
       }
 
       .faq-item:hover {
@@ -830,7 +1029,7 @@
         font-size: 1rem;
         color: var(--text);
         cursor: pointer;
-        transition: all var(--transition-fast);
+        transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -916,11 +1115,11 @@
       .code-block {
         background: var(--bg);
         border: 1px solid var(--border-light);
-        border-radius: 12px;
+        border-radius: 6px;
         padding: var(--space-5);
         position: relative;
         overflow-x: auto;
-        transition: all var(--transition-base);
+        transition: background-color var(--transition-base), border-color var(--transition-base), color var(--transition-base);
       }
 
       .code-block:hover {
@@ -951,13 +1150,12 @@
         cursor: pointer;
         font-size: 0.75rem;
         font-weight: 600;
-        transition: all var(--transition-fast);
+        transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
         z-index: 10;
       }
 
       .copy-btn:hover {
         background: var(--primary-dark);
-        transform: translateY(-1px);
       }
 
       /* Keywords and syntax highlighting */
@@ -999,7 +1197,7 @@
         gap: var(--space-2);
         padding: var(--space-3) var(--space-4);
         background: var(--bg-light);
-        border-radius: 8px;
+        border-radius: 6px;
         font-size: 0.875rem;
         color: var(--text-light);
         font-weight: 500;
@@ -1018,8 +1216,9 @@
       }
 
       .cta h2 {
+        font-family: var(--font-display);
         font-size: clamp(1.75rem, 3vw, 2.5rem);
-        font-weight: 700;
+        font-weight: 600;
         margin-bottom: var(--space-4);
       }
 
@@ -1139,10 +1338,6 @@
         .section-header h2 {
           font-size: 2rem;
         }
-
-        .hero h1 {
-          font-size: 2rem;
-        }
       }
     </style>
   </head>
@@ -1153,29 +1348,13 @@
     <header>
       <div class="container">
         <div class="header-content">
-          <a href="/" class="logo">Circalify</a>
+          <a href="./" class="logo">Circalify</a>
           <nav class="header-links" aria-label="Main navigation">
             <a href="#playground">Try It</a>
             <a href="#use-cases">Use Cases</a>
             <a href="#faq">FAQ</a>
             <a href="https://github.com/MahmoodSeoud/circalify" target="_blank" rel="noopener noreferrer">GitHub</a>
           </nav>
-          <button class="dark-mode-toggle" aria-label="Toggle dark mode">
-            <svg class="theme-icon sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
-            <svg class="theme-icon moon-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-          </button>
           <button class="mobile-menu-toggle" aria-label="Toggle mobile menu">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -1190,7 +1369,72 @@
     <!-- Main Content -->
     <main id="main-content">
       <!-- Hero Section -->
-      <section class="hero">
+      <section class="pro-hero">
+        <div class="container">
+          <p class="hero-da-link" lang="da">Leder du efter et årshjul? <a href="aarshjul/">Dansk side her.</a></p>
+          <div class="hero-grid">
+            <div class="hero-text">
+              <p class="eyebrow">Circalify Pro</p>
+              <h1>Make your year wheel online and share it with a link</h1>
+              <p class="hero-support">Type in the year's activities and Circalify draws the wheel. Share it with a link so the whole board sees the same plan. No code, nothing to install.</p>
+
+              <div class="offer-card">
+                <div class="price-block">
+                  <p class="price-main">&euro;<span data-price="monthly">47</span> / month</p>
+                  <p class="price-line">per organisation, excl. VAT</p>
+                  <p class="price-line">Or &euro;<span data-price="yearly">470</span> a year, the price of 10 months.</p>
+                  <p class="price-scope">Same price however many people edit. Viewing is always free.</p>
+                </div>
+
+                <div id="door">
+                  <button type="button" class="btn btn-primary pro-door-btn" id="door-btn">Get early access</button>
+
+                  <div class="panel" id="door-panel" hidden>
+                    <p class="panel-intro">This isn't built yet. I'll only build it if enough organisations want it. Sign up and I'll write to you when there's something to try. You won't pay anything before you've tried it.</p>
+                    <form id="pro-signup-form" novalidate>
+                      <div id="pro-signup-fields">
+                        <div class="field">
+                          <label for="pro-signup-email">Email</label>
+                          <input type="email" id="pro-signup-email" name="email" required autocomplete="email" />
+                        </div>
+                        <div class="field">
+                          <label for="pro-signup-org">Organisation (optional)</label>
+                          <input type="text" id="pro-signup-org" name="organisation" maxlength="120" autocomplete="organization" />
+                        </div>
+                        <input type="checkbox" name="botcheck" class="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" />
+                        <div class="form-actions">
+                          <button type="submit" class="btn btn-primary pro-door-btn" id="pro-signup-btn">Sign me up</button>
+                        </div>
+                        <p class="purpose muted">I only use your email to reply to you and to tell you when you can try it. Ask and I'll delete it.</p>
+                      </div>
+                      <p class="status-line" id="pro-signup-status" aria-live="polite" tabindex="-1"></p>
+                    </form>
+                    <p class="muted">Mahmood Seoud. I built Circalify, and the free library is already used by associations in Denmark and across the Nordics. <a href="mailto:hello@circalify.com">hello@circalify.com</a></p>
+                  </div>
+
+                  <noscript>
+                    <p class="panel">Turn on JavaScript, or email <a href="mailto:hello@circalify.com?subject=Circalify%20Pro%20early%20access">hello@circalify.com</a> for early access.</p>
+                  </noscript>
+                </div>
+                <p class="board-note"><strong>For your board:</strong> An online year wheel for the whole organisation at &euro;47 a month (&euro;470 a year). Anyone can view it for free through a link.</p>
+              </div>
+            </div>
+
+            <figure class="hero-visual">
+              <div class="wheel-box" id="wheel-box" data-wheel="loading" role="img" aria-label="Example year wheel for an association">
+                <div class="wheel-mount" id="wheel"></div>
+                <img class="wheel-fallback" id="wheel-fallback" alt="Example year wheel for an association" width="1200" height="709" hidden />
+                <noscript>
+                  <img class="wheel-fallback" src="images/hero-devices-final.png" alt="Example year wheel" width="1200" height="709" />
+                </noscript>
+              </div>
+              <figcaption class="muted">Example: an association's year</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="hero dev-hero">
         <div class="container">
           <div class="hero-badges">
             <div class="hero-badge">
@@ -1200,24 +1444,20 @@
               <span>MIT Licensed</span>
             </div>
             <div class="hero-badge">
-              <span>⭐ 8 stars on GitHub</span>
+              <span>8 stars on GitHub</span>
             </div>
             <div class="hero-badge">
-              <span>📦 Available on npm</span>
+              <span>Available on npm</span>
             </div>
           </div>
 
-          <h1>
-            JavaScript Library for Circular Timeline Visualizations
-            <span class="hero-tagline">Build year-at-a-glance timelines in 5 minutes. Zero dependencies, works everywhere.</span>
-          </h1>
+          <h2 class="dev-title">Or build it yourself with the free library</h2>
+          <p class="hero-why">Circalify is an open source JavaScript library for circular timelines. No dependencies, MIT licensed. Get 10 HTML templates to start from:</p>
 
-          <p class="hero-why">
-            <strong>Why circular?</strong> Year-long projects fit in half the space and patterns jump out visually. Linear timelines waste screen real estate and hide cyclical patterns.
-          </p>
-
+          <label class="dev-label" for="email-input">Email</label>
           <div class="email-signup">
             <input type="hidden" name="access_key" value="9973b241-2a5e-439a-b2bd-441e85933cb4">
+            <input type="checkbox" name="botcheck" id="botcheck-input" style="display: none;" tabindex="-1" autocomplete="off" aria-hidden="true">
             <input
               type="email"
               name="email"
@@ -1227,7 +1467,7 @@
               aria-label="Email address"
               autocomplete="email"
             />
-            <button type="submit" class="btn btn-primary" id="signup-btn">
+            <button type="submit" class="btn btn-secondary" id="signup-btn">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                 <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/>
               </svg>
@@ -1243,7 +1483,7 @@
           </p>
 
           <div class="success-message" id="success-message" role="status">
-            ✓ Your download has started — <a href="templates/circalify-templates.zip" download style="color: inherit; text-decoration: underline;">click here if it didn't</a>.
+            Your download has started — <a href="templates/circalify-templates.zip" download style="color: inherit; text-decoration: underline;">click here if it didn't</a>.
           </div>
 
           <div class="benefits-list">
@@ -1265,10 +1505,6 @@
               </svg>
               <span>Instant download — no waiting</span>
             </div>
-          </div>
-
-          <div class="hero-image">
-            <img src="./images/hero-devices-final.png" alt="Circalify running on MacBook showing interactive circular timeline visualization with multiple rings displaying quarterly projects, monthly milestones, weekly calendar, and month names" loading="eager" />
           </div>
         </div>
       </section>
@@ -1364,13 +1600,13 @@
 
           <div class="view-controls" role="group" aria-label="View options">
             <button class="view-btn active" data-view="split" aria-pressed="true">
-              <span aria-hidden="true">⬌</span> Side by Side
+              Side by Side
             </button>
             <button class="view-btn" data-view="code" aria-pressed="false">
-              <span aria-hidden="true">{ }</span> Code Only
+              Code Only
             </button>
             <button class="view-btn" data-view="preview" aria-pressed="false">
-              <span aria-hidden="true">▶</span> Preview Only
+              Preview Only
             </button>
           </div>
 
@@ -1390,13 +1626,12 @@
             </div>
 
             <div class="preview-panel">
-              <div class="preview-orb"></div>
               <div class="preview-header">
                 <span class="preview-title">Live Preview</span>
               </div>
 
               <button class="info-badge" onclick="showInteractionTooltip(); tooltipShown = false;" aria-label="Show interaction help">
-                ℹ️ Click to interact
+                Click to interact
               </button>
 
               <div class="error-display" id="error-display" role="alert" aria-live="assertive"></div>
@@ -1507,7 +1742,7 @@
               <span class="code-block-label">Or use CDN</span>
               <div class="code-block">
                 <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code to clipboard">Copy</button>
-                <pre><code><span class="keyword">import</span> CircularTimeline <span class="keyword">from</span> <span class="string">'https://unpkg.com/circalify@latest/src/index.js'</span>;</code></pre>
+                <pre><code><span class="keyword">import</span> CircularTimeline <span class="keyword">from</span> <span class="string">'https://unpkg.com/circalify@0.1.10/src/index.js'</span>;</code></pre>
               </div>
             </div>
 
@@ -1562,11 +1797,11 @@ timeline.<span class="function">setData</span>([
         <div class="container">
           <h2>Get Started</h2>
           <p style="font-family: 'Monaco', 'Courier New', monospace; font-size: 1.125rem; opacity: 0.9; margin: 16px 0 32px;">
-            <code style="color: #a5f3fc;">npm install</code> <code style="color: #fbbf24;">circalify</code>
+            <code style="color: var(--text-light);">npm install</code> <code style="color: var(--primary); font-weight: 600;">circalify</code>
           </p>
           <div class="cta-buttons">
             <a href="#email-input" class="btn btn-primary" onclick="document.getElementById('email-input').focus(); document.getElementById('email-input').scrollIntoView({behavior: 'smooth'});">Download 10 Free Templates</a>
-            <a href="https://github.com/MahmoodSeoud/circalify" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">⭐ Star on GitHub</a>
+            <a href="https://github.com/MahmoodSeoud/circalify" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Star on GitHub</a>
           </div>
         </div>
       </section>
@@ -1596,14 +1831,14 @@ timeline.<span class="function">setData</span>([
           </div>
         </div>
         <div class="footer-bottom">
-          <p>&copy; 2025 Circalify. Built with ❤️ by Mahmood Seoud. MIT Licensed.</p>
+          <p>&copy; 2025 Circalify. Built by Mahmood Seoud. MIT Licensed.</p>
         </div>
       </div>
     </footer>
 
     <script type="module">
       // Load CircularTimeline as global for playground
-      import CircularTimeline from 'https://unpkg.com/circalify@latest/src/index.js';
+      import CircularTimeline from 'https://unpkg.com/circalify@0.1.10/src/index.js';
       window.CircularTimeline = CircularTimeline;
 
       // Trigger initial preview once loaded
@@ -1611,23 +1846,6 @@ timeline.<span class="function">setData</span>([
     </script>
 
     <script>
-      // Dark mode toggle functionality
-      const darkModeToggle = document.querySelector('.dark-mode-toggle');
-      const htmlElement = document.documentElement;
-
-      function initTheme() {
-        const savedTheme = localStorage.getItem('circalify-theme') || 'dark';
-        htmlElement.setAttribute('data-theme', savedTheme);
-      }
-
-      darkModeToggle?.addEventListener('click', () => {
-        const currentTheme = htmlElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        htmlElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('circalify-theme', newTheme);
-      });
-
-      initTheme();
 
       // FAQ Functionality
       const faqQuestions = document.querySelectorAll('.faq-question');
@@ -1679,30 +1897,30 @@ timeline.<span class="function">setData</span>([
   startYear: 2025,
   backgroundColor: 'transparent',
   rings: [
-    { type: 'data', name: 'Quarters', unit: 'quarter', color: '#ffccbc', height: 14 },
-    { type: 'header', headerText: 'Quarters', color: '#2c2c2c', height: 3, fontColor: '#ffffff' },
-    { type: 'data', name: 'Projects', unit: 'month', color: '#ffe0b2', height: 12 },
-    { type: 'header', headerText: 'Milestones', color: '#2c2c2c', height: 3, fontColor: '#ffffff' },
-    { type: 'calendar', calendarType: 'weeks', color: '#e0e0e0', height: 8 },
-    { type: 'header', headerText: 'Calendar', color: '#2c2c2c', height: 3, fontColor: '#ffffff' },
-    { type: 'calendar', calendarType: 'month-names', showYear: false, color: '#ffffff', height: 10 }
+    { type: 'data', name: 'Quarters', unit: 'quarter', color: '#F2F3EE', height: 14 },
+    { type: 'header', headerText: 'Quarters', color: '#1F2A2E', height: 3, fontColor: '#F2F3EE' },
+    { type: 'data', name: 'Projects', unit: 'month', color: '#F2F3EE', height: 12 },
+    { type: 'header', headerText: 'Milestones', color: '#1F2A2E', height: 3, fontColor: '#F2F3EE' },
+    { type: 'calendar', calendarType: 'weeks', color: '#DCE0D9', height: 8 },
+    { type: 'header', headerText: 'Calendar', color: '#1F2A2E', height: 3, fontColor: '#F2F3EE' },
+    { type: 'calendar', calendarType: 'month-names', showYear: false, color: '#F2F3EE', height: 10 }
   ]
 });
 
 timeline.setData([
-  { label: 'Q1 Planning', startDate: '2025-01-01', endDate: '2025-03-31', color: '#f4511e' },
-  { label: 'Q2 Development', startDate: '2025-04-01', endDate: '2025-06-30', color: '#ff6f00' },
-  { label: 'Q3 Launch', startDate: '2025-07-01', endDate: '2025-09-30', color: '#ffa726' },
-  { label: 'Q4 Growth', startDate: '2025-10-01', endDate: '2025-12-31', color: '#ffb74d' }
+  { label: 'Q1 Planning', startDate: '2025-01-01', endDate: '2025-03-31', color: '#E9D27A' },
+  { label: 'Q2 Development', startDate: '2025-04-01', endDate: '2025-06-30', color: '#B9D29A' },
+  { label: 'Q3 Launch', startDate: '2025-07-01', endDate: '2025-09-30', color: '#A9CBD6' },
+  { label: 'Q4 Growth', startDate: '2025-10-01', endDate: '2025-12-31', color: '#C9B3D6' }
 ], 'Quarters');
 
 timeline.setData([
-  { label: 'Research', startDate: '2025-01-01', endDate: '2025-02-15', color: '#d84315' },
-  { label: 'Design', startDate: '2025-02-16', endDate: '2025-03-31', color: '#e64a19' },
-  { label: 'Alpha', startDate: '2025-04-01', endDate: '2025-04-30', color: '#f4511e' },
-  { label: 'Beta', startDate: '2025-06-01', endDate: '2025-06-30', color: '#ff5722' },
-  { label: 'Launch', startDate: '2025-09-01', endDate: '2025-09-15', color: '#ff6f00' },
-  { label: 'Marketing', startDate: '2025-10-01', endDate: '2025-12-31', color: '#ffa726' }
+  { label: 'Research', startDate: '2025-01-01', endDate: '2025-02-15', color: '#D9C7A8' },
+  { label: 'Design', startDate: '2025-02-16', endDate: '2025-03-31', color: '#EDB49A' },
+  { label: 'Alpha', startDate: '2025-04-01', endDate: '2025-04-30', color: '#E9D27A' },
+  { label: 'Beta', startDate: '2025-06-01', endDate: '2025-06-30', color: '#B9D29A' },
+  { label: 'Launch', startDate: '2025-09-01', endDate: '2025-09-15', color: '#A9CBD6' },
+  { label: 'Marketing', startDate: '2025-10-01', endDate: '2025-12-31', color: '#C9B3D6' }
 ], 'Projects');`;
 
       editor.setValue(defaultCode);
@@ -1749,15 +1967,7 @@ timeline.setData([
 
       // Random helper functions
       function randomColor() {
-        const colors = [
-          '#FF6B35', '#004E89', '#1A936F', '#C792EA', '#82AAFF',
-          '#F78C6C', '#C3E88D', '#89DDFF', '#FF5370', '#FFCB6B',
-          '#F07178', '#BB80B3', '#7E57C2', '#26A69A', '#66BB6A',
-          '#EF5350', '#EC407A', '#AB47BC', '#5C6BC0', '#42A5F5',
-          '#29B6F6', '#26C6DA', '#00ACC1', '#00897B', '#43A047',
-          '#7CB342', '#C0CA33', '#FDD835', '#FFB300', '#FB8C00',
-          '#F4511E', '#6D4C41', '#78909C'
-        ];
+        const colors = ['#E9D27A', '#B9D29A', '#A9CBD6', '#C9B3D6', '#EDB49A', '#D9C7A8'];
         return colors[Math.floor(Math.random() * colors.length)];
       }
 
@@ -2028,10 +2238,12 @@ timeline.setData([
         formData.append('access_key', '9973b241-2a5e-439a-b2bd-441e85933cb4');
         formData.append('email', emailInput.value);
         formData.append('subject', 'New Circalify template download');
+        formData.append('botcheck', document.getElementById('botcheck-input').checked ? 'on' : '');
         fetch('https://api.web3forms.com/submit', {
           method: 'POST',
           body: formData
-        }).catch(() => {});
+        }).then(res => { if (!res.ok) console.error('circalify post failed', 'templates', res.status); })
+          .catch(e => console.error('circalify post failed', 'templates', e));
 
         document.getElementById('success-message').style.display = 'block';
         emailInput.value = '';
@@ -2039,5 +2251,220 @@ timeline.setData([
 
       // Preview will initialize when CircularTimeline loads (via circalify-loaded event)
     </script>
+
+    <script>
+      // Circalify Pro door, English. Counted apart from the Danish gate:
+      // web3forms subjects 'Pro EN: early access click' / 'Pro EN: early access signup',
+      // GoatCounter events pro-en-door-seen, pro-en-door-click, pro-en-signup.
+      // GoatCounter loads async; events fired before it is ready wait here.
+      const pending = [];
+      function gcEvent(path) {
+        if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path, title: path, event: true });
+        else pending.push(path);
+      }
+      function flushGc() {
+        // count.js may load without defining count (blocker stub, proxy block page): keep the queue, never spin
+        if (!(window.goatcounter && window.goatcounter.count)) return;
+        while (pending.length) gcEvent(pending.shift());
+      }
+
+      (() => {
+        const WEB3FORMS_URL = 'https://api.web3forms.com/submit';
+        const ACCESS_KEY = '9973b241-2a5e-439a-b2bd-441e85933cb4';
+        const PAGE = '/';
+        const PRICE = { monthly: 47, yearly: 470 };
+        const PRICE_SHOWN = PRICE.monthly + 'eur-' + PRICE.yearly + 'eur';
+        const SUBJECT_DOOR_CLICK = 'Pro EN: early access click';
+        const SUBJECT_SIGNUP = 'Pro EN: early access signup';
+        const EVENT_DOOR_SEEN = 'pro-en-door-seen';
+        const EVENT_DOOR_CLICK = 'pro-en-door-click';
+        const EVENT_SIGNUP = 'pro-en-signup';
+        const FALLBACK_IMAGE = './images/hero-devices-final.png';
+        const IMPORT_URL = 'https://unpkg.com/circalify@0.1.10/src/index.js';
+        const WHEEL_TIMEOUT_MS = 2500;
+        const SIGNUP_TIMEOUT_MS = 10000;
+
+        function isTestBrowser() {
+          try {
+            return localStorage.getItem('circalify-test') === '1';
+          } catch (e) {
+            console.error('circalify: test flag unreadable', e);
+            return false;
+          }
+        }
+
+        function buildForm(subject, fields) {
+          const body = new FormData();
+          body.append('access_key', ACCESS_KEY);
+          body.append('subject', subject);
+          body.append('page', PAGE);
+          body.append('botcheck', '');
+          for (const [k, v] of Object.entries(fields)) body.append(k, v);
+          return body;
+        }
+
+        // Fire and forget: failures are silent to the visitor by design
+        function postForm(subject, fields) {
+          if (isTestBrowser()) {
+            console.info('circalify test browser: skipped POST', subject);
+            return;
+          }
+          fetch(WEB3FORMS_URL, { method: 'POST', body: buildForm(subject, fields), keepalive: true })
+            .then(res => { if (!res.ok) console.error('circalify post failed', subject, res.status); })
+            .catch(e => console.error('circalify post failed', subject, e));
+        }
+
+        // Door and signup: bound before any optional feature
+        const doorBtn = document.getElementById('door-btn');
+        const doorPanel = document.getElementById('door-panel');
+        const form = document.getElementById('pro-signup-form');
+        const fields = document.getElementById('pro-signup-fields');
+        const email = document.getElementById('pro-signup-email');
+        const org = document.getElementById('pro-signup-org');
+        const submitBtn = document.getElementById('pro-signup-btn');
+        const status = document.getElementById('pro-signup-status');
+
+        doorBtn.addEventListener('click', () => {
+          postForm(SUBJECT_DOOR_CLICK, { price_shown: PRICE_SHOWN });
+          gcEvent(EVENT_DOOR_CLICK);
+          doorBtn.hidden = true;
+          doorPanel.hidden = false;
+          doorPanel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          email.focus({ preventScroll: true });
+        });
+
+        function showError(reason) {
+          console.error('circalify signup failed', reason);
+          status.classList.add('error');
+          status.textContent = "That didn't go through. Try again, or email ";
+          const mail = document.createElement('a');
+          mail.href = 'mailto:hello@circalify.com?subject=' + encodeURIComponent('Circalify Pro early access');
+          mail.textContent = 'hello@circalify.com';
+          status.append(mail, '.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign me up';
+        }
+
+        function showSuccess() {
+          fields.remove();
+          status.classList.remove('error');
+          status.textContent = "Thanks! I'll write to you personally within a few days.";
+          status.focus();
+        }
+
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          if (!email.value || !email.checkValidity()) {
+            email.reportValidity();
+            return;
+          }
+          if (form.elements.botcheck.checked) return;
+
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Sending...';
+          status.textContent = '';
+
+          if (isTestBrowser()) {
+            console.info('circalify test browser: skipped POST', SUBJECT_SIGNUP);
+            gcEvent(EVENT_SIGNUP);
+            showSuccess();
+            return;
+          }
+
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), SIGNUP_TIMEOUT_MS);
+          try {
+            const res = await fetch(WEB3FORMS_URL, {
+              method: 'POST',
+              body: buildForm(SUBJECT_SIGNUP, { email: email.value, organisation: org.value, price_shown: PRICE_SHOWN }),
+              signal: controller.signal
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || data.success === false) {
+              showError(res.status);
+              return;
+            }
+            gcEvent(EVENT_SIGNUP);
+            showSuccess();
+          } catch (err) {
+            showError(err && err.name === 'AbortError' ? 'timeout' : String(err));
+          } finally {
+            clearTimeout(timer);
+          }
+        });
+
+        // Optional features: each one may fail without touching the door
+        document.querySelectorAll('[data-price]').forEach(el => {
+          el.textContent = String(PRICE[el.dataset.price]);
+        });
+
+        if ('IntersectionObserver' in window) {
+          new IntersectionObserver(([entry], observer) => {
+            if (entry.isIntersecting) {
+              gcEvent(EVENT_DOOR_SEEN);
+              observer.disconnect();
+            }
+          }, { threshold: 0.5 }).observe(document.getElementById('door'));
+        }
+
+        // Example wheel: live render, static image on failure or timeout
+        const wheelBox = document.getElementById('wheel-box');
+        const wheelMount = document.getElementById('wheel');
+        const wheelFallback = document.getElementById('wheel-fallback');
+        let wheelSettled = false;
+
+        function showWheelFallback(err) {
+          if (wheelSettled) return;
+          wheelSettled = true;
+          console.warn('circalify: example wheel fallback', err);
+          wheelMount.innerHTML = '';
+          wheelFallback.src = FALLBACK_IMAGE;
+          wheelFallback.hidden = false;
+          wheelBox.dataset.wheel = 'fallback';
+          gcEvent('wheel-fallback-en');
+        }
+
+        function renderWheel(CircularTimeline) {
+          const y = new Date().getFullYear();
+          const wheel = new CircularTimeline(wheelMount, {
+            title: '',
+            startYear: y,
+            interactive: false,
+            enableDetailPanel: false,
+            backgroundColor: 'transparent',
+            fontFamily: "'Hanken Grotesk', sans-serif",
+            centerLabelColor: '#1F2A2E',
+            centerLabel: 'Year plan\n' + y,
+            sameRingHeight: false,
+            rings: [
+              { type: 'data', name: 'Year', unit: 'month', color: '#F2F3EE', height: 30, fontSize: 36, fontColor: '#1F2A2E', interactive: false },
+              { type: 'calendar', calendarType: 'month-names', showYear: false, color: '#E4E7E1', height: 8, fontSize: 30, fontColor: '#1F2A2E' }
+            ]
+          });
+          // SVG units: the viewBox is 1000 wide; on a 343px phone wheel 36 units is about 12px, on a 510px desktop wheel about 18px
+          wheel.setData([
+            { label: 'Membership fees', startDate: y + '-01-01', endDate: y + '-01-31', color: '#E9D27A' },
+            { label: 'Annual accounts', startDate: y + '-02-01', endDate: y + '-02-28', color: '#B9D29A' },
+            { label: 'General meeting', startDate: y + '-03-01', endDate: y + '-03-31', color: '#A9CBD6' },
+            { label: 'Summer party', startDate: y + '-06-01', endDate: y + '-06-30', color: '#C9B3D6' },
+            { label: 'Budget', startDate: y + '-09-01', endDate: y + '-10-31', color: '#EDB49A' },
+            { label: 'Holiday party', startDate: y + '-12-01', endDate: y + '-12-31', color: '#D9C7A8' }
+          ], 'Year');
+        }
+
+        setTimeout(() => showWheelFallback(new Error('timeout after ' + WHEEL_TIMEOUT_MS + ' ms')), WHEEL_TIMEOUT_MS);
+        import(IMPORT_URL)
+          .then(mod => {
+            if (wheelSettled) return; // late resolution after the timeout: keep the fallback
+            renderWheel(mod.default);
+            wheelSettled = true;
+            wheelBox.dataset.wheel = 'live';
+          })
+          .catch(showWheelFallback);
+      })();
+    </script>
+
+    <!-- GoatCounter: cookieless visitor and event counts -->
+    <script data-goatcounter="https://matooize.goatcounter.com/count" async src="//gc.zgo.at/count.js" onload="flushGc()"></script>
   </body>
 </html>

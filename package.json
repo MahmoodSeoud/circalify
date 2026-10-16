@@ -1,11 +1,12 @@
 {
   "name": "circalify",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "JavaScript library for creating circular timeline visualizations for annual and cyclical data",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"No tests yet\" && exit 0"
+    "test": "node --test test/*.test.mjs",
+    "prepublishOnly": "npm test"
   },
   "repository": {
     "type": "git",

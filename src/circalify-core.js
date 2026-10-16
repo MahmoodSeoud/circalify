@@ -30,6 +30,7 @@ class CircalifyCore {
     this.detailPanel = null;
     this.monthSidebar = null;
     this.allEvents = [];
+    this.monthButtons = [];
     this.activeMonthButton = null;  // Track which month button is currently active
 
     // Calculate dimensions
@@ -331,8 +332,10 @@ class CircalifyCore {
       ring.render();
     });
 
-    // Add month interaction overlays spanning all rings
-    this._addMonthInteractionOverlays();
+    // Add month interaction overlays spanning all rings (hover "VIEW AGENDA" buttons)
+    if (this.generalConfig.interactive) {
+      this._addMonthInteractionOverlays();
+    }
   }
 
   /**

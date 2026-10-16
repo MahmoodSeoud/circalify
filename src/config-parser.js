@@ -5,10 +5,12 @@
  * Requires: constants.js
  */
 
+import CIRCALIFY_CONSTANTS from './constants.js';
+
 class ConfigParser {
   constructor() {
     // Destructure constants
-    const { DIMENSIONS, VALIDATION, TIMING } = window.CIRCALIFY_CONSTANTS || {};
+    const { DIMENSIONS, VALIDATION, TIMING, TIME } = CIRCALIFY_CONSTANTS;
 
     // Store constants as instance properties for easy access
     this.DEFAULT_INNER_RADIUS = DIMENSIONS?.DEFAULT_INNER_RADIUS || 150;
@@ -24,6 +26,12 @@ class ConfigParser {
     this.MIN_MONTHS_COUNT = VALIDATION?.MIN_MONTHS_COUNT || 1;
     this.MAX_MONTHS_COUNT = VALIDATION?.MAX_MONTHS_COUNT || 60;
     this.DEFAULT_ANIMATION_DURATION = TIMING?.DEFAULT_ANIMATION_DURATION || 300;
+
+    // Month label sets per locale
+    this.monthLabelsByLocale = {
+      en: TIME.MONTH_ABBR,
+      da: TIME.MONTH_ABBR_DA
+    };
 
     // Validation arrays
     this.validRingTypes = ['calendar', 'header', 'data'];
@@ -66,6 +74,8 @@ class ConfigParser {
    * @private
    */
   _parseGeneralSettings(config) {
+    const locale = this._validateLocale(config.locale);
+
     return {
       title: config.title !== undefined ? config.title : '',
       calendarSettings: this._validateEnum(
@@ -87,6 +97,10 @@ class ConfigParser {
         ? config.colorPalette
         : ['#b8e6e6', '#ffd4d4', '#d4e8e0', '#f0dcd4'],
       sameRingHeight: config.sameRingHeight !== false, // Default true
+
+      // Calendar labels: explicit monthLabels wins over locale
+      locale,
+      monthLabels: this._resolveMonthLabels(config.monthLabels, locale),
 
       // Dimension settings - Standard values optimized for beautiful display
       // These values provide optimal spacing for event labels in the center
@@ -264,6 +278,37 @@ class ConfigParser {
       showLabels: ring.showLabels !== false,
       interactive: ring.interactive !== false
     };
+  }
+
+  /**
+   * Validate the locale option
+   * @private
+   */
+  _validateLocale(value) {
+    if (value === undefined || value === null) {
+      return 'en';
+    }
+    if (!Object.prototype.hasOwnProperty.call(this.monthLabelsByLocale, value)) {
+      throw new Error(
+        `ConfigParser: locale must be one of ${Object.keys(this.monthLabelsByLocale).join(', ')}, got '${value}'`
+      );
+    }
+    return value;
+  }
+
+  /**
+   * Resolve the calendar ring's month labels: explicit monthLabels wins over locale
+   * @private
+   */
+  _resolveMonthLabels(monthLabels, locale) {
+    if (monthLabels === undefined || monthLabels === null) {
+      return [...this.monthLabelsByLocale[locale]];
+    }
+    if (!Array.isArray(monthLabels) || monthLabels.length !== 12 || !monthLabels.every(l => typeof l === 'string')) {
+      const got = Array.isArray(monthLabels) ? monthLabels.length : typeof monthLabels;
+      throw new Error(`ConfigParser: monthLabels must be an array of 12 strings, got ${got}`);
+    }
+    return [...monthLabels];
   }
 
   /**

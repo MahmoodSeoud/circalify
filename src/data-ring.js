@@ -159,6 +159,15 @@ class DataRing extends BaseRing {
   }
 
   /**
+   * Whether this ring reacts to hover and click: both the ring and the
+   * general config must allow it
+   * @private
+   */
+  _isInteractive() {
+    return this.config.interactive !== false && this.generalConfig.interactive !== false;
+  }
+
+  /**
    * Create a single clickable segment
    * @private
    */
@@ -176,12 +185,12 @@ class DataRing extends BaseRing {
       'stroke': 'rgba(255, 255, 255, 0.1)',
       'stroke-width': this.STYLING.RING_SEPARATOR_STROKE,
       'class': 'unit-segment',
-      'cursor': 'pointer',
+      'cursor': this._isInteractive() ? 'pointer' : 'default',
       ...attributes
     });
 
     // Add hover interaction if enabled
-    if (this.config.interactive !== false) {
+    if (this._isInteractive()) {
       let hoverIndicator = null;
 
       segment.addEventListener('mouseenter', () => {
@@ -501,7 +510,7 @@ class DataRing extends BaseRing {
       'stroke': 'rgba(160, 160, 160, 0.5)',
       'stroke-width': this.STYLING.EVENT_STROKE_WIDTH,
       'opacity': this.STYLING.EVENT_STROKE_OPACITY,
-      'cursor': this.config.interactive ? 'pointer' : 'default'
+      'cursor': this._isInteractive() ? 'pointer' : 'default'
     });
 
     eventGroup.appendChild(arc);
@@ -512,7 +521,7 @@ class DataRing extends BaseRing {
     }
 
     // Add interactivity if enabled
-    if (this.config.interactive && this.generalConfig.interactive) {
+    if (this._isInteractive()) {
       this._addEventInteractivity(eventGroup, arc, eventData);
     }
 

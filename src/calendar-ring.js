@@ -10,12 +10,8 @@ class CalendarRing extends BaseRing {
   constructor(config, boundaries, context) {
     super(config, boundaries, context);
 
-    // Constants are already set by BaseRing, just add calendar-specific properties
-    // Use constants for labels (fallback to hardcoded for backward compatibility)
-    this.monthLabels = (this.TIME && this.TIME.MONTH_ABBR) || [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
+    // Month labels are resolved by ConfigParser from the locale and monthLabels options
+    this.monthLabels = this.generalConfig.monthLabels;
 
     this.quarterLabels = (this.TIME && this.TIME.QUARTER_LABELS) || ['Q1', 'Q2', 'Q3', 'Q4'];
   }

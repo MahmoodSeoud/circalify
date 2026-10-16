@@ -109,8 +109,16 @@ Circalify creates SVG-based circular timelines with:
   numberOfMonths: 12,        // Optional: How many months to show (default: 12)
   sameRingHeight: false,     // Optional: Equal ring heights (default: false)
   backgroundColor: '#fff',   // Optional: Background color (default: '#ffffff')
-  interactive: true          // Optional: Enable hover/click (default: true)
+  interactive: true,         // Optional: Enable hover/click (default: true)
+  locale: 'en',              // Optional: Month labels, 'en' or 'da' (default: 'en')
+  monthLabels: null          // Optional: 12 custom month labels, overrides locale
 }
+```
+
+Danish month labels for an aarshjul:
+
+```javascript
+new CircularTimeline('#aarshjul', { startYear: 2026, locale: 'da', rings: [{ type: 'calendar' }] });
 ```
 
 ### Ring Types

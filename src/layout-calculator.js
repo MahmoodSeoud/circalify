@@ -5,10 +5,12 @@
  * Requires: constants.js
  */
 
+import CIRCALIFY_CONSTANTS from './constants.js';
+
 class LayoutCalculator {
   // Destructure constants for cleaner code
   static {
-    const { GEOMETRY, TIME } = window.CIRCALIFY_CONSTANTS || {};
+    const { GEOMETRY, TIME } = CIRCALIFY_CONSTANTS;
     if (GEOMETRY && TIME) {
       this.FULL_CIRCLE = GEOMETRY.FULL_CIRCLE;
       this.HALF_CIRCLE = GEOMETRY.HALF_CIRCLE;

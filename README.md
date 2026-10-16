@@ -1,12 +1,14 @@
 # Circalify
 
-![Circular Timeline Example](./images/hero-devices-final.png)
+![Circalify circular timeline with rings for quarters, milestones, week numbers and months](https://mahmoodseoud.github.io/circalify/images/hero-devices-final.png)
 
 A flexible, zero-dependency JavaScript library for creating circular timeline visualizations.
 
 Perfect for annual planning, project timelines, and cyclical data. Built with pure JavaScript and SVG.
 
-🌐 **[Website](https://mahmoodseoud.github.io/circalify)** | 📺 **[Live Demo](https://codepen.io/mahmoodseoud/pen/ByjJOVE)** | 📦 [npm](https://npmjs.com/package/circalify) | ⭐ [GitHub](https://github.com/MahmoodSeoud/circalify)
+**[Website](https://mahmoodseoud.github.io/circalify)** | **[Live Demo](https://codepen.io/mahmoodseoud/pen/ByjJOVE)** | [npm](https://npmjs.com/package/circalify) | [GitHub](https://github.com/MahmoodSeoud/circalify)
+
+Not a developer? **Circalify Pro**, a hosted editor where you type in the year's activities and share the wheel with a link, is in early access: [English](https://mahmoodseoud.github.io/circalify/) | [Dansk](https://mahmoodseoud.github.io/circalify/aarshjul/).
 
 ## Why Circular Timelines?
 
@@ -242,7 +244,7 @@ timeline.destroy();
 
 ## Examples
 
-Check out the [live demo on CodePen](https://codepen.io/YOUR-USERNAME/pen/YOUR-PEN-ID) or browse the [examples directory](examples/).
+Check out the [live demo on CodePen](https://codepen.io/mahmoodseoud/pen/ByjJOVE), the playground on the [website](https://mahmoodseoud.github.io/circalify/#playground), or browse the [examples directory](examples/).
 
 To run examples locally:
 ```bash

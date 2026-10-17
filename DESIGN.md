@@ -24,23 +24,23 @@ colors:
   error: "#A3362A"
 typography:
   display:
-    fontFamily: Familjen Grotesk
+    fontFamily: Source Serif 4
     fontWeight: 600
-    fontSize: clamp(1.75rem, 4vw, 2.5rem)
-    letterSpacing: -0.01em
+    fontSize: clamp(2rem, 5vw, 3.5rem)
+    lineHeight: 1.1
+    letterSpacing: -0.005em
   body:
-    fontFamily: Hanken Grotesk
-    fontSize: 1rem
+    fontFamily: Source Sans 3
+    fontSize: 1.0625rem
     lineHeight: 1.6
-  label:
-    fontFamily: Hanken Grotesk
+  heading:
+    fontFamily: Source Serif 4
     fontWeight: 600
-    fontSize: 0.875rem
-    letterSpacing: 0.04em
+    fontSize: 1.75rem
   price:
-    fontFamily: Familjen Grotesk
+    fontFamily: Source Serif 4
     fontWeight: 600
-    fontSize: 2rem
+    fontSize: 1.75rem
     fontFeature: tnum
 rounded:
   sm: 4px
@@ -97,13 +97,15 @@ Contrast (WCAG, measured): text on background 11.8:1, text on surface 13.2:1, mu
 
 ## Typography
 
-**Familjen Grotesk** (Google Fonts, OFL, Stockholm studio Familjen) is the display voice: headings and the price, weight 600, tight tracking, sentence case. **Hanken Grotesk** (Google Fonts, OFL) carries body, UI and the wheel's labels at 400, 500 and 700. Both cover æ ø å. Load with one request: `https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600&family=Hanken+Grotesk:wght@400;500;700&display=swap`.
-Atkinson Hyperlegible Next was considered for legibility and rejected: its only zero is slashed, which a Danish reader takes for Ø ("3.490" reads "3.49Ø"). Prices use tabular figures. Body text is never below 16px; headings sit at least two steps above body.
-On the wheel, set the engine's `fontFamily` to `'Hanken Grotesk', sans-serif` and label sizes in SVG units (about 30 for events at a 430px wheel); see CONFIGURATION.md.
+**Source Serif 4** (Google Fonts, OFL, Adobe) is the display voice: headings and the price, weight 600, upright, sentence case, near-normal tracking. It reads as a printed almanac rather than a startup page. **Source Sans 3** (Google Fonts, OFL, Adobe, the same family's sans) carries body and UI at 400 and 500; 600 and 700 are for the wheel's labels only. Both have an open zero and cover æ ø å. Load with one request: `https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600&family=Source+Sans+3:wght@400;500;600;700&display=swap`; the serif's optical-size axis keeps the 56px headline and the 28px price both crisp. Familjen Grotesk and Hanken Grotesk were used until 2026-10-17 and dropped because the pair read as a generated startup page.
+Atkinson Hyperlegible Next was considered for legibility and rejected: its only zero is slashed, which a Danish reader takes for Ø ("3.490" reads "3.49Ø"). Prices use tabular figures.
+
+Three sizes, set as tokens on `:root`: `--size-l` (the h1, clamp(2rem, 5vw, 3.5rem): 32px on a phone, 56px at 1440, line height 1.1, tracking -0.005em), `--size-m` (section headings and the price, 1.75rem) and `--size-s` (everything else, 1.0625rem, so 17px for Source Sans 3's small x-height: body, labels, buttons, captions, footer). The English page adds `--size-code` (0.875rem) for monospace and the editor's chrome only. Hierarchy comes from size and colour (`text` against `muted`), not from weight: body and UI stay at 500 or below outside the wheel, `strong` is 500, and the serif display is 600 because it reads thin at 500. No uppercase, no letter-spaced labels. (Adopted 2026-10-17 from the "AI tells" in YC's design review of Paper.) The h1 sets `text-wrap: balance` (even lines, no one-word last line, at every width) and a measure chosen per copy so it takes two lines at desktop: 760px for the Danish headline, 700px for the English one. Re-check the break whenever the headline copy changes. A number and its unit never split across lines: join them with a non-breaking space (`349&nbsp;kr.`, `10&nbsp;måneder`).
+On the wheel, set the engine's `fontFamily` to `'Source Sans 3', sans-serif` and label sizes in SVG units (about 30 for events at a 430px wheel); see CONFIGURATION.md.
 
 ## Layout
 
-Single column below 768px; two columns (text and offer card left, wheel right) at 768px and up; max content width 1100px with a 16px side gutter. Sections are separated by a 1px `border` rule, not boxes. The offer card groups price and the single primary button (approved 2026-10-16 in /design-shotgun) and must stay above the fold on a 375x812 phone and a 1440x900 laptop. Lower sections align to the hero's left edge with a 640px text measure.
+Max content width 1100px with a 16px side gutter. **Hero, 768px and up (the almanac spread):** the h1 and the support text run across the top at their own measures, then the offer card (440px) on the left and the wheel (520px) on the right sit level, their top edges aligned. The headline is read first, then price and wheel as equals. **Below 768px:** one column in the order h1, support, offer card, wheel at full width (343px on a 375 phone); the card ends above the 812px fold and the top of the wheel shows just under it, which invites the scroll. On the English page, whose header costs 89px, the "Leder du efter et årshjul?" link moves from above the headline to just under the card on phones, and the hero's top padding is 16px, so the card still ends above the fold. Sections are separated by a 1px `border` rule, not boxes. The offer card groups price and the single primary button (approved 2026-10-16 in /design-shotgun) and must stay above the fold on a 375x812 phone and a 1440x900 laptop. Lower sections align to the hero's left edge with a 640px text measure.
 
 ## Elevation & Depth
 
@@ -115,11 +117,12 @@ One radius, 6px (`rounded.md`), for buttons, inputs, poll buttons and the offer 
 
 ## Components
 
-- **Primary button:** pine fill, white 18px semibold label, min height 48px, full width inside the offer card. Hover darkens to `primary-hover`; focus-visible draws a 2px pine outline offset 2px; disabled drops to 60 percent opacity with the label "Sender...". One per view.
+- **Wheel:** labels in Source Sans 3: centre title 700, event labels 600, month names 500. One event label size, 30 units on the engine's 1000-unit viewBox, shrinking only when a label does not fit its segment (never growing to fill a big one). Events take the six wheel colours in order; empty months are `surface`; the month ring is `background`; ring separators are `border`, never the engine's default cool grey (#e5e7eb). A static wheel carries no filter, shadow or glow. The viewBox is cropped to the wheel's outer ring so the drawn wheel fills its box and its top edge aligns with whatever sits beside it. Label cap and separator colour are not engine options yet (`src/circalify-core.js` hardcodes the stroke); until they are, the pages may not fully match this rule.
+- **Primary button:** pine fill, white 16px medium (500) label, min height 48px, full width inside the offer card. Hover darkens to `primary-hover`; focus-visible draws a 2px pine outline offset 2px; disabled drops to 60 percent opacity with the label "Sender...". One per view.
 - **Secondary button / poll button:** surface fill, 2px `border`, slate label, min height 44px; hover turns border and label pine.
 - **Input:** surface fill, 2px `border`, 48px tall, visible label above (never placeholder-only); focus turns the border pine.
 - **Offer card:** surface fill, 1.5px `border-strong`, 6px radius, no shadow; holds the price block, the button (or the signup panel after the click) and the "Til bestyrelsen" lines under a 1px rule.
-- **Status lines:** success in slate semibold; errors in `error` with a mailto fallback; both `aria-live="polite"`.
+- **Status lines:** success in slate at 500; errors in `error` with a mailto fallback; both `aria-live="polite"`.
 - **Hidden state:** a global `[hidden] { display: none !important; }` rule, because component display rules otherwise override the attribute.
 
 ## Do's and Don'ts
@@ -131,7 +134,11 @@ One radius, 6px (`rounded.md`), for buttons, inputs, poll buttons and the offer 
 - Don't use pure white (#FFFFFF) as a page background or black (#000000) for text.
 - Don't bring back orange, gradients, glows, pill buttons or drop-shadowed cards.
 - Don't decorate sections with icons in tiles or stock photos; the wheel is the picture.
-- Don't put a kicker label above headings beyond the existing "Circalify Pro" eyebrow on the door page.
+- Don't put a kicker label above headings. The product name "Circalify Pro" is the first line inside the offer card, in muted 16px.
+- Don't add badges, pills or trust rows ("MIT licensed", star counts) or icon card grids; say it in a sentence or a plain list.
+- Don't centre sections. Headings, lists and code align to the hero's left edge; only the wheel's caption is centred.
+- Don't use em dashes or Title Case in copy; headings are sentence case.
+- Don't let a number wrap away from its unit (kr., md., måneder); use `&nbsp;`.
 - Don't address Danish readers as "I" or "jeres"; write impersonally or in the imperative.
 
 ## Motion
@@ -150,3 +157,7 @@ One radius, 6px (`rounded.md`), for buttons, inputs, poll buttons and the offer 
 | 2026-10-16 | Deferred: a "nu" hand on the wheel pointing at today | Needs an engine feature; revisit for the editor |
 | 2026-10-16 | Danish copy avoids the plural address "I/jeres" | The founder: addressing readers as "I" is unusual in Danish marketing; use impersonal phrasing or the imperative, and "du" only in one-to-one lines from Mahmood |
 | 2026-10-16 | English page moved onto this system; its dark mode and toggle removed | One light system per DESIGN.md; also removes the only localStorage write on the site |
+| 2026-10-17 | Three type sizes, weights at 500 or below, no kicker, badges, icon cards or centred sections | Founder asked to apply YC's Paper design review ("AI tells"); both pages cleaned the same day |
+| 2026-10-17 | Hero becomes the almanac spread (h1 across, card and 520px wheel level below); --size-l to clamp(2rem, 5vw, 3.5rem); wheel rules written down; mobile order and fold rule; number and unit joined with &nbsp; | /design-consultation in Paper (Scratchpad file, page "Circalify Pro"): current, B "almanac spread", C "wheel first" and a 375 frame compared side by side; founder picked B. Live checks found event labels varying 27.5 to 36, separators in Tailwind grey #e5e7eb, Hanken 600 not loaded, and "3.490 / kr." splitting at 375 |
+| 2026-10-17 | Source Serif 4 (display, 600) and Source Sans 3 (body, 17px) replace Familjen Grotesk and Hanken Grotesk; page copy edited for AI patterns | Founder: "the font and the text itself look very AI". Four pairings rendered live with the real headline, prices and æ ø å (all with open zeros); founder picked the almanac serif. Copy: repeated "del det med et link" removed from the support line, passive and vague lines made direct, an invented "monthly showcases" promise replaced with the occasional email the form already states |
+| 2026-10-17 | Headlines are plain what-and-who ("Årshjul til foreninger", "Year wheels for associations") and the support line names the old way it replaces | Founder asked for YC-style copy after rejecting translated-English and adjective headlines. Changed during the door test: read door metrics before and after 2026-10-17 |

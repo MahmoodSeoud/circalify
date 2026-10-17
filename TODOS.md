@@ -36,3 +36,18 @@ Deferred work with context. Added by /plan-eng-review 2026-08-07.
 - **Trigger:** Before the first link post if the founder wants a second look at the hero, or after the gate if the click rate lands within two clicks of the 5 percent bar.
 - **Depends on / blocked by:** The Danish page shipped on gh-pages.
 
+
+## Poll buttons show no chosen answer (QA ISSUE-002, Low, UX)
+
+- **What:** After a visitor answers "Hvor laver foreningen årshjulet i dag?", mark the chosen button (aria-pressed="true" plus a selected style) and show the others as inactive.
+- **Why:** Later clicks are ignored correctly (no double counting), but all six buttons still look clickable, so a second click seems to do nothing.
+- **Repro:** /aarshjul/, click Excel, then click Canva: the thank-you line stays "Tak for svaret: Excel." and no button looks selected.
+- **Context:** Found by /qa on 2026-10-17 (report: ../circalify-gh-pages/.gstack/qa-reports/qa-report-localhost-2026-10-17.md). The poll handler is in the inline script of aarshjul/index.html on gh-pages.
+- **Effort:** human S / CC S. **Priority:** P3.
+
+## Declare a favicon on the Pro pages (QA ISSUE-003, Low, visual)
+
+- **What:** Add a link rel="icon" (for example a small SVG wheel in the six wheel colours) to index.html and aarshjul/index.html on gh-pages.
+- **Why:** Neither page declares an icon, so tabs and bookmarks show a generic icon and browsers request /favicon.ico, which the project site does not serve.
+- **Context:** Found by /qa on 2026-10-17. Needs a small asset that follows DESIGN.md (no orange); the check-pages relative-targets rule will verify the path.
+- **Effort:** human S / CC S. **Priority:** P3.

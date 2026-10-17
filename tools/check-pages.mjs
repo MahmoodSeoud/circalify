@@ -126,6 +126,30 @@ const pageRules = {
     return fails;
   },
 
+  'number-unit-nbsp'(html) {
+    // DESIGN.md: a number never wraps away from its unit, so visible copy joins them with &nbsp;
+    const visible = html.replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, '');
+    return [...visible.matchAll(/(?:\d[\d.,]*|<\/span>)[ \t]+(?:kr\.|md\.|måned(?:er)?\b|months?\b|a (?:month|year)\b|\/ month\b)/g)]
+      .map(m => `number and unit split by a plain space, use &nbsp;: "${m[0]}"`);
+  },
+
+  'title-sync'(html) {
+    // The h1 is copied by hand into the share cards and the tab title; a missed copy ships a stale card
+    const h1 = (html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i) || [])[1];
+    if (h1 === undefined) return ['page has no <h1>'];
+    const text = h1.replace(/<[^>]+>/g, '').trim();
+    const fails = [];
+    for (const key of ['og:title', 'twitter:title']) {
+      const v = metaContent(html, key);
+      if (v === null) fails.push(`missing ${key}`);
+      else if (v !== text) fails.push(`${key} "${v}" does not match the h1 "${text}"`);
+    }
+    const title = (html.match(/<title>([\s\S]*?)<\/title>/i) || [])[1];
+    if (title === undefined) fails.push('missing <title>');
+    else if (!title.startsWith(text)) fails.push(`<title> "${title}" does not start with the h1 "${text}"`);
+    return fails;
+  },
+
   'goatcounter-tag'(html) {
     const tags = scripts(html).filter(s => /data-goatcounter=/.test(s.attrs));
     if (tags.length !== 1) return [`expected exactly one GoatCounter script tag, found ${tags.length}`];
@@ -270,6 +294,8 @@ const FIXTURE_EXPECT = {
   'share-tags-absolute': 'og:url must be an absolute URL',
   'web3forms-botcheck': 'a script posts to web3forms without a botcheck field',
   'goatcounter-tag': 'GoatCounter tag must load async',
+  'number-unit-nbsp': 'number and unit split by a plain space, use &nbsp;: "349 kr."',
+  'title-sync': 'og:title "Årshjul online" does not match the h1 "Årshjul til foreninger"',
   'subjects-exact': "missing web3forms subject 'Skabeloner: download fra /aarshjul/'",
   'event-paths': "missing GoatCounter event path 'wheel-fallback'",
   'gc-queue': 'onload="flushGc()"',
@@ -308,6 +334,10 @@ const MUTATIONS = [
   [DA, 'da', 'web3forms-botcheck', 'honeypot dropped', one("body.append('botcheck', '');", ''), 'without a botcheck field'],
   [DA, 'da', 'share-tags-absolute', 'relative share image', one('<meta property="og:image" content="https://mahmoodseoud.github.io/circalify/images/aarshjul-eksempel.png" />', '<meta property="og:image" content="../images/aarshjul-eksempel.png" />'), 'og:image must be an absolute URL'],
   [DA, 'da', 'no-root-absolute', 'root-absolute link', one('<a href="../">', '<a href="/">'), 'root-absolute URL'],
+  [DA, 'da', 'title-sync', 'share title left behind', one('<meta property="og:title" content="Årshjul til foreninger" />', '<meta property="og:title" content="Lav årshjulet online" />'), 'og:title "Lav årshjulet online" does not match the h1'],
+  ['index.html', 'en', 'title-sync', 'English tab title left behind', one('<title>Year wheels for associations | Circalify</title>', '<title>Make your year wheel online | Circalify</title>'), '<title> "Make your year wheel online | Circalify" does not start with the h1'],
+  [DA, 'da', 'number-unit-nbsp', 'price wraps from its unit', one('349</span>&nbsp;kr./md.', '349</span> kr./md.'), 'number and unit split by a plain space'],
+  ['index.html', 'en', 'number-unit-nbsp', 'English months wrap from the number', one('10&nbsp;months', '10 months'), 'number and unit split by a plain space'],
   [DA, 'da', 'relative-targets-exist', 'missing download', one("const TEMPLATES_ZIP = '../templates/circalify-templates.zip';", "const TEMPLATES_ZIP = '../templates/nope.zip';"), 'does not exist on disk: ../templates/nope.zip'],
   ['index.html', 'en', 'subjects-exact', 'English signup subject changed', one("const SUBJECT_SIGNUP = 'Pro EN: early access signup';", "const SUBJECT_SIGNUP = 'Pro EN: signup';"), "missing web3forms subject 'Pro EN: early access signup'"],
   ['index.html', 'en', 'event-paths', 'English event mixed with Danish', one("'pro-en-door-seen'", "'pro-door-seen'"), "missing GoatCounter event path 'pro-en-door-seen'"],

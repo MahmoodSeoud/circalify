@@ -17,7 +17,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Årshjul til foreninger | Circalify</title>
-    <meta name="description" content="Skriv årets aktiviteter ind, så tegner Circalify hjulet. Hele bestyrelsen ser det samme hjul via ét link, i stedet for en PowerPoint, der bliver sendt rundt på mail." />
+    <meta name="description" content="Skriv årets aktiviteter ind, og Circalify tegner hjulet. Så har hele bestyrelsen et fælles overblik over, hvad der skal ske og hvornår." />
     <meta name="keywords" content="årshjul, aarshjul, årshjul skabelon, årshjul forening, årshjul bestyrelse, årsplan, Circalify" />
     <meta name="author" content="Mahmood Seoud" />
     <link rel="canonical" href="https://mahmoodseoud.github.io/circalify/aarshjul/" />
@@ -26,14 +26,14 @@
     <meta property="og:locale" content="da_DK" />
     <meta property="og:url" content="https://mahmoodseoud.github.io/circalify/aarshjul/" />
     <meta property="og:title" content="Årshjul til foreninger" />
-    <meta property="og:description" content="Skriv årets aktiviteter ind, så tegner Circalify hjulet. Hele bestyrelsen ser det samme hjul via ét link, i stedet for en PowerPoint, der bliver sendt rundt på mail." />
+    <meta property="og:description" content="Skriv årets aktiviteter ind, og Circalify tegner hjulet. Så har hele bestyrelsen et fælles overblik over, hvad der skal ske og hvornår." />
     <meta property="og:image" content="https://mahmoodseoud.github.io/circalify/images/aarshjul-eksempel.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Årshjul til foreninger" />
-    <meta name="twitter:description" content="Skriv årets aktiviteter ind, så tegner Circalify hjulet. Hele bestyrelsen ser det samme hjul via ét link, i stedet for en PowerPoint, der bliver sendt rundt på mail." />
+    <meta name="twitter:description" content="Skriv årets aktiviteter ind, og Circalify tegner hjulet. Så har hele bestyrelsen et fælles overblik over, hvad der skal ske og hvornår." />
     <meta name="twitter:image" content="https://mahmoodseoud.github.io/circalify/images/aarshjul-eksempel.png" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -72,7 +72,7 @@
         --space-8: 3rem;
         --space-10: 5rem;
         --space-12: 6rem;
-        --size-l: clamp(2rem, 5vw, 3.5rem);
+        --size-l: clamp(2.25rem, 4vw, 3rem);
         --size-m: 1.75rem;
         --size-s: 1.0625rem; /* 17px: Source Sans 3 has a small x-height */
 
@@ -140,11 +140,12 @@
       }
 
       /* Hero */
+      /* Calm cover (DESIGN.md Layout): headline, support line and offer card on the left,
+         the whole example wheel on the right, level with them */
       .hero {
-        padding: var(--space-8) 0 var(--space-8);
+        padding: var(--space-8) 0 var(--space-10);
       }
 
-      /* Almanac spread (DESIGN.md Layout): headline across the top, then card and wheel level */
       .hero-head {
         margin-bottom: var(--space-5);
       }
@@ -155,15 +156,11 @@
         gap: var(--space-6);
       }
 
-      @media (min-width: 768px) {
-        .hero-head {
-          margin-bottom: var(--space-6);
-        }
-
+      @media (min-width: 900px) {
         .hero-grid {
-          grid-template-columns: minmax(0, 440px) minmax(0, 520px);
+          grid-template-columns: minmax(0, 440px) minmax(0, 580px);
           justify-content: space-between;
-          align-items: start;
+          align-items: center;
           gap: var(--space-8);
         }
       }
@@ -179,8 +176,7 @@
         font-size: var(--size-l);
         font-weight: var(--weight-display);
         letter-spacing: -0.005em;
-        line-height: 1.1;
-        max-width: 760px; /* two lines at 56px for this copy; re-check the break when the copy changes */
+        line-height: 1.12;
         text-wrap: balance; /* even lines, no one-word last line, at every width */
         margin-bottom: var(--space-4);
       }
@@ -367,9 +363,9 @@
 
       /* Example wheel */
       .hero-visual {
-        margin: 0 auto;
         width: 100%;
-        max-width: 520px;
+        max-width: 580px;
+        margin: 0 auto;
       }
 
       .wheel-box {
@@ -430,13 +426,9 @@
         }
       }
 
-      /* Sections */
-      section + section {
-        border-top: 1px solid var(--border);
-      }
-
+      /* Sections are separated by space, not rules */
       .section {
-        padding: var(--space-8) 0;
+        padding: 0 0 var(--space-10);
       }
 
       .section h2 {
@@ -494,17 +486,6 @@
         line-height: var(--line-height-relaxed);
       }
 
-      /* Use cases */
-      .use-cases {
-        list-style: none;
-        display: grid;
-        gap: var(--space-3);
-      }
-
-      .use-cases strong {
-        font-weight: 500;
-      }
-
       /* Footer */
       footer {
         background: var(--surface-sunk);
@@ -520,20 +501,20 @@
   <body>
     <main>
       <section class="hero">
-        <div class="container">
-          <div class="hero-head">
-            <h1>Årshjul til foreninger</h1>
-            <p class="hero-support">Skriv årets aktiviteter ind, så tegner Circalify hjulet. Hele bestyrelsen ser det samme hjul via ét link, i stedet for en PowerPoint, der bliver sendt rundt på mail.</p>
-          </div>
+        <div class="container hero-grid">
+          <div class="hero-text">
+            <div class="hero-head">
+              <h1>Årshjul til foreninger</h1>
+              <p class="hero-support">Skriv årets aktiviteter ind, og Circalify tegner hjulet. Så har hele bestyrelsen et fælles overblik over, hvad der skal ske og hvornår.</p>
+            </div>
 
-          <div class="hero-grid">
             <div class="offer-card">
               <p class="offer-name">Circalify Pro</p>
               <div class="price-block" id="price-block">
                 <p class="price-main"><span data-price="monthly">349</span>&nbsp;kr./md.</p>
                 <p class="price-line">ekskl. moms (<span data-price="monthly-vat">436</span>&nbsp;kr. med moms)</p>
                 <p class="price-line">Eller <span data-price="yearly">3.490</span>&nbsp;kr. om året, svarende til 10&nbsp;måneder.</p>
-                <p class="price-scope">Samme pris, uanset hvor mange der redigerer. Det er gratis at se hjulet.</p>
+                <p class="price-scope">Én pris for hele foreningen, uanset hvor mange der redigerer. Det er gratis at se hjulet.</p>
               </div>
 
               <div id="door">
@@ -555,7 +536,7 @@
                       <div class="form-actions">
                         <button type="submit" class="btn btn-primary" id="signup-btn">Skriv mig op</button>
                       </div>
-                      <p class="purpose muted">Jeg bruger kun din e-mail til at svare dig og sige til, når du kan prøve det. Skriv, hvis du vil have den slettet.</p>
+                      <p class="purpose muted">Jeg skriver kun til dig om Circalify Pro, og når du kan prøve det. Skriv til mig, hvis jeg skal slette din e-mail.</p>
                     </div>
                     <p class="status-line" id="signup-status" aria-live="polite" tabindex="-1"></p>
                   </form>
@@ -566,8 +547,9 @@
                   <p class="panel">Slå JavaScript til, eller skriv til <a href="mailto:hello@circalify.com?subject=Circalify%20Pro%20early%20access">hello@circalify.com</a> for at få tidlig adgang.</p>
                 </noscript>
               </div>
-              <p class="board-note"><strong>Til bestyrelsen:</strong> Et online årshjul for hele foreningen til 349&nbsp;kr. om måneden (3.490&nbsp;kr. om året). Alle kan se det gratis via et link.</p>
+              <p class="board-note"><strong>Til bestyrelsen:</strong> Et fælles årshjul for hele foreningen til 349&nbsp;kr. om måneden (3.490&nbsp;kr. om året). Det er gratis at se det.</p>
             </div>
+          </div>
 
             <figure class="hero-visual">
               <div class="wheel-box" id="wheel-box" data-wheel="loading" role="img" aria-label="Eksempel på et årshjul for en forening">
@@ -579,13 +561,12 @@
               </div>
               <figcaption class="muted">Eksempel: en forenings år</figcaption>
             </figure>
-          </div>
         </div>
       </section>
 
       <section class="section">
         <div class="container narrow">
-          <h2>Hvor laver foreningen årshjulet i dag?</h2>
+          <h2>Hvad bruger du til årshjulet i dag?</h2>
           <div class="poll-grid" id="poll">
             <button type="button" class="poll-btn" data-answer="powerpoint">PowerPoint</button>
             <button type="button" class="poll-btn" data-answer="excel">Excel</button>
@@ -601,7 +582,7 @@
       <section class="section">
         <div class="container narrow">
           <h2>Hellere en gratis skabelon?</h2>
-          <p class="templates-lead">Der er 10 skabeloner som HTML-filer. De åbnes i browseren, og teksten rettes i en teksteditor, så det kræver lidt teknisk snilde.</p>
+          <p class="templates-lead">Hent 10 gratis skabeloner som HTML-filer. Du retter dem selv i en teksteditor, så det kræver lidt IT-erfaring.</p>
           <form id="templates-form" novalidate>
             <div class="field">
               <label for="templates-email">E-mail</label>
@@ -611,20 +592,9 @@
             <div class="form-actions">
               <button type="submit" class="btn btn-secondary" id="templates-btn">Hent skabelonerne</button>
             </div>
-            <p class="purpose muted">Jeg bruger kun din e-mail til at sende nyt om Circalify en gang imellem. Skriv, hvis du vil have den slettet.</p>
+            <p class="purpose muted">Jeg skriver kun, når der er nyt om Circalify. Skriv til mig, hvis jeg skal slette din e-mail.</p>
             <p class="status-line" id="templates-status" aria-live="polite" tabindex="-1"></p>
           </form>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="container narrow">
-          <h2>Hvem bruger et årshjul?</h2>
-          <ul class="use-cases">
-            <li><strong>Foreninger og bestyrelser:</strong> generalforsamling, kontingent, sommerfest, julefrokost.</li>
-            <li><strong>Skoler og institutioner:</strong> skolestart, forældremøder, ferier, eksamen.</li>
-            <li><strong>Kommuner og teams:</strong> budget, høringer, rådsmøder, årsregnskab.</li>
-          </ul>
         </div>
       </section>
     </main>

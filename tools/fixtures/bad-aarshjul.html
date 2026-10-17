@@ -35,6 +35,12 @@
     <p>349 kr. om måneden</p>
     <button data-answer="powerpoint"></button><button data-answer="excel"></button><button data-answer="plandisc"></button>
     <button data-answer="canva"></button><button data-answer="ai"></button><button data-answer="andet"></button>
+    <!-- error-focus: the error handler never moves focus to its status line -->
+    <script>
+      function showErr() {
+        note.classList.add('error');
+      }
+    </script>
     <script>
       // subjects-exact: the templates subject is missing
       const SUBJECT_DOOR_CLICK = 'Pro: klik paa early access';

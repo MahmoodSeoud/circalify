@@ -751,6 +751,7 @@
         signupStatus.append(mail, '.');
         signupBtn.disabled = false;
         signupBtn.textContent = 'Skriv mig op';
+        signupStatus.focus(); // the disabled button dropped focus to the body
       }
 
       function showSignupSuccess() {

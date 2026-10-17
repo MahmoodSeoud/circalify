@@ -2053,6 +2053,7 @@ timeline.setData([
           status.append(mail, '.');
           submitBtn.disabled = false;
           submitBtn.textContent = 'Sign me up';
+          status.focus(); // the disabled button dropped focus to the body
         }
 
         function showSuccess() {

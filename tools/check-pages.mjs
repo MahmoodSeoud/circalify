@@ -133,6 +133,23 @@ const pageRules = {
       .map(m => `number and unit split by a plain space, use &nbsp;: "${m[0]}"`);
   },
 
+  // Regression: ISSUE-001 — a failed signup left keyboard focus on the body
+  // Found by /qa on 2026-10-17
+  // Report: .gstack/qa-reports/qa-report-localhost-2026-10-17.md
+  'error-focus'(html) {
+    // A handler that turns a status line into an error must move focus to it, as the
+    // success handlers do; the submit button was disabled while sending and lost focus
+    const fails = [];
+    for (const s of scripts(html)) {
+      for (const [, name, body] of s.body.matchAll(/function (\w+)\([^)]*\) \{([\s\S]*?)\n\s*\}\n/g)) {
+        for (const [, el] of body.matchAll(/(\w+)\.classList\.add\('error'\)/g)) {
+          if (!new RegExp(`\\b${el}\\.focus\\(`).test(body)) fails.push(`${name}() shows an error on ${el} without ${el}.focus()`);
+        }
+      }
+    }
+    return fails;
+  },
+
   'title-sync'(html) {
     // The h1 is copied by hand into the share cards and the tab title; a missed copy ships a stale card
     const h1 = (html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i) || [])[1];
@@ -296,6 +313,7 @@ const FIXTURE_EXPECT = {
   'goatcounter-tag': 'GoatCounter tag must load async',
   'number-unit-nbsp': 'number and unit split by a plain space, use &nbsp;: "349 kr."',
   'title-sync': 'og:title "Årshjul online" does not match the h1 "Årshjul til foreninger"',
+  'error-focus': 'showErr() shows an error on note without note.focus()',
   'subjects-exact': "missing web3forms subject 'Skabeloner: download fra /aarshjul/'",
   'event-paths': "missing GoatCounter event path 'wheel-fallback'",
   'gc-queue': 'onload="flushGc()"',
@@ -334,6 +352,8 @@ const MUTATIONS = [
   [DA, 'da', 'web3forms-botcheck', 'honeypot dropped', one("body.append('botcheck', '');", ''), 'without a botcheck field'],
   [DA, 'da', 'share-tags-absolute', 'relative share image', one('<meta property="og:image" content="https://mahmoodseoud.github.io/circalify/images/aarshjul-eksempel.png" />', '<meta property="og:image" content="../images/aarshjul-eksempel.png" />'), 'og:image must be an absolute URL'],
   [DA, 'da', 'no-root-absolute', 'root-absolute link', one('<a href="../">', '<a href="/">'), 'root-absolute URL'],
+  [DA, 'da', 'error-focus', 'signup error leaves focus on the body', one("signupBtn.textContent = 'Skriv mig op';\n        signupStatus.focus();", "signupBtn.textContent = 'Skriv mig op';"), 'showSignupError() shows an error on signupStatus without signupStatus.focus()'],
+  ['index.html', 'en', 'error-focus', 'English signup error leaves focus on the body', one("submitBtn.textContent = 'Sign me up';\n          status.focus();", "submitBtn.textContent = 'Sign me up';"), 'showError() shows an error on status without status.focus()'],
   [DA, 'da', 'title-sync', 'share title left behind', one('<meta property="og:title" content="Årshjul til foreninger" />', '<meta property="og:title" content="Lav årshjulet online" />'), 'og:title "Lav årshjulet online" does not match the h1'],
   ['index.html', 'en', 'title-sync', 'English tab title left behind', one('<title>Year wheels for associations | Circalify</title>', '<title>Make your year wheel online | Circalify</title>'), '<title> "Make your year wheel online | Circalify" does not start with the h1'],
   [DA, 'da', 'number-unit-nbsp', 'price wraps from its unit', one('349</span>&nbsp;kr./md.', '349</span> kr./md.'), 'number and unit split by a plain space'],

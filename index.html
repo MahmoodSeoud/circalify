@@ -5,30 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Primary Meta Tags -->
-    <title>Make your year wheel online and share it with a link | Circalify</title>
+    <title>Year wheels for associations | Circalify</title>
     <meta name="title" content="Make your year wheel online and share it with a link | Circalify" />
-    <meta name="description" content="Type in the year's activities and Circalify draws the wheel. Share it with a link so the whole board sees the same plan. Circalify Pro is in early access; developers can use the free, open source JavaScript library." />
+    <meta name="description" content="Type in the year's activities and Circalify draws the wheel, and the whole board sees the same wheel through one link. Circalify Pro is in early access; developers can use the free, open source JavaScript library." />
     <meta name="keywords" content="year wheel, annual wheel, annual planner, association planning, board calendar, circular timeline, JavaScript library, open source" />
     <meta name="author" content="Mahmood Seoud" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://mahmoodseoud.github.io/circalify/" />
-    <meta property="og:title" content="Make your year wheel online and share it with a link" />
-    <meta property="og:description" content="Type in the year's activities and Circalify draws the wheel. Share it with a link so the whole board sees the same plan. No code, nothing to install." />
+    <meta property="og:title" content="Year wheels for associations" />
+    <meta property="og:description" content="Type in the year's activities and Circalify draws the wheel. The whole board sees the same wheel through one link, instead of a PowerPoint passed around by email." />
     <meta property="og:image" content="https://mahmoodseoud.github.io/circalify/images/hero-devices-final.png" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://mahmoodseoud.github.io/circalify/" />
-    <meta property="twitter:title" content="Make your year wheel online and share it with a link" />
-    <meta property="twitter:description" content="Type in the year's activities and Circalify draws the wheel. Share it with a link so the whole board sees the same plan. No code, nothing to install." />
+    <meta property="twitter:title" content="Year wheels for associations" />
+    <meta property="twitter:description" content="Type in the year's activities and Circalify draws the wheel. The whole board sees the same wheel through one link, instead of a PowerPoint passed around by email." />
     <meta property="twitter:image" content="https://mahmoodseoud.github.io/circalify/images/hero-devices-final.png" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
     <!-- The pinned engine graph for the Pro hero wheel -->
     <link rel="modulepreload" href="https://unpkg.com/circalify@0.1.10/src/index.js" />
@@ -56,6 +56,10 @@
       }
 
       :root {
+        --size-l: clamp(2rem, 5vw, 3.5rem);
+        --size-m: 1.75rem;
+        --size-s: 1.0625rem; /* 17px: Source Sans 3 has a small x-height */
+        --size-code: 0.875rem; /* monospace and editor chrome only */
         /* Spacing system - 8px base */
         --space-1: 0.25rem;   /* 4px */
         --space-2: 0.5rem;    /* 8px */
@@ -86,8 +90,9 @@
         --code-text: #DCE0D9;
 
         /* Typography */
-        --font-body: 'Hanken Grotesk', 'Segoe UI', sans-serif;
-        --font-display: 'Familjen Grotesk', 'Hanken Grotesk', sans-serif;
+        --font-body: 'Source Sans 3', 'Segoe UI', sans-serif;
+        --font-display: 'Source Serif 4', Georgia, serif;
+        --weight-display: 600; /* the serif reads thin at 500 */
         --line-height-tight: 1.2;
         --line-height-normal: 1.5;
         --line-height-relaxed: 1.75;
@@ -106,6 +111,7 @@
 
       body {
         font-family: var(--font-body);
+        font-size: var(--size-s);
         color: var(--text);
         line-height: var(--line-height-normal);
         background: var(--bg);
@@ -163,9 +169,9 @@
       }
 
       .logo {
-        font-size: 1.5rem;
+        font-size: var(--size-s);
         font-family: var(--font-display);
-        font-weight: 700;
+        font-weight: var(--weight-display);
         color: var(--primary);
         text-decoration: none;
         transition: color var(--transition-fast);
@@ -186,7 +192,7 @@
         text-decoration: none;
         font-weight: 500;
         transition: color var(--transition-fast);
-        font-size: 0.9375rem;
+        font-size: var(--size-s);
       }
 
       .header-links a:hover {
@@ -232,7 +238,7 @@
       }
 
       .hero-da-link {
-        font-size: 0.875rem;
+        font-size: var(--size-s);
         color: var(--text-light);
         margin-bottom: var(--space-5);
       }
@@ -242,43 +248,78 @@
         text-decoration: underline;
       }
 
+      /* Almanac spread (DESIGN.md Layout): headline across the top, then card and wheel level */
+      .hero-head {
+        margin-bottom: var(--space-5);
+      }
+
       .hero-grid {
         display: grid;
         grid-template-columns: 1fr;
         gap: var(--space-6);
-        align-items: center;
       }
 
       @media (min-width: 768px) {
+        .hero-head {
+          margin-bottom: var(--space-6);
+        }
+
         .hero-grid {
-          grid-template-columns: 1fr 1fr;
+          grid-template-columns: minmax(0, 440px) minmax(0, 520px);
+          justify-content: space-between;
+          align-items: start;
           gap: var(--space-8);
         }
       }
 
-      .eyebrow {
+      /* Phones: the whole offer card above the 812px fold (DESIGN.md Layout), so the
+         Danish link drops below the card instead of sitting above the headline */
+      @media (max-width: 767px) {
+        .pro-hero {
+          padding-top: var(--space-4);
+        }
+
+        .pro-hero .container {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .pro-hero .hero-grid {
+          display: contents;
+        }
+
+        .pro-hero .hero-head { order: 1; }
+        .pro-hero .offer-card { order: 2; }
+        .pro-hero .hero-da-link { order: 3; margin: var(--space-4) 0 var(--space-6); }
+        .pro-hero .hero-visual { order: 4; }
+      }
+
+      strong {
+        font-weight: 500;
+      }
+
+      .offer-name {
         color: var(--text-light);
-        font-size: 0.875rem;
-        font-weight: 600;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        margin-bottom: var(--space-3);
+        font-weight: 500;
+        margin-bottom: var(--space-2);
       }
 
       .pro-hero h1 {
         font-family: var(--font-display);
-        font-size: clamp(1.75rem, 4vw, 2.5rem);
-        font-weight: 600;
-        letter-spacing: -0.01em;
-        line-height: var(--line-height-tight);
+        font-size: var(--size-l);
+        font-weight: var(--weight-display);
+        letter-spacing: -0.005em;
+        line-height: 1.1;
+        max-width: 700px; /* two lines at 56px for this copy; re-check the break when the copy changes */
+        text-wrap: balance; /* even lines, no one-word last line, at every width */
         margin-bottom: var(--space-4);
       }
 
       .hero-support {
-        font-size: 1.125rem;
+        font-size: var(--size-s);
         color: var(--text-light);
         line-height: var(--line-height-relaxed);
-        margin-bottom: var(--space-5);
+        max-width: 640px;
       }
 
       .offer-card {
@@ -295,15 +336,15 @@
 
       .price-main {
         font-family: var(--font-display);
-        font-size: 2rem;
-        font-weight: 600;
+        font-size: var(--size-m);
+        font-weight: var(--weight-display);
         line-height: var(--line-height-tight);
         font-variant-numeric: tabular-nums;
       }
 
       .price-line {
         color: var(--text-light);
-        font-size: 1rem;
+        font-size: var(--size-s);
       }
 
       .price-scope {
@@ -312,7 +353,7 @@
 
       .pro-door-btn {
         width: 100%;
-        font-size: 18px;
+        font-size: var(--size-s);
         min-height: 48px;
         padding: 0 var(--space-6);
       }
@@ -335,13 +376,13 @@
       }
 
       .field label {
-        font-weight: 600;
-        font-size: 0.9375rem;
+        font-weight: 500;
+        font-size: var(--size-s);
       }
 
       .field input {
         font-family: inherit;
-        font-size: 1rem;
+        font-size: var(--size-s);
         min-height: 48px;
         padding: 0 var(--space-4);
         border: 2px solid var(--border);
@@ -362,7 +403,7 @@
 
       .muted {
         color: var(--text-light);
-        font-size: 1rem;
+        font-size: var(--size-s);
       }
 
       .purpose {
@@ -371,7 +412,7 @@
 
       .status-line {
         margin-top: var(--space-3);
-        font-weight: 600;
+        font-weight: 500;
       }
 
       .status-line:empty {
@@ -391,13 +432,13 @@
         margin-top: var(--space-4);
         padding-top: var(--space-3);
         border-top: 1px solid var(--border);
-        font-size: 1rem;
+        font-size: var(--size-s);
         color: var(--text-light);
       }
 
       .board-note strong {
         color: var(--text);
-        font-weight: 700;
+        font-weight: 500;
       }
 
       .hero-visual {
@@ -440,7 +481,7 @@
       .hero-visual figcaption {
         text-align: center;
         margin-top: var(--space-2);
-        font-size: 0.875rem;
+        font-size: var(--size-s);
       }
 
       @media (prefers-reduced-motion: no-preference) {
@@ -471,7 +512,6 @@
         max-width: 640px;
       }
 
-      .dev-hero .hero-badges,
       .dev-hero .hero-note {
         justify-content: flex-start;
       }
@@ -480,21 +520,17 @@
         margin: 0 0 var(--space-4);
       }
 
-      .dev-hero .benefits-list {
-        margin: var(--space-6) 0;
-      }
-
       .dev-label {
         display: block;
-        font-weight: 600;
-        font-size: 0.9375rem;
+        font-weight: 500;
+        font-size: var(--size-s);
         margin-bottom: var(--space-1);
       }
 
       .dev-title {
         font-family: var(--font-display);
-        font-size: clamp(1.5rem, 3vw, 2rem);
-        font-weight: 600;
+        font-size: var(--size-m);
+        font-weight: var(--weight-display);
         letter-spacing: -0.01em;
         line-height: var(--line-height-tight);
         margin-bottom: var(--space-4);
@@ -503,36 +539,11 @@
       /* Hero Section */
       .hero {
         padding: var(--space-8) 0 var(--space-10);
-        text-align: center;
-      }
-
-      .hero-badges {
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--space-3);
-        margin-bottom: var(--space-5);
-      }
-
-      .hero-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: var(--space-2);
-        background: var(--bg-light);
-        padding: var(--space-2) var(--space-4);
-        border-radius: 4px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: var(--text);
-        border: 1px solid var(--border-light);
-      }
-
-      .hero-badge svg {
-        width: 16px;
-        height: 16px;
+        text-align: left;
       }
 
       .hero-why {
-        font-size: 1.125rem;
+        font-size: var(--size-s);
         color: var(--text-light);
         margin-bottom: var(--space-6);
         line-height: var(--line-height-relaxed);
@@ -540,16 +551,6 @@
 
       .hero-why strong {
         color: var(--primary);
-      }
-
-      .hero-subtitle {
-        font-size: clamp(1rem, 2.5vw, 1.25rem);
-        color: var(--text-light);
-        margin-bottom: var(--space-8);
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
-        line-height: var(--line-height-relaxed);
       }
 
       .email-signup {
@@ -564,7 +565,7 @@
         flex: 1;
         min-width: 250px;
         padding: var(--space-4) var(--space-5);
-        font-size: 1rem;
+        font-size: var(--size-s);
         border: 2px solid var(--border);
         border-radius: 6px;
         font-family: inherit;
@@ -584,8 +585,8 @@
 
       .btn {
         padding: var(--space-4) var(--space-6);
-        font-size: 1rem;
-        font-weight: 600;
+        font-size: var(--size-s);
+        font-weight: 500;
         border: none;
         border-radius: 6px;
         cursor: pointer;
@@ -625,58 +626,17 @@
       }
 
       .hero-note {
-        font-size: 0.875rem;
+        font-size: var(--size-s);
         color: var(--text-light);
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         gap: var(--space-2);
-      }
-
-      .hero-note svg {
-        width: 16px;
-        height: 16px;
-        flex-shrink: 0;
-      }
-
-      .benefits-list {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--space-4) var(--space-6);
-        margin: var(--space-8) auto;
-        max-width: 800px;
-      }
-
-      .benefit-item {
-        display: flex;
-        align-items: flex-start;
-        gap: var(--space-3);
-      }
-
-      .benefit-icon {
-        width: 20px;
-        height: 20px;
-        flex-shrink: 0;
-        color: var(--primary);
-        margin-top: 2px;
-      }
-
-      .benefit-item span {
-        font-size: 0.95rem;
-        color: var(--text);
-        line-height: var(--line-height-relaxed);
-      }
-
-      @media (max-width: 768px) {
-        .benefits-list {
-          grid-template-columns: 1fr;
-          gap: var(--space-3);
-        }
       }
 
       .success-message {
         color: var(--success);
-        font-weight: 600;
+        font-weight: 500;
         margin-top: var(--space-4);
         display: none;
         padding: var(--space-3) var(--space-4);
@@ -718,64 +678,37 @@
         background: var(--bg-light);
       }
 
+      .use-list {
+        list-style: none;
+        display: grid;
+        gap: var(--space-3);
+        max-width: 640px;
+        line-height: var(--line-height-relaxed);
+      }
+
+      .use-list strong {
+        font-weight: 500;
+      }
+
       .section-header {
-        text-align: center;
+        text-align: left;
+        max-width: 640px;
         margin-bottom: var(--space-8);
       }
 
       .section-header h2 {
         font-family: var(--font-display);
-        font-size: clamp(2rem, 4vw, 2.5rem);
-        font-weight: 600;
+        font-size: var(--size-m);
+        font-weight: var(--weight-display);
         letter-spacing: -0.01em;
         margin-bottom: var(--space-4);
         line-height: var(--line-height-tight);
       }
 
       .section-header p {
-        font-size: 1.125rem;
+        font-size: var(--size-s);
         color: var(--text-light);
         line-height: var(--line-height-relaxed);
-      }
-
-      .use-cases-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: var(--space-6);
-      }
-
-      .use-case-card {
-        padding: var(--space-6);
-        background: var(--bg);
-        border: 1px solid var(--border-light);
-        border-radius: 6px;
-        transition: background-color var(--transition-base), border-color var(--transition-base), color var(--transition-base);
-      }
-
-      .use-case-card:hover {
-        border-color: var(--primary);
-        box-shadow: var(--shadow-lg);
-        transform: translateY(-2px);
-      }
-
-      .use-case-card h3 {
-        font-family: var(--font-display);
-        font-size: 1.125rem;
-        font-weight: 600;
-        margin-bottom: var(--space-3);
-        display: flex;
-        align-items: center;
-        gap: var(--space-3);
-      }
-
-      .use-case-card h3 svg {
-        flex-shrink: 0;
-      }
-
-      .use-case-card p {
-        color: var(--text-light);
-        line-height: var(--line-height-relaxed);
-        font-size: 0.9375rem;
       }
 
       /* Interactive Playground */
@@ -786,7 +719,8 @@
 
       .view-controls {
         display: flex;
-        justify-content: center;
+        justify-content: flex-start;
+        flex-wrap: wrap;
         gap: var(--space-3);
         margin-bottom: var(--space-5);
         position: relative;
@@ -797,7 +731,7 @@
 
       .view-btn {
         padding: var(--space-2) var(--space-4);
-        font-size: 0.875rem;
+        font-size: var(--size-s);
         background: var(--bg);
         color: var(--text);
         border: 2px solid var(--border);
@@ -809,6 +743,7 @@
         display: inline-flex;
         align-items: center;
         gap: var(--space-2);
+        white-space: nowrap;
       }
 
       .view-btn:hover {
@@ -873,8 +808,8 @@
 
       .editor-title {
         color: var(--code-text);
-        font-weight: 600;
-        font-size: 0.875rem;
+        font-weight: 500;
+        font-size: var(--size-code);
       }
 
       .editor-wrapper {
@@ -901,7 +836,7 @@
 
       .helper-btn {
         padding: var(--space-2) var(--space-3);
-        font-size: 0.75rem;
+        font-size: var(--size-code);
         background: var(--code-surface);
         color: var(--code-text);
         border: none;
@@ -941,8 +876,8 @@
 
       .preview-title {
         color: var(--text-light);
-        font-weight: 600;
-        font-size: 0.875rem;
+        font-weight: 500;
+        font-size: var(--size-code);
       }
 
       #preview {
@@ -965,7 +900,7 @@
         color: white;
         padding: var(--space-2) var(--space-3);
         border-radius: 6px;
-        font-size: 0.75rem;
+        font-size: var(--size-code);
         border: none;
         cursor: pointer;
         z-index: 10;
@@ -989,7 +924,7 @@
         display: none;
         max-width: 300px;
         z-index: 20;
-        font-size: 0.875rem;
+        font-size: var(--size-code);
         box-shadow: var(--shadow-lg);
       }
 
@@ -1004,7 +939,7 @@
 
       .faq-list {
         max-width: 800px;
-        margin: 0 auto;
+        margin: 0;
       }
 
       .faq-item {
@@ -1025,8 +960,8 @@
         background: var(--bg);
         border: none;
         text-align: left;
-        font-weight: 600;
-        font-size: 1rem;
+        font-weight: 500;
+        font-size: var(--size-s);
         color: var(--text);
         cursor: pointer;
         transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
@@ -1043,7 +978,7 @@
 
       .faq-question::after {
         content: '+';
-        font-size: 1.5rem;
+        font-size: var(--size-m);
         color: var(--primary);
         transition: transform var(--transition-fast);
       }
@@ -1075,7 +1010,7 @@
         padding: 3px 8px;
         border-radius: 4px;
         font-family: 'Monaco', 'Courier New', monospace;
-        font-size: 0.9em;
+        font-size: var(--size-code);
         font-weight: 500;
       }
 
@@ -1101,12 +1036,12 @@
         flex-direction: column;
         gap: var(--space-6);
         max-width: 800px;
-        margin: 0 auto;
+        margin: 0;
       }
 
       .code-block-label {
-        font-size: 0.875rem;
-        font-weight: 600;
+        font-size: var(--size-s);
+        font-weight: 500;
         color: var(--text);
         margin-bottom: var(--space-3);
         display: block;
@@ -1129,7 +1064,7 @@
       .code-block pre {
         margin: 0;
         font-family: 'Monaco', 'Courier New', monospace;
-        font-size: 0.875rem;
+        font-size: var(--size-code);
         color: var(--text);
         line-height: var(--line-height-normal);
       }
@@ -1148,8 +1083,8 @@
         border: none;
         border-radius: 6px;
         cursor: pointer;
-        font-size: 0.75rem;
-        font-weight: 600;
+        font-size: var(--size-code);
+        font-weight: 500;
         transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
         z-index: 10;
       }
@@ -1161,7 +1096,7 @@
       /* Keywords and syntax highlighting */
       .keyword {
         color: var(--primary);
-        font-weight: 600;
+        font-weight: 500;
       }
 
       .string {
@@ -1179,64 +1114,7 @@
 
       .shell-prompt {
         color: var(--secondary);
-        font-weight: 600;
-      }
-
-      /* Trust Badges */
-      .trust-badges {
-        display: flex;
-        justify-content: center;
-        gap: var(--space-6);
-        margin-top: var(--space-10);
-        flex-wrap: wrap;
-      }
-
-      .trust-badge {
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-        padding: var(--space-3) var(--space-4);
-        background: var(--bg-light);
-        border-radius: 6px;
-        font-size: 0.875rem;
-        color: var(--text-light);
         font-weight: 500;
-      }
-
-      .trust-badge svg {
-        width: 20px;
-        height: 20px;
-        color: var(--secondary);
-      }
-
-      /* CTA Section */
-      .cta {
-        padding: var(--space-10) 0;
-        text-align: center;
-      }
-
-      .cta h2 {
-        font-family: var(--font-display);
-        font-size: clamp(1.75rem, 3vw, 2.5rem);
-        font-weight: 600;
-        margin-bottom: var(--space-4);
-      }
-
-      .cta p {
-        font-size: 1.125rem;
-        color: var(--text-light);
-        margin-bottom: var(--space-6);
-      }
-
-      .cta-buttons {
-        display: flex;
-        gap: var(--space-4);
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-
-      .cta-buttons .btn {
-        min-width: 200px;
       }
 
       /* Footer */
@@ -1260,10 +1138,8 @@
       }
 
       .footer-section h3 {
-        font-size: 0.875rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+        font-size: var(--size-s);
+        font-weight: 500;
         color: var(--text);
         margin-bottom: var(--space-2);
       }
@@ -1271,7 +1147,7 @@
       .footer-section a {
         color: var(--text-light);
         text-decoration: none;
-        font-size: 0.9375rem;
+        font-size: var(--size-s);
         transition: color var(--transition-fast);
       }
 
@@ -1280,11 +1156,11 @@
       }
 
       .footer-bottom {
-        text-align: center;
+        text-align: left;
         padding-top: var(--space-6);
         border-top: 1px solid var(--border-light);
         color: var(--text-light);
-        font-size: 0.875rem;
+        font-size: var(--size-s);
       }
 
       /* Responsive Design */
@@ -1292,14 +1168,6 @@
         .playground-container {
           grid-template-columns: 1fr;
           min-height: 400px;
-        }
-
-        .use-cases-grid {
-          gap: var(--space-4);
-        }
-
-        .use-case-card {
-          padding: var(--space-4);
         }
 
         .email-signup {
@@ -1319,24 +1187,8 @@
           display: flex;
         }
 
-        .trust-badges {
-          gap: var(--space-4);
-        }
-
-        .cta-buttons {
-          flex-direction: column;
-        }
-
-        .cta-buttons .btn {
-          width: 100%;
-        }
-
         .code-blocks-container {
           grid-template-columns: 1fr;
-        }
-
-        .section-header h2 {
-          font-size: 2rem;
         }
       }
     </style>
@@ -1350,8 +1202,8 @@
         <div class="header-content">
           <a href="./" class="logo">Circalify</a>
           <nav class="header-links" aria-label="Main navigation">
-            <a href="#playground">Try It</a>
-            <a href="#use-cases">Use Cases</a>
+            <a href="#playground">Try it</a>
+            <a href="#use-cases">Use cases</a>
             <a href="#faq">FAQ</a>
             <a href="https://github.com/MahmoodSeoud/circalify" target="_blank" rel="noopener noreferrer">GitHub</a>
           </nav>
@@ -1372,52 +1224,52 @@
       <section class="pro-hero">
         <div class="container">
           <p class="hero-da-link" lang="da">Leder du efter et årshjul? <a href="aarshjul/">Dansk side her.</a></p>
+          <div class="hero-head">
+            <h1>Year wheels for associations</h1>
+            <p class="hero-support">Type in the year's activities and Circalify draws the wheel. The whole board sees the same wheel through one link, instead of a PowerPoint passed around by email.</p>
+          </div>
+
           <div class="hero-grid">
-            <div class="hero-text">
-              <p class="eyebrow">Circalify Pro</p>
-              <h1>Make your year wheel online and share it with a link</h1>
-              <p class="hero-support">Type in the year's activities and Circalify draws the wheel. Share it with a link so the whole board sees the same plan. No code, nothing to install.</p>
-
-              <div class="offer-card">
-                <div class="price-block">
-                  <p class="price-main">&euro;<span data-price="monthly">47</span> / month</p>
-                  <p class="price-line">per organisation, excl. VAT</p>
-                  <p class="price-line">Or &euro;<span data-price="yearly">470</span> a year, the price of 10 months.</p>
-                  <p class="price-scope">Same price however many people edit. Viewing is always free.</p>
-                </div>
-
-                <div id="door">
-                  <button type="button" class="btn btn-primary pro-door-btn" id="door-btn">Get early access</button>
-
-                  <div class="panel" id="door-panel" hidden>
-                    <p class="panel-intro">This isn't built yet. I'll only build it if enough organisations want it. Sign up and I'll write to you when there's something to try. You won't pay anything before you've tried it.</p>
-                    <form id="pro-signup-form" novalidate>
-                      <div id="pro-signup-fields">
-                        <div class="field">
-                          <label for="pro-signup-email">Email</label>
-                          <input type="email" id="pro-signup-email" name="email" required autocomplete="email" />
-                        </div>
-                        <div class="field">
-                          <label for="pro-signup-org">Organisation (optional)</label>
-                          <input type="text" id="pro-signup-org" name="organisation" maxlength="120" autocomplete="organization" />
-                        </div>
-                        <input type="checkbox" name="botcheck" class="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" />
-                        <div class="form-actions">
-                          <button type="submit" class="btn btn-primary pro-door-btn" id="pro-signup-btn">Sign me up</button>
-                        </div>
-                        <p class="purpose muted">I only use your email to reply to you and to tell you when you can try it. Ask and I'll delete it.</p>
-                      </div>
-                      <p class="status-line" id="pro-signup-status" aria-live="polite" tabindex="-1"></p>
-                    </form>
-                    <p class="muted">Mahmood Seoud. I built Circalify, and the free library is already used by associations in Denmark and across the Nordics. <a href="mailto:hello@circalify.com">hello@circalify.com</a></p>
-                  </div>
-
-                  <noscript>
-                    <p class="panel">Turn on JavaScript, or email <a href="mailto:hello@circalify.com?subject=Circalify%20Pro%20early%20access">hello@circalify.com</a> for early access.</p>
-                  </noscript>
-                </div>
-                <p class="board-note"><strong>For your board:</strong> An online year wheel for the whole organisation at &euro;47 a month (&euro;470 a year). Anyone can view it for free through a link.</p>
+            <div class="offer-card">
+              <p class="offer-name">Circalify Pro</p>
+              <div class="price-block">
+                <p class="price-main">&euro;<span data-price="monthly">47</span>&nbsp;/&nbsp;month</p>
+                <p class="price-line">per organisation, excl. VAT</p>
+                <p class="price-line">Or &euro;<span data-price="yearly">470</span>&nbsp;a year, the price of 10&nbsp;months.</p>
+                <p class="price-scope">Same price however many people edit. Viewing is always free.</p>
               </div>
+
+              <div id="door">
+                <button type="button" class="btn btn-primary pro-door-btn" id="door-btn">Get early access</button>
+
+                <div class="panel" id="door-panel" hidden>
+                  <p class="panel-intro">This isn't built yet. I'll only build it if enough organisations want it. Sign up and I'll write to you when there's something to try. You won't pay anything before you've tried it.</p>
+                  <form id="pro-signup-form" novalidate>
+                    <div id="pro-signup-fields">
+                      <div class="field">
+                        <label for="pro-signup-email">Email</label>
+                        <input type="email" id="pro-signup-email" name="email" required autocomplete="email" />
+                      </div>
+                      <div class="field">
+                        <label for="pro-signup-org">Organisation (optional)</label>
+                        <input type="text" id="pro-signup-org" name="organisation" maxlength="120" autocomplete="organization" />
+                      </div>
+                      <input type="checkbox" name="botcheck" class="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" />
+                      <div class="form-actions">
+                        <button type="submit" class="btn btn-primary pro-door-btn" id="pro-signup-btn">Sign me up</button>
+                      </div>
+                      <p class="purpose muted">I only use your email to reply to you and to tell you when you can try it. Ask and I'll delete it.</p>
+                    </div>
+                    <p class="status-line" id="pro-signup-status" aria-live="polite" tabindex="-1"></p>
+                  </form>
+                  <p class="muted">Mahmood Seoud. I built Circalify, and organisations in Denmark and across the Nordics have already downloaded the free library. <a href="mailto:hello@circalify.com">hello@circalify.com</a></p>
+                </div>
+
+                <noscript>
+                  <p class="panel">Turn on JavaScript, or email <a href="mailto:hello@circalify.com?subject=Circalify%20Pro%20early%20access">hello@circalify.com</a> for early access.</p>
+                </noscript>
+              </div>
+              <p class="board-note"><strong>For your board:</strong> An online year wheel for the whole organisation at &euro;47&nbsp;a month (&euro;470&nbsp;a year). Anyone can view it for free through a link.</p>
             </div>
 
             <figure class="hero-visual">
@@ -1436,23 +1288,9 @@
 
       <section class="hero dev-hero">
         <div class="container">
-          <div class="hero-badges">
-            <div class="hero-badge">
-              <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
-              </svg>
-              <span>MIT Licensed</span>
-            </div>
-            <div class="hero-badge">
-              <span>8 stars on GitHub</span>
-            </div>
-            <div class="hero-badge">
-              <span>Available on npm</span>
-            </div>
-          </div>
 
           <h2 class="dev-title">Or build it yourself with the free library</h2>
-          <p class="hero-why">Circalify is an open source JavaScript library for circular timelines. No dependencies, MIT licensed. Get 10 HTML templates to start from:</p>
+          <p class="hero-why">Circalify is an open source JavaScript library for circular timelines, MIT licensed and with no dependencies. Get 10 HTML templates to start from:</p>
 
           <label class="dev-label" for="email-input">Email</label>
           <div class="email-signup">
@@ -1468,43 +1306,16 @@
               autocomplete="email"
             />
             <button type="submit" class="btn btn-secondary" id="signup-btn">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/>
-              </svg>
-              Download Templates
+              Download templates
             </button>
           </div>
 
           <p class="hero-note">
-            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-            </svg>
-            Instant download. Your email is only used for occasional update news. No spam, ever.
+            The download starts right away. I only use your email to send the occasional update.
           </p>
 
           <div class="success-message" id="success-message" role="status">
-            Your download has started — <a href="templates/circalify-templates.zip" download style="color: inherit; text-decoration: underline;">click here if it didn't</a>.
-          </div>
-
-          <div class="benefits-list">
-            <div class="benefit-item">
-              <svg class="benefit-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
-              </svg>
-              <span>10 production-ready templates</span>
-            </div>
-            <div class="benefit-item">
-              <svg class="benefit-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
-              </svg>
-              <span>Real-world examples with actual data</span>
-            </div>
-            <div class="benefit-item">
-              <svg class="benefit-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
-              </svg>
-              <span>Instant download — no waiting</span>
-            </div>
+            Your download has started. <a href="templates/circalify-templates.zip" download style="color: inherit; text-decoration: underline;">Click here if it didn't</a>.
           </div>
         </div>
       </section>
@@ -1513,80 +1324,17 @@
       <section class="use-cases" id="use-cases">
         <div class="container">
           <div class="section-header">
-            <h2>Built For Every Timeline</h2>
-            <p>Whether you're planning quarterly goals, launching products, or tracking personal projects</p>
+            <h2>What people plan with it</h2>
           </div>
 
-          <div class="use-cases-grid">
-            <div class="use-case-card">
-              <h3>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                  <line x1="12" y1="2" x2="12" y2="22"></line>
-                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                </svg>
-                Business Planning
-              </h3>
-              <p>Quarterly roadmaps, annual goals, and strategic milestones. See your entire year at a glance.</p>
-            </div>
-
-            <div class="use-case-card">
-              <h3>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                </svg>
-                Product Launches
-              </h3>
-              <p>Pre-launch planning, go-to-market phases, and post-launch momentum tracking all in one view.</p>
-            </div>
-
-            <div class="use-case-card">
-              <h3>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                  <path d="M4 19.5h16M6 12.5h12M6 5.5h12"></path>
-                </svg>
-                Content Planning
-              </h3>
-              <p>Editorial calendars with publishing schedules, content types, and multi-channel distribution.</p>
-            </div>
-
-            <div class="use-case-card">
-              <h3>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                  <line x1="16" y1="2" x2="16" y2="6"></line>
-                  <line x1="8" y1="2" x2="8" y2="6"></line>
-                  <line x1="3" y1="10" x2="21" y2="10"></line>
-                </svg>
-                Project Management
-              </h3>
-              <p>Multiple projects running in parallel with overlapping phases, dependencies, and milestones.</p>
-            </div>
-
-            <div class="use-case-card">
-              <h3>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                  <circle cx="12" cy="12" r="1"></circle>
-                  <circle cx="19" cy="12" r="1"></circle>
-                  <circle cx="5" cy="12" r="1"></circle>
-                </svg>
-                Academic Planning
-              </h3>
-              <p>Semesters, exam periods, holidays, and assignment deadlines for students and institutions.</p>
-            </div>
-
-            <div class="use-case-card">
-              <h3>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="9" cy="7" r="4"></circle>
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                </svg>
-                Team Coordination
-              </h3>
-              <p>HR cycles, hiring windows, team events, training, and company milestones throughout the year.</p>
-            </div>
-          </div>
+          <ul class="use-list">
+            <li><strong>Business planning.</strong> Quarterly roadmaps, annual goals and milestones, with the whole year in one view.</li>
+            <li><strong>Product launches.</strong> The run-up, the launch and the follow-up on one wheel.</li>
+            <li><strong>Content planning.</strong> Editorial calendars with publishing dates and channels.</li>
+            <li><strong>Projects.</strong> Several projects in parallel, with overlapping phases and milestones.</li>
+            <li><strong>School and university.</strong> Semesters, exam periods, holidays and deadlines.</li>
+            <li><strong>Teams and HR.</strong> Hiring windows, reviews, training and team events through the year.</li>
+          </ul>
         </div>
       </section>
 
@@ -1594,19 +1342,19 @@
       <section class="playground" id="playground">
         <div class="container">
           <div class="section-header">
-            <h2>Try It Live—No Install Required</h2>
-            <p>Edit the code and watch your timeline update instantly. Interact with the preview, modify values, add rings.</p>
+            <h2>Try it in the browser</h2>
+            <p>Edit the code and the wheel updates as you type. Click the preview to use the wheel.</p>
           </div>
 
           <div class="view-controls" role="group" aria-label="View options">
             <button class="view-btn active" data-view="split" aria-pressed="true">
-              Side by Side
+              Side by side
             </button>
             <button class="view-btn" data-view="code" aria-pressed="false">
-              Code Only
+              Code only
             </button>
             <button class="view-btn" data-view="preview" aria-pressed="false">
-              Preview Only
+              Preview only
             </button>
           </div>
 
@@ -1627,7 +1375,7 @@
 
             <div class="preview-panel">
               <div class="preview-header">
-                <span class="preview-title">Live Preview</span>
+                <span class="preview-title">Live preview</span>
               </div>
 
               <button class="info-badge" onclick="showInteractionTooltip(); tooltipShown = false;" aria-label="Show interaction help">
@@ -1645,8 +1393,7 @@
       <section class="faq" id="faq">
         <div class="container">
           <div class="section-header">
-            <h2>Frequently Asked Questions</h2>
-            <p>Everything you need to know about Circalify</p>
+            <h2>Questions</h2>
           </div>
 
           <div class="faq-list">
@@ -1655,7 +1402,7 @@
                 When should I use circular timelines instead of linear ones?
               </button>
               <div class="faq-answer">
-                <p>Circular timelines work well when you're visualizing cyclical data—things that repeat annually like quarterly goals, seasonal trends, fiscal calendars, or content schedules. If you find yourself scrolling left and right to see Q4 while planning Q1, circular layouts solve that.</p>
+                <p>Circular timelines work well when you're visualizing cyclical data: things that repeat annually like quarterly goals, seasonal trends, fiscal calendars, or content schedules. If you find yourself scrolling left and right to see Q4 while planning Q1, circular layouts solve that.</p>
                 <p>For one-off projects with clear start and end dates (like a product launch timeline or historical events), stick with linear timelines.</p>
               </div>
             </div>
@@ -1675,7 +1422,7 @@
                 Is Circalify open source?
               </button>
               <div class="faq-answer">
-                <p>Yes! Circalify is MIT licensed and open source. The entire library is free for personal, commercial, and any other use without restrictions.</p>
+                <p>Yes. Circalify is open source under the MIT license, free for personal and commercial use.</p>
               </div>
             </div>
 
@@ -1684,7 +1431,7 @@
                 How do I customize the appearance?
               </button>
               <div class="faq-answer">
-                <p>Every aspect is customizable—colors, fonts, sizes, spacing, and animations. Use the configuration options or apply custom CSS for complete control.</p>
+                <p>Colours, fonts, sizes and spacing are all options in the config. You can also style the SVG with your own CSS.</p>
               </div>
             </div>
 
@@ -1693,7 +1440,7 @@
                 Can I use it for commercial projects?
               </button>
               <div class="faq-answer">
-                <p>Absolutely! The MIT license allows unrestricted use in commercial projects. No attribution required, though always appreciated!</p>
+                <p>Yes. The MIT license allows commercial use, and you don't have to credit it.</p>
               </div>
             </div>
 
@@ -1702,8 +1449,8 @@
                 What do I get when I sign up?
               </button>
               <div class="faq-answer">
-                <p><strong>Immediately:</strong> 10 professional timeline templates as HTML files ready to customize. Includes quarterly planning, product roadmaps, editorial calendars, event planning, HR cycles, academic planners, and more.</p>
-                <p><strong>Ongoing:</strong> Monthly showcases of creative timeline designs and implementation tips to help you build better visualizations. No spam, unsubscribe anytime.</p>
+                <p><strong>Right away:</strong> 10 timeline templates as HTML files, for quarterly planning, a product launch, an editorial calendar, a project, a marketing campaign, an academic year, an event, the HR year, a financial year and personal goals.</p>
+                <p><strong>After that:</strong> An occasional email when there's something new. Ask and I'll delete your address.</p>
               </div>
             </div>
 
@@ -1712,7 +1459,7 @@
                 How can I contribute or report bugs?
               </button>
               <div class="faq-answer">
-                <p>We welcome contributions! Check out our GitHub repository to report issues, submit pull requests, or discuss feature ideas. Star the repo to show your support!</p>
+                <p>Open an issue or a pull request on <a href="https://github.com/MahmoodSeoud/circalify">GitHub</a>.</p>
               </div>
             </div>
           </div>
@@ -1723,14 +1470,13 @@
       <section class="quick-start">
         <div class="container">
           <div class="section-header">
-            <h2>Get Started in 30 Seconds</h2>
-            <p>Install via npm or use the CDN - your choice</p>
+            <h2>Install</h2>
           </div>
 
           <div class="code-blocks-container">
             <!-- NPM Installation -->
             <div>
-              <span class="code-block-label">NPM Installation</span>
+              <span class="code-block-label">npm</span>
               <div class="code-block">
                 <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code to clipboard">Copy</button>
                 <pre><code><span class="shell-prompt">$</span> npm install circalify</code></pre>
@@ -1739,7 +1485,7 @@
 
             <!-- CDN Import -->
             <div>
-              <span class="code-block-label">Or use CDN</span>
+              <span class="code-block-label">Or from a CDN</span>
               <div class="code-block">
                 <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code to clipboard">Copy</button>
                 <pre><code><span class="keyword">import</span> CircularTimeline <span class="keyword">from</span> <span class="string">'https://unpkg.com/circalify@0.1.10/src/index.js'</span>;</code></pre>
@@ -1748,7 +1494,7 @@
 
             <!-- Usage Example -->
             <div>
-              <span class="code-block-label">Basic Usage</span>
+              <span class="code-block-label">Basic usage</span>
               <div class="code-block">
                 <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code to clipboard">Copy</button>
                 <pre><code><span class="comment">// Create your timeline</span>
@@ -1767,44 +1513,9 @@ timeline.<span class="function">setData</span>([
               </div>
             </div>
           </div>
-
-          <div class="trust-badges">
-            <div class="trust-badge">
-              <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
-              </svg>
-              <span>MIT Licensed</span>
-            </div>
-            <div class="trust-badge">
-              <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
-              </svg>
-              <span>Zero Dependencies</span>
-            </div>
-            <div class="trust-badge">
-              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                <rect x="2" y="3" width="12" height="10" rx="1"></rect>
-                <line x1="2" y1="7" x2="14" y2="7"></line>
-              </svg>
-              <span>Framework Agnostic</span>
-            </div>
-          </div>
         </div>
       </section>
 
-      <!-- CTA -->
-      <section class="cta">
-        <div class="container">
-          <h2>Get Started</h2>
-          <p style="font-family: 'Monaco', 'Courier New', monospace; font-size: 1.125rem; opacity: 0.9; margin: 16px 0 32px;">
-            <code style="color: var(--text-light);">npm install</code> <code style="color: var(--primary); font-weight: 600;">circalify</code>
-          </p>
-          <div class="cta-buttons">
-            <a href="#email-input" class="btn btn-primary" onclick="document.getElementById('email-input').focus(); document.getElementById('email-input').scrollIntoView({behavior: 'smooth'});">Download 10 Free Templates</a>
-            <a href="https://github.com/MahmoodSeoud/circalify" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Star on GitHub</a>
-          </div>
-        </div>
-      </section>
     </main>
 
     <!-- Footer -->
@@ -1819,19 +1530,18 @@ timeline.<span class="function">setData</span>([
           </div>
           <div class="footer-section">
             <h3>Resources</h3>
-            <a href="https://github.com/MahmoodSeoud/circalify/issues">Report Bug</a>
+            <a href="https://github.com/MahmoodSeoud/circalify/issues">Report a bug</a>
             <a href="https://github.com/MahmoodSeoud/circalify/discussions">Discussions</a>
             <a href="https://github.com/MahmoodSeoud/circalify/blob/master/LICENSE">License</a>
           </div>
           <div class="footer-section">
             <h3>Connect</h3>
-            <a href="https://twitter.com">Twitter</a>
-            <a href="https://github.com/MahmoodSeoud">GitHub Profile</a>
+            <a href="https://github.com/MahmoodSeoud">GitHub profile</a>
             <a href="mailto:hello@circalify.com">Email</a>
           </div>
         </div>
         <div class="footer-bottom">
-          <p>&copy; 2025 Circalify. Built by Mahmood Seoud. MIT Licensed.</p>
+          <p>&copy; 2026 Circalify. Built by Mahmood Seoud. MIT Licensed.</p>
         </div>
       </div>
     </footer>
@@ -2432,12 +2142,12 @@ timeline.setData([
             interactive: false,
             enableDetailPanel: false,
             backgroundColor: 'transparent',
-            fontFamily: "'Hanken Grotesk', sans-serif",
+            fontFamily: "'Source Sans 3', sans-serif",
             centerLabelColor: '#1F2A2E',
             centerLabel: 'Year plan\n' + y,
             sameRingHeight: false,
             rings: [
-              { type: 'data', name: 'Year', unit: 'month', color: '#F2F3EE', height: 30, fontSize: 36, fontColor: '#1F2A2E', interactive: false },
+              { type: 'data', name: 'Year', unit: 'month', color: '#F2F3EE', height: 30, fontSize: 30, fontColor: '#1F2A2E', interactive: false },
               { type: 'calendar', calendarType: 'month-names', showYear: false, color: '#E4E7E1', height: 8, fontSize: 30, fontColor: '#1F2A2E' }
             ]
           });

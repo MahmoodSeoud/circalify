@@ -17,7 +17,7 @@ import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const SITE_BASE = 'https://mahmoodseoud.github.io/circalify/';
+const SITE_BASE = 'https://circalify.com/';
 const SUBJECTS = [
   'Pro: klik paa early access',
   'Pro: early access tilmelding',
@@ -110,6 +110,14 @@ const pageRules = {
       else if (!v.startsWith(SITE_BASE)) fails.push(`${k} must be an absolute URL under ${SITE_BASE}, got ${v}`);
     }
     return fails;
+  },
+
+  'canonical-url'(html) {
+    // Search engines index the canonical, so it must name the same page as og:url
+    const m = stripComments(html).match(/<link\s+rel=["']canonical["']\s+href=["']([^"']*)["']/i);
+    if (!m) return ['missing <link rel="canonical">'];
+    const og = metaContent(html, 'og:url');
+    return m[1] === og ? [] : [`canonical ${m[1]} does not match og:url ${og}`];
   },
 
   'web3forms-botcheck'(html) {
@@ -309,6 +317,7 @@ const FIXTURE_EXPECT = {
   'relative-targets-exist': 'relative target does not exist on disk: ../templates/missing.zip',
   'no-root-absolute': 'root-absolute URL 404s on a project page: /aarshjul/',
   'share-tags-absolute': 'og:url must be an absolute URL',
+  'canonical-url': 'canonical https://mahmoodseoud.github.io/circalify/aarshjul/ does not match og:url aarshjul/',
   'web3forms-botcheck': 'a script posts to web3forms without a botcheck field',
   'goatcounter-tag': 'GoatCounter tag must load async',
   'number-unit-nbsp': 'number and unit split by a plain space, use &nbsp;: "349 kr."',
@@ -350,7 +359,7 @@ const MUTATIONS = [
   [DA, 'da', 'gc-queue', 'flushGc spins without count', one(/\n\s*if \(!\(window\.goatcounter && window\.goatcounter\.count\)\) return;(?=\n)/, ''), 'loops forever'],
   [DA, 'da', 'gc-queue', 'flushGc missing', one('function flushGc() {', 'function flushQueue() {'), 'flushGc() is not defined'],
   [DA, 'da', 'web3forms-botcheck', 'honeypot dropped', one("body.append('botcheck', '');", ''), 'without a botcheck field'],
-  [DA, 'da', 'share-tags-absolute', 'relative share image', one('<meta property="og:image" content="https://mahmoodseoud.github.io/circalify/images/aarshjul-eksempel.png" />', '<meta property="og:image" content="../images/aarshjul-eksempel.png" />'), 'og:image must be an absolute URL'],
+  [DA, 'da', 'share-tags-absolute', 'relative share image', one('<meta property="og:image" content="https://circalify.com/images/aarshjul-eksempel.png" />', '<meta property="og:image" content="../images/aarshjul-eksempel.png" />'), 'og:image must be an absolute URL'],
   [DA, 'da', 'no-root-absolute', 'root-absolute link', one('<a href="../">', '<a href="/">'), 'root-absolute URL'],
   [DA, 'da', 'error-focus', 'signup error leaves focus on the body', one("signupBtn.textContent = 'Skriv mig op';\n        signupStatus.focus();", "signupBtn.textContent = 'Skriv mig op';"), 'showSignupError() shows an error on signupStatus without signupStatus.focus()'],
   ['index.html', 'en', 'error-focus', 'English signup error leaves focus on the body', one("submitBtn.textContent = 'Sign me up';\n          status.focus();", "submitBtn.textContent = 'Sign me up';"), 'showError() shows an error on status without status.focus()'],
@@ -360,6 +369,8 @@ const MUTATIONS = [
   ['index.html', 'en', 'number-unit-nbsp', 'English months wrap from the number', one('10&nbsp;months', '10 months'), 'number and unit split by a plain space'],
   [DA, 'da', 'relative-targets-exist', 'missing download', one("const TEMPLATES_ZIP = '../templates/circalify-templates.zip';", "const TEMPLATES_ZIP = '../templates/nope.zip';"), 'does not exist on disk: ../templates/nope.zip'],
   ['index.html', 'en', 'subjects-exact', 'English signup subject changed', one("const SUBJECT_SIGNUP = 'Pro EN: early access signup';", "const SUBJECT_SIGNUP = 'Pro EN: signup';"), "missing web3forms subject 'Pro EN: early access signup'"],
+  [DA, 'da', 'canonical-url', 'canonical left on the old host', one('<link rel="canonical" href="https://circalify.com/aarshjul/" />', '<link rel="canonical" href="https://mahmoodseoud.github.io/circalify/aarshjul/" />'), 'does not match og:url'],
+  ['index.html', 'en', 'canonical-url', 'English canonical dropped', one(/\n\s*<link rel="canonical" href="https:\/\/circalify\.com\/" \/>(?=\n)/, ''), 'missing <link rel="canonical">'],
   ['index.html', 'en', 'event-paths', 'English event mixed with Danish', one("'pro-en-door-seen'", "'pro-door-seen'"), "missing GoatCounter event path 'pro-en-door-seen'"],
   ['index.html', 'en', 'wheel-config', 'English detail panel on', inRenderWheel(/\n\s*enableDetailPanel: false,(?=\n)/, ''), 'enableDetailPanel: false'],
   ['index.html', 'en', 'gc-queue', 'English queue never flushed', one(' onload="flushGc()"', ''), 'onload="flushGc()"'],

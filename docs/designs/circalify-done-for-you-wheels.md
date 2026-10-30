@@ -46,6 +46,7 @@ Foreninger are second: smallest budgets, DGI closed that channel, and both free 
 - Founder time is limited. Budget, itemised: lead research for 8 new plans and named recipients 2 h; 8 sample wheels at about 20 min 3 h; emails 1 h; calls to 11 leads at up to 3 attempts of about 10 min 4 h; CVR and e-invoice setup 1 h; delivering up to 2 paid wheels with corrections 3 h. Total about 14 h, roughly 2 working days spread over four weeks. Conditional: if exactly 1 order arrives, the extension (5 more leads: research, samples, emails, calls) adds about 6 h and two weeks, to 2026-12-11; the founder commits to that extension before the first call, so a single order is never left unread. If the founder cannot give the base plus the conditional time, the test is not run rather than run half.
 - Danish copy. Public sector buyers.
 - Getting paid by a public body needs a CVR number and an electronic invoice (see Dependencies).
+- Accepted legal risk (CEO review D3, founder's choice): the sample emails in step 2 are unsolicited electronic marketing under markedsfoeringsloven par. 10, which also covers public authorities; a complaint can bring a fine of at least 10,000 kr. or 100 kr. per mail. The founder kept email-first. The fix, if reversed, is to swap steps 2 and 3 and email only after a yes on the phone.
 
 ## Premises
 
@@ -74,7 +75,7 @@ Ruled out earlier in the session: keeping the 349 kr. door as the test (unreadab
 
 Approach A.
 
-0. Before the first new email: on the /aarshjul/ page (gh-pages), remove the 349 kr./md. Pro price block and the early-access signup, and put a short block in their place: "Vi laver jeres aarshjul for jer: send jeres plan, faa et faerdigt hjul paa fem arbejdsdage, 1.500 kr." with hello@circalify.com as the contact. The free templates stay. A buyer who follows the link must see the same offer as the email.
+0. Before the first new email: on the /aarshjul/ page (gh-pages), remove the 349 kr./md. Pro price block and the early-access signup, and put a short block in their place: "Vi laver jeres aarshjul for jer: send jeres plan, faa et faerdigt hjul paa fem arbejdsdage, 1.500 kr." with hello@circalify.com as the contact. The free templates stay. A buyer who follows the link must see the same offer as the email. In the same gh-pages change (CEO review D4), update tools/check-pages.mjs: drop the Danish page's Pro-door subject and event-path rules, add one rule that the service block text is present, add a matching violation to tools/fixtures/bad-aarshjul.html, and run `node tools/check-pages.mjs` and `node tools/check-pages.mjs --self-test` before the push; tools/pre-push runs the checker and must pass without being skipped.
 1. Follow-ups by 2026-11-04: phone Haderslev HovedMED and Region Nordjylland Kommunal PRO (in segment), and the TAB housing board (out of segment, read separately). Find the committee secretary through the switchboard or the plan's named contact. Script, in this order: did the wheel arrive; who makes and owns the aarshjul; how the current one was made and how long it took; who reads it and how they get it; what the paid wheel adds over the sample: "Den betalte udgave laver jeg ud fra jeres aktuelle plan, med alle de ringe I vil have, som trykklar A3-PDF, SVG og PNG, og med en rettelsesrunde"; then "Vil I have den faerdige udgave for 1.500 kr., ja eller nej, og hvad ville goere det til et nej?" The yearly update is not asked on sales calls; it is asked only after a paid wheel is delivered, so the money question has one price.
 2. Eight new leads by 2026-11-13: search kommune and region websites and dagsorden or referat pages for "aarshjul" plus "MED" plans published as text or tables. One lead per organisation, a named recipient where the plan names one, not a generic inbox. Build each sample with the engine, reuse the Haderslev email, attach the sample PNG.
 3. Phone every new lead within three working days of the email, same script.
@@ -106,6 +107,7 @@ Window: 2026-11-02 to 2026-11-27.
 
 - A CVR number for invoicing (free registration of a sole proprietorship on virk.dk) and a way to send an electronic invoice to a public body (NemHandel; Danish public institutions accept only e-invoices). Check before the first yes, not after.
 - Phone numbers for the three existing leads.
+- E-invoicing path, checked before the first yes: confirm on nemhandel.dk whether the free NemHandel invoice form still serves sole traders in 2026, or pick a bookkeeping app that sends NemHandel e-invoices; the written order must carry the buyer's EAN/GLN number, without which the invoice cannot be routed.
 - The engine at src/ as published (circalify 0.1.11). Exports with no new code: the wheel renders as an SVG element in the browser; save that element as the SVG file, take the PNG as a 2x browser screenshot of the wheel, and make the A3 PDF with the browser's print-to-PDF at A3 landscape. Check all three once on the Haderslev sample before the first order, and confirm the A3 PDF prints sharp.
 
 ## The Assignment
@@ -283,3 +285,79 @@ issues verified: 2 of 2
 
 Verification is deterministic: a fix counts when its `applied_text` is in the current design and absent from the round-2 snapshot. It confirms applied edits, never a review verdict; no reviewer was launched past the cap.
 <!-- gstack:office-hours:concerns:end -->
+
+## CEO Review ledger (plan-ceo-review, HOLD SCOPE, 2026-10-30)
+
+Mode: HOLD SCOPE, chosen by the founder (answer to D2, 2026-10-30). Depth: strategy-only plus the one page change in step 0.
+
+| ID and owner | Contract and evidence | Current | Proposed | Status | Exact approval and scope |
+|---|---|---|---|---|---|
+| CEO-1 (Section 3, legal) | Markedsfoeringsloven par. 10: no electronic direct marketing to anyone, businesses and public authorities included, without prior consent; fine at least 10,000 kr. or 100 kr. per mail (Dansk Erhverv 2020; Forbrugerombudsmanden spamvejledning). Plan step 2 emails 8 unsolicited offers. | Email sample and offer first, phone after 3 working days | A) Phone first, ask "maa jeg sende jer et udkast?", email the sample only after a yes; B) keep email-first; C) email generic inboxes only | approved: B (current kept) | Founder answer to D3, 2026-10-30: "B: Keep email first". Scope: steps 2 and 3 unchanged; the par. 10 fine risk is accepted by the founder, recorded in Constraints. |
+| CEO-2 (Section 5/9, gh-pages) | tools/check-pages.mjs (origin/gh-pages lines 21-36) asserts the Pro subjects and pro-door event paths on aarshjul/index.html; tools/pre-push runs it. Step 0 removes them. | Step 0 removes the door, checker untouched | A) Same gh-pages change updates check-pages.mjs rules and its self-test fixture for the service block; B) leave the door up; C) push with the hook skipped | approved: A | Founder answer to D4, 2026-10-30: "A: Update checker too". Scope: step 0 only; checker rules for the Danish page and its fixture. |
+
+## CEO Review findings (HOLD SCOPE, strategy-only depth)
+
+Current scope: Approach A as approved in office-hours (D4, 2026-10-30) with D5 revisions; CEO-1 kept email-first (founder's D3 answer); CEO-2 adds the checker update to step 0 (founder's D4 answer). Nothing deferred or cut. English page Pro EN door (47 EUR, index.html) is untouched and out of scope.
+
+### Section 1: Architecture
+
+```
+ lead research ──> sample (src/ engine in browser ──> SVG node / 2x PNG / A3 print-PDF)
+      │                         │
+      v                         v
+ public plan (kommune site) ──> email with sample (hello@circalify.com)
+                                     │
+                                     v
+                       phone call (<= 3 working days) ──> outcome: yes / no / unreachable / open
+                                     │ yes
+                                     v
+                written order + buyer EAN ──> paid wheel (5 working days, 1 correction)
+                                     │
+                                     v
+                    NemHandel e-invoice (CVR) ──> Review record (public: org, dates, outcome)
+                                                  private notes (names, quotes) -> gstack-artifacts (private)
+ /aarshjul/ page (gh-pages): Pro door replaced by service block; checked by tools/check-pages.mjs via tools/pre-push
+```
+
+Single points of failure: founder time (budget in Constraints); the hello@circalify.com mailbox (a test mail reached the inbox in October 2026, so forwarding works today); the e-invoice path (unverified, now a dependency). Rollback: the service is manual; the page change reverts with one git revert on gh-pages.
+
+### Section 2: Error and rescue map (capability rows)
+
+| Capability | What can go wrong | Rescued? | Action | Buyer sees |
+|---|---|---|---|---|
+| Sample export | SVG save, PNG or A3 PDF output blurry or clipped | Y | Check all three on the Haderslev sample first (Dependencies) | A clean sample |
+| Offer email | Bounce or no named recipient | Y | Find the secretary by phone; a lead with no reachable person after rule 4 is unreachable | Nothing |
+| Offer email | Recipient treats it as spam (par. 10) | accepted risk | Founder kept email-first (D3) | A complaint route |
+| Phone call | No answer, wrong person | Y | Rule 4: three attempts on three working days, then unreachable (counts as no) | Nothing |
+| Order | Order lacks EAN/GLN | Y | Ask for EAN before delivery (Dependencies) | One extra email |
+| Delivery | Correction round exceeds one | Y | Second round quoted separately; recorded in private notes | A clear scope line |
+| Invoice | No working NemHandel path at first yes | Y | Checked before the first yes (Dependencies) | On-time invoice |
+
+### Section 3: Security, privacy and legal
+- par. 10 email marketing ban: likelihood Med, impact Med (fine at least 10,000 kr.); not mitigated by founder choice (D3).
+- Personal data: names, numbers and quotes of public employees only in private notes; MahmoodSeoud/gstack-artifacts is private (GitHub listing, 2026-10-30). Removing the web3forms early-access signup from /aarshjul/ reduces collected personal data.
+- No new endpoints, secrets or dependencies.
+
+### Section 4: Data flow and edge cases
+Covered by the plan: two committees in one organisation (one lead per organisation), a reply by email instead of phone (counts as written order), "send it to X" (a person who can name the owner completes the call), "cheaper?" (recorded, no price change), "next meeting" (open, counts as no at the read date). No unhandled edge cases found.
+
+### Section 5: Code quality
+Only change: aarshjul/index.html on gh-pages. Remove the Pro block markup and its now-dead script (PRICE constant, door and signup handlers, pro-door events) together, so tools/check-pages.mjs rules can drop them (D4).
+
+### Section 6: Tests
+`node tools/check-pages.mjs` and `node tools/check-pages.mjs --self-test` pass with the new service-block rule and its fixture violation (D4); after the push, open /aarshjul/ on a phone-width viewport and confirm the block and the templates download work.
+
+### Section 7: Performance
+No issues found.
+
+### Section 8: Observability
+The public Review record is the dashboard; read on 2026-11-27. GoatCounter stays on the page for the record. No gaps beyond those already in the plan.
+
+### Section 9: Deployment
+A push to gh-pages is a deploy. Order: edit page and checker together, run both checker commands, push (pre-push runs the checker), verify the live page. Rollback: git revert on gh-pages and push.
+
+### Section 10: Long-term trajectory
+Reversibility 5/5. Debt: TODOS.md still describes the retired fake-door gate ("Validation gate instrument (fake door)") as the gate the maker depends on; it must point at this plan's pass rule instead (direct consequence of premise 1).
+
+### Section 11: Design and UX (step 0 block only)
+The service block replaces the price block in the hero: one sentence, the price, the contact address; reuse the existing price-block styles and DESIGN.md tokens; no form, so no loading or error states; must fit a 360px viewport with the 16px gutter.

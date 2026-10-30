@@ -1,0 +1,387 @@
+From 817514d935944bf99f3a00b9c6117e2ba14bf01f Mon Sep 17 00:00:00 2001
+From: Mahmood Seoud <mahmoodseoud@gmail.com>
+Date: Fri, 30 Oct 2026 14:48:58 +0000
+Subject: [PATCH] feat(aarshjul): replace the 349 kr. Pro door with the 1.500
+ kr. done-for-you offer
+
+Removes the Pro price block, early-access signup, board note and their
+script (PRICE, door and signup handlers, pro-door events). Adds a mailto
+offer card counted as service-mail-click. check-pages: Danish subjects and
+events follow the new page, Pro subjects are retired, a new offer-copy rule
+pins the price and copy to the offer emails, self-test mutations and the
+fixture retargeted.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01HPZPxM8f2XZ17g7A352ysZ
+---
+ aarshjul/index.html              | 178 ++++---------------------------
+ tools/check-pages.mjs            |  42 +++++---
+ tools/fixtures/bad-aarshjul.html |   9 +-
+ 3 files changed, 50 insertions(+), 179 deletions(-)
+
+diff --git a/aarshjul/index.html b/aarshjul/index.html
+index 62a3c24..eb2fa12 100644
+--- a/aarshjul/index.html
++++ b/aarshjul/index.html
+@@ -1,12 +1,11 @@
+ <!doctype html>
+ <!--
+-  Danish landing page with the Circalify Pro fake door. Design: docs/designs/circalify-pro-fake-door.md (master).
+-  web3forms subjects (verbatim, used in the monthly inbox count):
+-    "Pro: klik paa early access"          door click, no email
+-    "Pro: early access tilmelding"        signup with email
++  Danish landing page with the done-for-you aarshjul offer (1.500 kr. one-off).
++  Design: docs/designs/circalify-done-for-you-wheels.md (master). The 349 kr./md. Pro fake door was retired on 2026-10-30.
++  web3forms subject (verbatim, used in the inbox count):
+     "Skabeloner: download fra /aarshjul/" Danish template download
+-  GoatCounter event paths: pro-door-seen, pro-door-click, pro-signup (each with an -inbox variant when ?src=inbox),
+-    templates-download, wheel-fallback, poll-powerpoint, poll-excel, poll-plandisc, poll-canva, poll-ai, poll-andet.
++  GoatCounter event paths: service-mail-click, templates-download, wheel-fallback,
++    poll-powerpoint, poll-excel, poll-plandisc, poll-canva, poll-ai, poll-andet.
+   The poll is counted in GoatCounter only (gate decision d9a); it never posts to web3forms.
+   Test flag (founder's own browsers only): localStorage.setItem('circalify-test', '1') skips every web3forms POST.
+   Run node tools/check-pages.mjs before push. A push to gh-pages deploys.
+@@ -209,7 +208,7 @@
+         margin-top: var(--space-2);
+       }
+ 
+-      /* Offer card: price and the door button read as one offer */
++      /* Offer card: price and the mail button read as one offer */
+       .offer-card {
+         background: var(--bg-light);
+         border: 1.5px solid var(--border-strong);
+@@ -224,6 +223,7 @@
+ 
+       .offer-card .btn-primary {
+         width: 100%;
++        text-decoration: none;
+       }
+ 
+       .offer-card .panel {
+@@ -508,46 +508,15 @@
+               <p class="hero-support">Skriv årets aktiviteter ind, og Circalify tegner hjulet. Så har hele bestyrelsen et fælles overblik over, hvad der skal ske og hvornår.</p>
+             </div>
+ 
+-            <div class="offer-card">
+-              <p class="offer-name">Circalify Pro</p>
+-              <div class="price-block" id="price-block">
+-                <p class="price-main"><span data-price="monthly">349</span>&nbsp;kr./md.</p>
+-                <p class="price-line">ekskl. moms (<span data-price="monthly-vat">436</span>&nbsp;kr. med moms)</p>
+-                <p class="price-line">Eller <span data-price="yearly">3.490</span>&nbsp;kr. om året, svarende til 10&nbsp;måneder.</p>
+-                <p class="price-scope">Én pris for hele foreningen, uanset hvor mange der redigerer. Det er gratis at se hjulet.</p>
++            <div class="offer-card" id="service">
++              <p class="offer-name">Vi laver hjulet for jer</p>
++              <div class="price-block">
++                <p class="price-main">1.500&nbsp;kr.</p>
++                <p class="price-line">Engangspris. Ingen moms og intet abonnement.</p>
++                <p class="price-scope">Send jeres plan, som den er, i Excel, Word eller PDF. Så får I et færdigt årshjul på fem arbejdsdage med én rettelsesrunde, som trykklar A3-PDF, PNG og SVG.</p>
+               </div>
+-
+-              <div id="door">
+-                <button type="button" class="btn btn-primary" id="door-btn">Få tidlig adgang</button>
+-
+-                <div class="panel" id="door-panel" hidden>
+-                  <p class="panel-intro">Det her er ikke bygget endnu. Jeg bygger det kun, hvis nok foreninger vil bruge det. Skriv dig op, så hører du fra mig, når der er noget at prøve. Der er ingen betaling, før du har prøvet det.</p>
+-                  <form id="signup-form" novalidate>
+-                    <div id="signup-fields">
+-                      <div class="field">
+-                        <label for="signup-email">E-mail</label>
+-                        <input type="email" id="signup-email" name="email" required autocomplete="email" />
+-                      </div>
+-                      <div class="field">
+-                        <label for="signup-org">Forening eller organisation (valgfrit)</label>
+-                        <input type="text" id="signup-org" name="organisation" maxlength="120" autocomplete="organization" />
+-                      </div>
+-                      <input type="checkbox" name="botcheck" class="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" />
+-                      <div class="form-actions">
+-                        <button type="submit" class="btn btn-primary" id="signup-btn">Skriv mig op</button>
+-                      </div>
+-                      <p class="purpose muted">Jeg skriver kun til dig om Circalify Pro, og når du kan prøve det. Skriv til mig, hvis jeg skal slette din e-mail.</p>
+-                    </div>
+-                    <p class="status-line" id="signup-status" aria-live="polite" tabindex="-1"></p>
+-                  </form>
+-                  <p class="muted">Mahmood Seoud. Jeg har lavet Circalify, og organisationer i Danmark og resten af Norden har allerede hentet den gratis version. <a href="mailto:hello@circalify.com">hello@circalify.com</a></p>
+-                </div>
+-
+-                <noscript>
+-                  <p class="panel">Slå JavaScript til, eller skriv til <a href="mailto:hello@circalify.com?subject=Circalify%20Pro%20early%20access">hello@circalify.com</a> for at få tidlig adgang.</p>
+-                </noscript>
+-              </div>
+-              <p class="board-note"><strong>Til bestyrelsen:</strong> Et fælles årshjul for hele foreningen til 349&nbsp;kr. om måneden (3.490&nbsp;kr. om året). Det er gratis at se det.</p>
++              <a class="btn btn-primary" id="service-btn" href="mailto:hello@circalify.com?subject=Vores%20%C3%A5rshjul">Send jeres plan</a>
++              <p class="board-note"><strong>Til bestyrelsen:</strong> Ét færdigt årshjul for hele året, betalt én gang. Alle kan se, dele og printe det gratis.</p>
+             </div>
+           </div>
+ 
+@@ -614,16 +583,11 @@
+       const WEB3FORMS_URL = 'https://api.web3forms.com/submit';
+       const ACCESS_KEY = '9973b241-2a5e-439a-b2bd-441e85933cb4';
+       const PAGE = '/aarshjul/';
+-      const PRICE = { monthly: 349, yearly: 3490, vat: 0.25 };
+-      const PRICE_SHOWN = PRICE.monthly + 'md-' + PRICE.yearly + 'aar';
+-      const SUBJECT_DOOR_CLICK = 'Pro: klik paa early access';
+-      const SUBJECT_SIGNUP = 'Pro: early access tilmelding';
+       const SUBJECT_TEMPLATES = 'Skabeloner: download fra /aarshjul/';
+       const TEMPLATES_ZIP = '../templates/circalify-templates.zip';
+       const FALLBACK_IMAGE = '../images/aarshjul-eksempel.png';
+       const IMPORT_URL = 'https://unpkg.com/circalify@0.1.10/src/index.js';
+       const WHEEL_TIMEOUT_MS = 2500;
+-      const SIGNUP_TIMEOUT_MS = 10000;
+       const POLL_ANSWERS = {
+         powerpoint: 'PowerPoint',
+         excel: 'Excel',
+@@ -635,9 +599,6 @@
+ 
+       // Inbox cohort: only the exact value 'inbox' is accepted
+       const src = new URLSearchParams(location.search).get('src') === 'inbox' ? 'inbox' : '';
+-      const EVENT_DOOR_SEEN = src ? 'pro-door-seen-inbox' : 'pro-door-seen';
+-      const EVENT_DOOR_CLICK = src ? 'pro-door-click-inbox' : 'pro-door-click';
+-      const EVENT_SIGNUP = src ? 'pro-signup-inbox' : 'pro-signup';
+ 
+       // ---------------------------------------------------------------------
+       // Tracking helpers
+@@ -686,94 +647,11 @@
+           .catch(e => console.error('circalify post failed', subject, e));
+       }
+ 
+-      function formatKr(n) {
+-        return n.toLocaleString('da-DK');
+-      }
+-
+       // ---------------------------------------------------------------------
+-      // Door, signup, poll and templates: bound before any optional feature
++      // Service link, poll and templates: bound before any optional feature
+       // ---------------------------------------------------------------------
+-      const doorBtn = document.getElementById('door-btn');
+-      const doorPanel = document.getElementById('door-panel');
+-      const signupForm = document.getElementById('signup-form');
+-      const signupFields = document.getElementById('signup-fields');
+-      const signupEmail = document.getElementById('signup-email');
+-      const signupOrg = document.getElementById('signup-org');
+-      const signupBtn = document.getElementById('signup-btn');
+-      const signupStatus = document.getElementById('signup-status');
+-
+-      doorBtn.addEventListener('click', () => {
+-        postForm(SUBJECT_DOOR_CLICK, { price_shown: PRICE_SHOWN });
+-        gcEvent(EVENT_DOOR_CLICK);
+-        doorBtn.hidden = true;
+-        doorPanel.hidden = false;
+-        doorPanel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+-        signupEmail.focus({ preventScroll: true });
+-      });
+-
+-      function showSignupError(status) {
+-        console.error('circalify signup failed', status);
+-        signupStatus.classList.add('error');
+-        signupStatus.textContent = 'Det gik ikke igennem. Prøv igen, eller skriv direkte til ';
+-        const mail = document.createElement('a');
+-        mail.href = 'mailto:hello@circalify.com?subject=' + encodeURIComponent('Circalify Pro early access');
+-        mail.textContent = 'hello@circalify.com';
+-        signupStatus.append(mail, '.');
+-        signupBtn.disabled = false;
+-        signupBtn.textContent = 'Skriv mig op';
+-        signupStatus.focus(); // the disabled button dropped focus to the body
+-      }
+-
+-      function showSignupSuccess() {
+-        signupFields.remove();
+-        signupStatus.classList.remove('error');
+-        signupStatus.textContent = 'Tak! Jeg skriver til dig personligt inden for et par dage.';
+-        signupStatus.focus();
+-      }
+-
+-      signupForm.addEventListener('submit', async (e) => {
+-        e.preventDefault();
+-        if (!signupEmail.value || !signupEmail.checkValidity()) {
+-          signupEmail.reportValidity();
+-          return;
+-        }
+-        if (signupForm.elements.botcheck.checked) return;
+-
+-        signupBtn.disabled = true;
+-        signupBtn.textContent = 'Sender...';
+-        signupStatus.textContent = '';
+-
+-        if (isTestBrowser()) {
+-          console.info('circalify test browser: skipped POST', SUBJECT_SIGNUP);
+-          gcEvent(EVENT_SIGNUP);
+-          showSignupSuccess();
+-          return;
+-        }
+-
+-        const controller = new AbortController();
+-        const timer = setTimeout(() => controller.abort(), SIGNUP_TIMEOUT_MS);
+-        try {
+-          const res = await fetch(WEB3FORMS_URL, {
+-            method: 'POST',
+-            body: buildForm(SUBJECT_SIGNUP, {
+-              email: signupEmail.value,
+-              organisation: signupOrg.value,
+-              price_shown: PRICE_SHOWN
+-            }),
+-            signal: controller.signal
+-          });
+-          const data = await res.json().catch(() => ({}));
+-          if (!res.ok || data.success === false) {
+-            showSignupError(res.status);
+-            return;
+-          }
+-          gcEvent(EVENT_SIGNUP);
+-          showSignupSuccess();
+-        } catch (err) {
+-          showSignupError(err && err.name === 'AbortError' ? 'timeout' : String(err));
+-        } finally {
+-          clearTimeout(timer);
+-        }
++      document.getElementById('service-btn').addEventListener('click', () => {
++        gcEvent('service-mail-click');
+       });
+ 
+       const poll = document.getElementById('poll');
+@@ -819,26 +697,8 @@
+       });
+ 
+       // ---------------------------------------------------------------------
+-      // Optional features: each one may fail without touching the door
++      // Optional features: each one may fail without touching the offer
+       // ---------------------------------------------------------------------
+-      document.querySelectorAll('[data-price]').forEach(el => {
+-        const values = {
+-          'monthly': PRICE.monthly,
+-          'monthly-vat': Math.round(PRICE.monthly * (1 + PRICE.vat)),
+-          'yearly': PRICE.yearly
+-        };
+-        el.textContent = formatKr(values[el.dataset.price]);
+-      });
+-
+-      if ('IntersectionObserver' in window) {
+-        new IntersectionObserver(([entry], observer) => {
+-          if (entry.isIntersecting) {
+-            gcEvent(EVENT_DOOR_SEEN);
+-            observer.disconnect();
+-          }
+-        }, { threshold: 0.5 }).observe(document.getElementById('door'));
+-      }
+-
+       // Example wheel: live Danish render, static image on failure or timeout
+       const wheelBox = document.getElementById('wheel-box');
+       const wheelMount = document.getElementById('wheel');
+diff --git a/tools/check-pages.mjs b/tools/check-pages.mjs
+index 23302dc..6662b4b 100644
+--- a/tools/check-pages.mjs
++++ b/tools/check-pages.mjs
+@@ -18,27 +18,27 @@ import { fileURLToPath } from 'node:url';
+ 
+ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+ const SITE_BASE = 'https://circalify.com/';
+-const SUBJECTS = [
+-  'Pro: klik paa early access',
+-  'Pro: early access tilmelding',
+-  'Skabeloner: download fra /aarshjul/'
+-];
+-const RETIRED_SUBJECTS = ['Poll: aarshjul i dag'];
+-const EVENT_PATHS = [
+-  'pro-door-seen', 'pro-door-click', 'pro-signup',
+-  'pro-door-seen-inbox', 'pro-door-click-inbox', 'pro-signup-inbox',
+-  'templates-download', 'wheel-fallback'
+-];
++const SUBJECTS = ['Skabeloner: download fra /aarshjul/'];
++// The Danish Pro fake door was retired on 2026-10-30 for the done-for-you offer
++const RETIRED_SUBJECTS = ['Poll: aarshjul i dag', 'Pro: klik paa early access', 'Pro: early access tilmelding'];
++const EVENT_PATHS = ['service-mail-click', 'templates-download', 'wheel-fallback'];
+ const POLL_KEYS = ['powerpoint', 'excel', 'plandisc', 'canva', 'ai', 'andet'];
+ 
+-// The English Pro door is counted apart from the Danish gate
++// The English Pro door is counted apart from the Danish done-for-you offer
+ const DOORS = {
+-  da: { subjects: SUBJECTS, events: EVENT_PATHS, poll: true, wheelNeedles: ['enableDetailPanel: false', "locale: 'da'"] },
++  da: {
++    subjects: SUBJECTS,
++    events: EVENT_PATHS,
++    poll: true,
++    wheelNeedles: ['enableDetailPanel: false', "locale: 'da'"],
++    offerNeedles: ['Vi laver hjulet for jer', '<p class="price-main">1.500&nbsp;kr.</p>', 'href="mailto:hello@circalify.com?subject=']
++  },
+   en: {
+     subjects: ['Pro EN: early access click', 'Pro EN: early access signup'],
+     events: ['pro-en-door-seen', 'pro-en-door-click', 'pro-en-signup', 'wheel-fallback-en'],
+     poll: false,
+-    wheelNeedles: ['enableDetailPanel: false']
++    wheelNeedles: ['enableDetailPanel: false'],
++    offerNeedles: []
+   }
+ };
+ const ENGINE_FILES = 11;
+@@ -187,8 +187,13 @@ const pageRules = {
+   }
+ };
+ 
+-// Rules for a Pro door page, parameterized by DOORS.da / DOORS.en
++// Rules for an offer page, parameterized by DOORS.da / DOORS.en
+ const doorRules = (door) => ({
++  'offer-copy'(html) {
++    // The offer a visitor sees must match the one in the offer emails
++    return door.offerNeedles.filter(n => !html.includes(n)).map(n => `offer block is missing ${n}`);
++  },
++
+   'subjects-exact'(html) {
+     const fails = [];
+     for (const s of door.subjects) if (!html.includes(`'${s}'`)) fails.push(`missing web3forms subject '${s}'`);
+@@ -323,6 +328,7 @@ const FIXTURE_EXPECT = {
+   'number-unit-nbsp': 'number and unit split by a plain space, use &nbsp;: "349 kr."',
+   'title-sync': 'og:title "Årshjul online" does not match the h1 "Årshjul til foreninger"',
+   'error-focus': 'showErr() shows an error on note without note.focus()',
++  'offer-copy': 'offer block is missing <p class="price-main">1.500&nbsp;kr.</p>',
+   'subjects-exact': "missing web3forms subject 'Skabeloner: download fra /aarshjul/'",
+   'event-paths': "missing GoatCounter event path 'wheel-fallback'",
+   'gc-queue': 'onload="flushGc()"',
+@@ -361,11 +367,13 @@ const MUTATIONS = [
+   [DA, 'da', 'web3forms-botcheck', 'honeypot dropped', one("body.append('botcheck', '');", ''), 'without a botcheck field'],
+   [DA, 'da', 'share-tags-absolute', 'relative share image', one('<meta property="og:image" content="https://circalify.com/images/aarshjul-eksempel.png" />', '<meta property="og:image" content="../images/aarshjul-eksempel.png" />'), 'og:image must be an absolute URL'],
+   [DA, 'da', 'no-root-absolute', 'root-absolute link', one('<a href="../">', '<a href="/">'), 'root-absolute URL'],
+-  [DA, 'da', 'error-focus', 'signup error leaves focus on the body', one("signupBtn.textContent = 'Skriv mig op';\n        signupStatus.focus();", "signupBtn.textContent = 'Skriv mig op';"), 'showSignupError() shows an error on signupStatus without signupStatus.focus()'],
+   ['index.html', 'en', 'error-focus', 'English signup error leaves focus on the body', one("submitBtn.textContent = 'Sign me up';\n          status.focus();", "submitBtn.textContent = 'Sign me up';"), 'showError() shows an error on status without status.focus()'],
+   [DA, 'da', 'title-sync', 'share title left behind', one('<meta property="og:title" content="Årshjul til foreninger" />', '<meta property="og:title" content="Lav årshjulet online" />'), 'og:title "Lav årshjulet online" does not match the h1'],
+   ['index.html', 'en', 'title-sync', 'English tab title left behind', one('<title>Year wheels for associations | Circalify</title>', '<title>Make your year wheel online | Circalify</title>'), '<title> "Make your year wheel online | Circalify" does not start with the h1'],
+-  [DA, 'da', 'number-unit-nbsp', 'price wraps from its unit', one('349</span>&nbsp;kr./md.', '349</span> kr./md.'), 'number and unit split by a plain space'],
++  [DA, 'da', 'number-unit-nbsp', 'price wraps from its unit', one('<p class="price-main">1.500&nbsp;kr.</p>', '<p class="price-main">1.500 kr.</p>'), 'number and unit split by a plain space'],
++  [DA, 'da', 'offer-copy', 'offer price changed on the page only', one('<p class="price-main">1.500&nbsp;kr.</p>', '<p class="price-main">1.200&nbsp;kr.</p>'), 'offer block is missing'],
++  [DA, 'da', 'subjects-exact', 'retired Pro subject back', addScript("const s = 'Pro: early access tilmelding';"), 'retired subject still present'],
++  [DA, 'da', 'event-paths', 'service click not counted', one("gcEvent('service-mail-click');", "gcEvent('service-click');"), "missing GoatCounter event path 'service-mail-click'"],
+   ['index.html', 'en', 'number-unit-nbsp', 'English months wrap from the number', one('10&nbsp;months', '10 months'), 'number and unit split by a plain space'],
+   [DA, 'da', 'relative-targets-exist', 'missing download', one("const TEMPLATES_ZIP = '../templates/circalify-templates.zip';", "const TEMPLATES_ZIP = '../templates/nope.zip';"), 'does not exist on disk: ../templates/nope.zip'],
+   ['index.html', 'en', 'subjects-exact', 'English signup subject changed', one("const SUBJECT_SIGNUP = 'Pro EN: early access signup';", "const SUBJECT_SIGNUP = 'Pro EN: signup';"), "missing web3forms subject 'Pro EN: early access signup'"],
+diff --git a/tools/fixtures/bad-aarshjul.html b/tools/fixtures/bad-aarshjul.html
+index 9534927..c108371 100644
+--- a/tools/fixtures/bad-aarshjul.html
++++ b/tools/fixtures/bad-aarshjul.html
+@@ -35,6 +35,10 @@
+     <h1>Årshjul til foreninger</h1>
+     <!-- number-unit-nbsp: a plain space lets the price wrap away from its unit -->
+     <p>349 kr. om måneden</p>
++    <!-- offer-copy: the price on the page differs from the offer emails -->
++    <p>Vi laver hjulet for jer</p>
++    <p class="price-main">1.200&nbsp;kr.</p>
++    <a href="mailto:hello@circalify.com?subject=Plan">Send</a>
+     <button data-answer="powerpoint"></button><button data-answer="excel"></button><button data-answer="plandisc"></button>
+     <button data-answer="canva"></button><button data-answer="ai"></button><button data-answer="andet"></button>
+     <!-- error-focus: the error handler never moves focus to its status line -->
+@@ -45,13 +49,12 @@
+     </script>
+     <script>
+       // subjects-exact: the templates subject is missing
+-      const SUBJECT_DOOR_CLICK = 'Pro: klik paa early access';
+-      const SUBJECT_SIGNUP = 'Pro: early access tilmelding';
++      const SUBJECT_OTHER = 'Kontakt: aarshjul';
+       const IMPORT_URL = 'https://unpkg.com/circalify@0.1.9/src/index.js';
+       const body = new FormData(); body.append('botcheck', '');
+       fetch('https://api.web3forms.com/submit', { method: 'POST', body });
+       // event-paths: 'wheel-fallback' is missing
+-      const paths = ['pro-door-seen', 'pro-door-click', 'pro-signup', 'pro-door-seen-inbox', 'pro-door-click-inbox', 'pro-signup-inbox', 'templates-download'];
++      const paths = ['service-mail-click', 'templates-download'];
+       const key = 'ai'; gcEvent('poll-' + key);
+       function flushGc() {
+         if (!(window.goatcounter && window.goatcounter.count)) return;
+-- 
+2.43.0
+

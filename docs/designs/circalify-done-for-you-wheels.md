@@ -114,7 +114,7 @@ Window: 2026-11-02 to 2026-11-27.
 - A CVR number for invoicing (free registration of a sole proprietorship on virk.dk) and a way to send an electronic invoice to a public body (NemHandel; Danish public institutions accept only e-invoices). Check before the first yes, not after.
 - Phone numbers for the three existing leads.
 - E-invoicing path, checked before the first yes: confirm on nemhandel.dk whether the free NemHandel invoice form still serves sole traders in 2026, or pick a bookkeeping app that sends NemHandel e-invoices; the written order must carry the buyer's EAN/GLN number and their order number or personreference, without which the invoice is rejected; register a NemKonto for the CVR at the bank, and expect to be created in the buyer's creditor system. The invoice states the price without moms and that the seller is not VAT-registered (turnover below 50,000 kr.).
-- Before the CVR registration (CEO review D5.3): check the a-kasse's rules on a sole trader business and reported hours while on dagpenge, and any job offer's side-business terms. A sole trader's name and address become public in the CVR register. Stop rule: if hired mid-window, finish open orders, send no new offers, and read the test over the offers already sent.
+- Before the CVR registration (CEO review D5.3, updated 2026-10-30 from the founder: no longer on dagpenge, now employed at Peoplenet): the a-kasse check no longer applies; check the employment contract's side-business (bibeskaeftigelse) clause and, where it requires one, tell or ask the employer before the first order. A sole trader's name and address become public in the CVR register. Stop rule: if hired mid-window, finish open orders, send no new offers, and read the test over the offers already sent.
 - The engine: samples use the same version the live page pins (circalify@0.1.10 on gh-pages as of 2026-10-30) or both move to 0.1.11 together. Exports with no new code: the wheel renders as an SVG element in the browser; save that element as the SVG file, take the PNG as a 2x browser screenshot of the wheel, and make the A3 PDF with the browser's print-to-PDF at A3 landscape. Check all three once on the Haderslev sample at its real density before the first order: the A3 PDF prints sharp and every label reads in full (the engine truncates long labels, src/base-ring.js _truncateText).
 
 ## The Assignment
@@ -425,7 +425,7 @@ CRITICAL GAPS: 0 (the par. 10 row is a founder-accepted risk, not silent: it is 
 ## Implementation Tasks
 Synthesized from this review's findings. Each task derives from a specific finding above. Checkbox as you ship.
 
-- [ ] **T1 (P1, human: ~1.5h / CC: ~20min)** — gh-pages — Replace the Pro door with the service block and update the checker by 2026-11-03
+- [x] **T1 (P1, human: ~1.5h / CC: ~20min)** — gh-pages — Replace the Pro door with the service block and update the checker by 2026-11-03 (done 2026-10-30 as gh-pages commit 817514d, patch in docs/designs/patches/t1-gh-pages-service-block.patch; check-pages and --self-test pass, rendered at 360px and 1280px with no console errors; not yet pushed to gh-pages)
   - Surfaced by: CEO-2, CEO-6, outside voice F6
   - Files: aarshjul/index.html, tools/check-pages.mjs, tools/fixtures/bad-aarshjul.html (gh-pages)
   - Verify: `node tools/check-pages.mjs` and `node tools/check-pages.mjs --self-test` pass; pre-push passes unskipped; live /aarshjul/ at 360px shows the block and no 349 kr. text
@@ -433,11 +433,11 @@ Synthesized from this review's findings. Each task derives from a specific findi
   - Surfaced by: CEO-3, outside voice F10
   - Files: to be determined (local working files, not committed)
   - Verify: SVG, 2x PNG and A3 PDF open; every label reads in full; watermark crosses the wheel
-- [ ] **T3 (P1, human: ~30min / CC: n/a)** — founder — a-kasse and job-terms check, then CVR, NemKonto and the e-invoice path
+- [ ] **T3 (P1, human: ~30min / CC: n/a)** — founder — Employment-contract side-business check (a-kasse no longer applies), then CVR, NemKonto and the e-invoice path
   - Surfaced by: CEO-5, outside voice F9
   - Files: none
   - Verify: written answer from the a-kasse; CVR number; NemKonto registered; one test invoice path confirmed on nemhandel.dk or a bookkeeping app
-- [ ] **T4 (P2, human: ~15min / CC: ~5min)** — docs — Point TODOS.md's gate entries at this plan's pass rule
+- [x] **T4 (P2, human: ~15min / CC: ~5min)** — docs — Point TODOS.md's gate entries at this plan's pass rule (done 2026-10-30)
   - Surfaced by: Section 10
   - Files: TODOS.md
   - Verify: no TODOS entry names the fake door as the active gate

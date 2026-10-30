@@ -1,0 +1,128 @@
+{
+  "version": 2,
+  "round": 2,
+  "document": "/home/user/circalify/docs/designs/circalify-done-for-you-wheels.md",
+  "quality_score": 7,
+  "dimensions": {
+    "completeness": "ISSUES",
+    "consistency": "ISSUES",
+    "clarity": "ISSUES",
+    "scope": "PASS",
+    "feasibility": "ISSUES"
+  },
+  "findings": [
+    {
+      "id": "R2-1",
+      "dimension": "consistency",
+      "severity": "blocking",
+      "changed_text": "never in this public repo",
+      "problem": "Step 5 and the Review record header now keep names and verbatim quotes out of the public repo, but The Assignment, which is the founder's actual next action, still says 'Write their exact words into the Review record the same day.' The Review record is in this public doc, so following the Assignment puts named public employees' words into the public repo. The original privacy obligation (R1-8) is still unmet at the point where the founder acts.",
+      "remedy": "Rewrite The Assignment to log only organisation, dates and outcome in the Review record, with exact words going to the private notes named in step 5."
+    },
+    {
+      "id": "R2-2",
+      "dimension": "feasibility",
+      "severity": "blocking",
+      "changed_text": "Exactly 1 order: extend once.",
+      "problem": "The new exactly-1-order branch commits the founder to 5 more in-segment offers by 2026-12-04, read on 2026-12-11. That means more lead research, samples, emails and up to 15 more call attempts, and it runs the test to about six weeks. The itemised budget (about 14 h over four weeks) does not include it. The constraint says the test is not run at all if the founder cannot give the budgeted time, so the go/no-go is decided on a number that leaves out a branch the test may require.",
+      "remedy": "Add the extension's time (about 5 to 6 h at the stated per-lead rates) and its two extra weeks to the budget as a conditional line, and say whether the founder commits to it before the test starts."
+    },
+    {
+      "id": "R2-3",
+      "dimension": "feasibility",
+      "severity": "minor",
+      "changed_text": "calls to 11 leads at up to 3 attempts of about 10 min 4 h",
+      "problem": "The call line item does not add up. 11 leads x 3 attempts x 10 min is 5.5 h, not 4 h. The federation chairman call in The Assignment is not budgeted either.",
+      "remedy": "Either state the expected attempts per lead behind 4 h, or raise the line to about 5.5 h plus the chairman call and update the total."
+    },
+    {
+      "id": "R2-4",
+      "dimension": "consistency",
+      "severity": "minor",
+      "changed_text": "reuse the Haderslev email, attach the sample PNG.",
+      "problem": "The wedge says the sample-versus-paid difference 'goes into every email and call', but step 2 says to reuse the Haderslev email. That email was written on 2026-10-19, before the difference was defined, so reused unchanged it would not state what the 1,500 kr. adds.",
+      "remedy": "Say the Haderslev email is reused with the sample-versus-paid lines added (or quote the added lines)."
+    },
+    {
+      "id": "R2-5",
+      "dimension": "clarity",
+      "severity": "minor",
+      "changed_text": "Script, in this order: did the wheel arrive",
+      "problem": "The call script is fixed 'in this order', but none of its five steps states the sample-versus-paid difference before the money question. A founder following the script literally asks 'Vil I have den faerdige udgave' without saying what the paid version adds, which the wedge says must happen on every call.",
+      "remedy": "Insert one script line before the money question that states what the paid wheel adds over the sample."
+    },
+    {
+      "id": "R2-6",
+      "dimension": "completeness",
+      "severity": "minor",
+      "changed_text": "Outcome (yes, no, unreachable, open)",
+      "problem": "The Review record allows an 'open' outcome, but the read rules only define 'no completed call' (counts as no) and orders. It is not stated how a completed call with an answer like 'we will take it to the next committee meeting' is read on 2026-11-27, or whether an order that arrives later still counts. MED committees often decide at their next meeting.",
+      "remedy": "State that 'open' leads are not orders at the read date (count as no), and say whether a later order from an open lead is recorded only for the record."
+    },
+    {
+      "id": "R2-7",
+      "dimension": "clarity",
+      "severity": "minor",
+      "changed_text": "synced to the private gstack-artifacts repo",
+      "problem": "The privacy fix depends on the private notes being private, but the doc only asserts that the gstack-artifacts repo is private. It also calls the notes location 'the ~/.gstack copy of this doc', which can diverge from or be overwritten by the public copy.",
+      "remedy": "Confirm the gstack-artifacts repo is private before the first call, and name a notes file separate from the doc copy (for example a dedicated call-notes file in that repo)."
+    },
+    {
+      "id": "R2-8",
+      "dimension": "consistency",
+      "severity": "minor",
+      "changed_text": null,
+      "problem": "The Assignment and Demand Evidence still describe the 2026-10-19 attachments as 'finished wheels' and plans 'already drawn as a wheel', while the doc now separates a free sample from the paid finished wheel.",
+      "remedy": "Call the 2026-10-19 attachments samples in The Assignment so the wording matches the sample-versus-paid split."
+    },
+    {
+      "id": "R2-9",
+      "dimension": "consistency",
+      "severity": "minor",
+      "changed_text": "Sample, free, sent unasked: one screen-resolution PNG",
+      "problem": "The sample is now defined as a screen-resolution PNG with a 'Proeve fra Circalify' line, but the two in-segment offers already sent on 2026-10-19 may not match that definition (no sample line, possibly printable). If they already hold a usable wheel, their 'no' does not test the same offer as the 8 new leads.",
+      "remedy": "Record what the 2026-10-19 attachments actually were, and if they differ from the sample spec, say so on the call and in how those two results are read."
+    },
+    {
+      "id": "R2-10",
+      "dimension": "feasibility",
+      "severity": "minor",
+      "changed_text": "print-ready A3 PDF plus PNG and SVG",
+      "problem": "Persisting from R1-11, and now sharper: the paid wheel promises a print-ready A3 PDF, but the engine is a browser rendering library and the doc does not say how PDF and PNG are made without new code.",
+      "remedy": "Name the manual export steps (for example SVG export, then browser print-to-PDF at A3) and confirm on one sample that the A3 PDF output is print-ready."
+    },
+    {
+      "id": "R2-11",
+      "dimension": "clarity",
+      "severity": "minor",
+      "changed_text": null,
+      "problem": "Persisting from R1-12: Target User still states as fact that the secretary 'can spend 1,500 kr. without procurement', while Open Questions asks whether public plans reach anyone with a budget.",
+      "remedy": "Phrase the budget authority as a hypothesis tested by the 'who owns it' call question."
+    },
+    {
+      "id": "R2-12",
+      "dimension": "clarity",
+      "severity": "minor",
+      "changed_text": null,
+      "problem": "Persisting from R1-14: 'The second opinion (independent cold read) did not run this session' is still listed under Open Questions, but it is a process note, not a customer question.",
+      "remedy": "Move it to a status or process note, or drop it."
+    }
+  ],
+  "prior": [
+    {"id": "R1-1", "status": "resolved", "evidence": "Success Criteria now maps every count: 2 or more orders pass, exactly 1 order extends once with 5 more offers read on 2026-12-11 over 15, 0 orders kill. The garbled line is removed.", "current_id": null},
+    {"id": "R1-2", "status": "resolved", "evidence": "Step 4 defines a completed call (owner or someone who names the owner answered the money question, or three attempts on three working days logged as unreachable, counted as no), and Success Criteria says any lead without a completed call by 2026-11-27 counts as a no.", "current_id": null},
+    {"id": "R1-3", "status": "resolved", "evidence": "Premise 4 now sets the sequence as written order, delivery within five working days, then e-invoice on normal terms. Success Criteria defines an order as a written order and says an unpaid invoice does not undo it.", "current_id": null},
+    {"id": "R1-4", "status": "resolved", "evidence": "The Target User section now defines the free sample (screen-resolution PNG of the published plan, one ring set, uncorrected, sample line) against the paid wheel (current plan, all rings, A3 PDF/PNG/SVG, no sample line, one correction round, five working days). How this reaches the email and script is tracked as new minor findings R2-4 and R2-5.", "current_id": null},
+    {"id": "R1-5", "status": "resolved", "evidence": "Step 1 says the yearly update is not asked on sales calls, only after a paid wheel is delivered. Open Questions and Success Criteria now say the same.", "current_id": null},
+    {"id": "R1-6", "status": "resolved", "evidence": "TAB is marked out of segment in step 1, the denominator (10 in-segment offers, 2 existing plus 8 new) excludes it, and the Review record has an In segment column.", "current_id": null},
+    {"id": "R1-7", "status": "resolved", "evidence": "Success Criteria now says the two 2026-10-19 in-segment offers are called by 2026-11-04 and every new offer within 3 working days of its email.", "current_id": null},
+    {"id": "R1-8", "status": "persisting", "evidence": "Step 5 and the Review record header keep names and quotes private, but The Assignment still tells the founder to 'Write their exact words into the Review record the same day', which is in the public doc.", "current_id": "R2-1"},
+    {"id": "R1-9", "status": "resolved", "evidence": "Step 0 removes the 349 kr./md. Pro block and early-access signup before the first new email and replaces them with the 1,500 kr. done-for-you block and hello@circalify.com, so the page matches the email.", "current_id": null},
+    {"id": "R1-10", "status": "resolved", "evidence": "Constraints now itemise lead research, samples, emails, call retries, CVR and e-invoice setup and delivery of up to 2 orders (about 14 h over four weeks), with a run-or-don't-run rule. Remaining gaps (extension branch, call arithmetic) are new findings R2-2 and R2-3.", "current_id": null},
+    {"id": "R1-11", "status": "persisting", "evidence": "The doc still does not say how PNG and PDF are exported from the browser engine without new code, and the paid wheel now promises a print-ready A3 PDF.", "current_id": "R2-10"},
+    {"id": "R1-12", "status": "persisting", "evidence": "Target User still says the secretary 'can spend 1,500 kr. without procurement' as fact.", "current_id": "R2-11"},
+    {"id": "R1-13", "status": "resolved", "evidence": "Step 2 now sources leads from 'kommune and region websites and dagsorden or referat pages', so it is clear which sources count.", "current_id": null},
+    {"id": "R1-14", "status": "persisting", "evidence": "Open Questions still lists 'The second opinion (independent cold read) did not run this session.'", "current_id": "R2-12"},
+    {"id": "R1-15", "status": "resolved", "evidence": "Step 1 now says 'Follow-ups by 2026-11-04', matching The Assignment's deadline.", "current_id": null}
+  ]
+}

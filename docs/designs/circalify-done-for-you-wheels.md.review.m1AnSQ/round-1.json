@@ -1,0 +1,136 @@
+{
+  "version": 2,
+  "round": 1,
+  "document": "/home/user/circalify/docs/designs/circalify-done-for-you-wheels.md",
+  "quality_score": 6,
+  "dimensions": {
+    "completeness": "ISSUES",
+    "consistency": "ISSUES",
+    "clarity": "ISSUES",
+    "scope": "PASS",
+    "feasibility": "ISSUES"
+  },
+  "findings": [
+    {
+      "id": "R1-1",
+      "dimension": "completeness",
+      "severity": "blocking",
+      "changed_text": null,
+      "problem": "The decision rule has a gap: Pass is 2 or more orders and Kill is 0 orders, but exactly 1 paid order after all calls are made has no defined outcome. The line 'Between 1 and 0 with calls not completed is not a result' is garbled and only covers the incomplete-calls case.",
+      "remedy": "State what exactly 1 order after all calls means (e.g. extend by N more offers at the same price, or count as a fail) and rewrite the garbled line so every possible count with completed calls maps to one action."
+    },
+    {
+      "id": "R1-2",
+      "dimension": "completeness",
+      "severity": "blocking",
+      "changed_text": null,
+      "problem": "Kill and the reading rule both require 'every call is made', but nothing defines when a call counts as made: how many attempts, what happens if the switchboard never reaches the secretary, or when a lead is closed as unreachable. With no attempt limit and no fallback after 2026-11-27, the test may never produce a readable result, which is exactly what happened to the 2026-10-19 emails.",
+      "remedy": "Define a completed call (e.g. reached the owner or secretary, or 3 attempts over 3 working days logged as 'unreachable'), and state what 2026-11-27 means for leads still open (counted as no, or excluded with the denominator stated)."
+    },
+    {
+      "id": "R1-3",
+      "dimension": "consistency",
+      "severity": "blocking",
+      "changed_text": null,
+      "problem": "Payment terms contradict each other and Danish public-sector practice. Premise 4 says the paid wheel is 'paid before delivery', yet Pass counts 'a written order or a paid invoice', and public bodies normally pay an e-invoice after delivery on net terms, not in advance. The document does not say whether the founder delivers on a written order and invoices afterwards, or waits for prepayment that a kommune is unlikely to make.",
+      "remedy": "Pick one sequence (e.g. written order or PO, then delivery in five working days, then NemHandel e-invoice), update premise 4 to match, and state that a written order counts as a Pass order while an unpaid invoice is followed up."
+    },
+    {
+      "id": "R1-4",
+      "dimension": "clarity",
+      "severity": "blocking",
+      "changed_text": null,
+      "problem": "The paid product is not distinguished from the free sample. Every offer already attaches the organisation's own plan 'already drawn' as a PNG, and the money question asks 'Vil I have den faerdige udgave'. The document never says what the 1,500 kr. adds beyond the sample (PDF/SVG files, corrected or current-year content, branding, one correction round, no watermark). A buyer who can already print the free PNG has little reason to pay, and a 'no' cannot be read.",
+      "remedy": "Specify what the sample is (e.g. watermarked or low-resolution PNG of the published text, uncorrected) and what the paid deliverable adds, and put that difference into the offer email and the call script."
+    },
+    {
+      "id": "R1-5",
+      "dimension": "consistency",
+      "severity": "blocking",
+      "changed_text": null,
+      "problem": "The yearly-update question is placed in contradictory parts of the process. Open Questions says it is 'Asked on every call that reaches the owner', but the five-question script in step 1 and the Assignment do not include it, and Success Criteria asks about a yearly update price only after delivering paid orders. Approach B was rejected because two prices in one offer blur the answer, so asking it on every sales call conflicts with that rationale.",
+      "remedy": "Choose one: either add the yearly-update question to the script after the money question (and to the Review record columns), or ask it only after delivery and fix the Open Questions line."
+    },
+    {
+      "id": "R1-6",
+      "dimension": "consistency",
+      "severity": "blocking",
+      "changed_text": null,
+      "problem": "One of the 10 offers is outside the stated target segment. The target user and premise 3 are MED committees and HR secretariats in kommuner and regioner, but the TAB housing association board is not a MED committee, may not use NemHandel, and does not face the same budget rules. Counting it toward the 10 offers and the Pass/Kill denominator mixes segments.",
+      "remedy": "Either replace TAB with a seventh-plus-one MED lead so 10 offers are all in the segment, or state explicitly that TAB is counted and how its result is read separately."
+    },
+    {
+      "id": "R1-7",
+      "dimension": "consistency",
+      "severity": "blocking",
+      "changed_text": null,
+      "problem": "The success criterion 'Every offer followed by a phone call within 3 working days' cannot be met for the three offers sent on 2026-10-19, which are already 9 working days old, and these three count toward the 10 offers.",
+      "remedy": "Restate the criterion as 'every new offer called within 3 working days; the three 2026-10-19 offers called by 2026-11-04', matching the Assignment."
+    },
+    {
+      "id": "R1-8",
+      "dimension": "completeness",
+      "severity": "blocking",
+      "changed_text": null,
+      "problem": "Step 4 logs each contact's name ('who answered') and verbatim words in this doc's Review record. The doc lives in the MahmoodSeoud/circalify GitHub repo, which is presumably public (the MIT engine is published to npm). Committing named public employees' quotes and call outcomes to a public repo is a privacy and GDPR risk and could hurt the founder with buyers.",
+      "remedy": "Keep the Review record outside the public repo (private note or sheet) or log only role and organisation, with quotes not linked to a named person, and say which in the doc."
+    },
+    {
+      "id": "R1-9",
+      "dimension": "clarity",
+      "severity": "blocking",
+      "changed_text": null,
+      "problem": "It is unclear what the /aarshjul/ page shows during the test. The header says the old page 'stays live, its gate is retired', premise 1 says the page 'stays up', and the offers use it as 'the link'. The document never says whether the 349 kr./md. Pro door and the early-access signup are removed. Buyers who receive a 1,500 kr. one-off service offer could land on a page selling a monthly editor that does not exist.",
+      "remedy": "State whether the Pro price and signup are removed or replaced by the done-for-you offer before the first new email goes out, and what the page says about the service."
+    },
+    {
+      "id": "R1-10",
+      "dimension": "feasibility",
+      "severity": "blocking",
+      "changed_text": null,
+      "problem": "The 1.5-working-day founder budget is unsupported. It counts the wheels (about 2 h) and the calls, but leaves out finding seven text-published MED plans and named recipients, getting phone numbers through switchboards, repeat call attempts, CVR registration and NemHandel setup, and delivering paid orders within five working days including a round of corrections. The plan's own 'days 1 to 5' wording also reads as five days of work. Approach A was chosen partly because it fits this constraint.",
+      "remedy": "Itemise the time per activity, including lead research, call retries, invoicing setup and delivery of up to 2 orders, and either confirm the total fits or revise the constraint or scope."
+    },
+    {
+      "id": "R1-11",
+      "dimension": "feasibility",
+      "severity": "minor",
+      "changed_text": null,
+      "problem": "The deliverable promises PDF, PNG and SVG, but the engine (circalify 0.1.11, src/index.js) is a browser rendering library. The document does not say how PNG and PDF are produced without new code (browser screenshot, print-to-PDF, SVG export).",
+      "remedy": "Name the manual export steps used for the 2026-10-19 PNGs and confirm PDF output works the same way."
+    },
+    {
+      "id": "R1-12",
+      "dimension": "clarity",
+      "severity": "minor",
+      "changed_text": null,
+      "problem": "The Target User definition says the secretary 'can spend 1,500 kr. without procurement' as a fact, while Open Questions asks whether public plans reach anyone with a budget at all.",
+      "remedy": "Phrase the budget authority in Target User as a hypothesis that the 'who owns it' call question tests."
+    },
+    {
+      "id": "R1-13",
+      "dimension": "clarity",
+      "severity": "minor",
+      "changed_text": null,
+      "problem": "Leads are sourced from 'intranet' plans and Haderslev's plan is said to sit 'on its intranet', yet the offers rely on plans being public. Intranets are normally not publicly reachable, so it is unclear which sources count.",
+      "remedy": "Say 'public website or dagsorden/referat pages' (or explain how Haderslev's intranet plan was reached) so lead sourcing is unambiguous."
+    },
+    {
+      "id": "R1-14",
+      "dimension": "clarity",
+      "severity": "minor",
+      "changed_text": null,
+      "problem": "'The second opinion (independent cold read) did not run this session' is a process note, not an open customer question.",
+      "remedy": "Move it to a status or process note, or drop it."
+    },
+    {
+      "id": "R1-15",
+      "dimension": "clarity",
+      "severity": "minor",
+      "changed_text": null,
+      "problem": "Step 1 says the follow-up calls happen on 'day 1', while the Assignment allows until Wednesday 2026-11-04, the third day of the window.",
+      "remedy": "Align the two (e.g. 'by 2026-11-04' in both)."
+    }
+  ],
+  "prior": []
+}
